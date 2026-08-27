@@ -1,18 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Schedule Digital - Agenda Infinita</title>
     <link rel="stylesheet" href="design.css">
 </head>
 <body>
-    <p> oi</p>
 
-    <div class="calendario">  <h3>Agosto 2026</h3>  <table>    <thead>      <tr>        <th>Dom</th>        <th>Seg</th>        <th>Ter</th>        <th>Qua</th>        <th>Qui</th>        <th>Sex</th>        <th>Sáb</th>      </tr>    </thead>    <tbody>      <tr>       
-         <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td>1</td>      </tr>      <tr>        <td>2</td>        <td>3</td>       
-             <td>4</td>        <td>5</td>        <td>6</td>        <td>7</td>        <td>8</td>      </tr>      <tr>        <td>9</td>        <td>10</td>        <td>11</td>        <td>12</td>        <td>13</td>        <td>14</td>        <td>15</td>      </tr>      <tr>       
-                 <td>16</td>        <td>17</td>        <td>18</td>        <td>19</td>        <td>20</td>        <td>21</td>        <td>22</td>      </tr>      <tr>        <td>23</td>        <td>24</td>        <td>25</td>        <td>26</td>        <td>27</td>        <td>28</td>     
-                      <td>29</td>      </tr>      <tr>        <td>30</td>        <td>31</td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>        <td class="vazio"></td>      </tr>    </tbody>  </table></div>
+    <!-- BARRA SUPERIOR (NAVBAR) -->
+    <header class="navbar">
+        <a href="index.html" class="brand">Schedule Digital</a>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-btn">Início</a>
+            <a href="criadores.html" class="nav-btn">Criadores</a>
+            <button class="btn-auth btn-login">Entrar</button>
+            <button class="btn-auth btn-register">Cadastrar</button>
+        </nav>
+    </header>
+
+    <!-- CONTAINER CENTRAL DA AGENDA -->
+    <main class="agenda-wrapper">
+        <div class="calendario-card grande">
+            <div class="calendar-header">
+                <!-- Nome do Mês e Ano -->
+                <h3 id="monthYear"></h3>
+                <div class="calendar-nav">
+                    <button class="nav-arrow" id="prevMonth" aria-label="Mês Anterior">&lt;</button>
+                    <button class="nav-arrow" id="nextMonth" aria-label="Próximo Mês">&gt;</button>
+                </div>
+            </div>
+
+            <!-- TABELA DO CALENDÁRIO -->
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        <th>Dom</th>
+                        <th>Seg</th>
+                        <th>Ter</th>
+                        <th>Qua</th>
+                        <th>Qui</th>
+                        <th>Sex</th>
+                        <th>Sáb</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarBody">
+                    <!-- Gerado dinamicamente via JS -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+        <p>© 2026 <span class="schedule-brand">Schedule Digital</span>. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- SCRIPT DO CALENDÁRIO -->
+    <script src="calendar.js"></script>
 </body>
 </html>
