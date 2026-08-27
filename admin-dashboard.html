@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Schedule Digital</title>
+    <link rel="stylesheet" href="design.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- BARRA LATERAL ADMIN -->
+    <aside class="sidebar">
+        <div>
+            <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #ef4444;">[ADMIN]</span></h2>
+            <nav class="sidebar-menu" style="margin-top: 25px;">
+                <p style="color: #60a5fa; font-weight: 600;">Gestão de Alunos</p>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer;">Sair da Conta</button>
+        </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="dashboard-content">
+        <header class="dashboard-header">
+            <h1>Painel de Controle Administrativo</h1>
+            <p>Cadastre e gerencie as contas de acesso dos estudantes.</p>
+        </header>
+
+        <!-- FORMULÁRIO DE CADASTRO -->
+        <section class="admin-section">
+            <div class="login-card" style="max-width: 600px; margin: 0; padding: 25px;">
+                <h3 style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
+                <form id="cadastrarAlunoForm" class="login-form">
+                    <div style="display: flex; gap: 15px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Nome Completo</label>
+                            <input type="text" id="novoNome" placeholder="Ex: Ana Souza" required>
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label>E-mail de Acesso</label>
+                            <input type="email" id="novoEmail" placeholder="aluno@escola.com" required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Matrícula</label>
+                            <input type="text" id="novaMatricula" placeholder="2026001" required>
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label>Senha Provisória</label>
+                            <input type="password" id="novaSenha" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-central" style="max-width: 200px; margin-top: 10px;">Cadastrar Aluno</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- TABELA DE ALUNOS CADASTRADOS -->
+        <section style="margin-top: 40px;">
+            <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
+            <table style="width: 100%; border-collapse: collapse; background: rgba(17, 24, 39, 0.75); border-radius: 10px; overflow: hidden; text-align: left;">
+                <thead>
+                    <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <th style="padding: 12px 15px;">Nome</th>
+                        <th style="padding: 12px 15px;">E-mail</th>
+                        <th style="padding: 12px 15px;">Matrícula</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaAlunos">
+                    <!-- Linhas inseridas via JS -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        // Trava de segurança: Garante que apenas a conta ADMIN acessa esta página
+        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+        if (!usuario || usuario.cargo !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        // Função para atualizar a tabela na tela
+        function carregarTabela() {
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const tbody = document.getElementById('tabelaAlunos');
+            tbody.innerHTML = '';
+
+            alunos.forEach(aluno => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+                tr.innerHTML = `
+                    <td style="padding: 12px 15px;">${aluno.nome}</td>
+                    <td style="padding: 12px 15px;">${aluno.email}</td>
+                    <td style="padding: 12px 15px;">${aluno.matricula}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Salvar novo aluno no localStorage
+        document.getElementById('cadastrarAlunoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const novoAluno = {
+                nome: document.getElementById('novoNome').value,
+                email: document.getElementById('novoEmail').value,
+                matricula: document.getElementById('novaMatricula').value,
+                senha: document.getElementById('novaSenha').value
+            };
+
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            alunos.push(novoAluno);
+            localStorage.setItem('alunosDB', JSON.stringify(alunos));
+
+            this.reset();
+            carregarTabela();
+            alert('Aluno cadastrado com sucesso!');
+        });
+
+        function logout() {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'login.html';
+        }
+
+        // Carrega os alunos salvos ao abrir a página
+        carregarTabela();
+    </script>
+</body>
+</html>
