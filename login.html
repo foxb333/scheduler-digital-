@@ -9,20 +9,26 @@
 <body class="login-body">
 
     <!-- CARD DE LOGIN CENTRALIZADO -->
-    <div class="login-card">
+    <div class="login-card" style="position: relative;">
+        
+        <!-- Botão de Tema no topo do card -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+            <button id="toggleTheme" onclick="alternarTema()" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 13px;">
+                ☀️ / 🌙 Tema
+            </button>
+        </div>
+
         <h2 class="login-title">Acessar Conta</h2>
         <p class="login-subtitle">Entre com suas credenciais</p>
-
+        
         <form id="loginForm" class="login-form">
             <div class="input-group">
                 <label for="email">E-mail ou Matrícula</label>
-                <!-- Alterado para máximo de 25 caracteres -->
                 <input type="text" id="email" placeholder="ex: 0000110949562" maxlength="25" required>
             </div>
 
             <div class="input-group">
                 <label for="password">Senha</label>
-                <!-- Máximo de 25 caracteres -->
                 <input type="password" id="password" placeholder="••••••••" maxlength="25" required>
             </div>
 
@@ -36,8 +42,25 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA DE AUTENTICAÇÃO -->
+    <!-- SCRIPT DE LÓGICA DE TEMA E AUTENTICAÇÃO -->
     <script>
+        // 1. Aplica o tema salvo (claro ou escuro) ao carregar a página
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        // Função para alternar o tema com o botão
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 2. Lógica de Autenticação
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -45,14 +68,14 @@
             const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMessage');
 
-            // 1. Validação da conta Admin (adm.com / adm1234)
+            // Validação da conta Admin (adm.com / adm1234)
             if (email === 'adm.com' && password === 'adm1234') {
                 localStorage.setItem('usuarioLogado', JSON.stringify({ email: email, cargo: 'admin' }));
                 window.location.href = 'admin-dashboard.html';
                 return;
             }
 
-            // 2. Validação de Alunos cadastrados via localStorage
+            // Validação de Alunos cadastrados via localStorage
             const alunosCadastrados = JSON.parse(localStorage.getItem('alunosDB')) || [];
             const alunoEncontrado = alunosCadastrados.find(aluno => 
                 (aluno.email === email || aluno.matricula === email) && aluno.senha === password

@@ -36,8 +36,12 @@
                 <p style="color: #60a5fa; font-weight: 600;">Gestão de Alunos</p>
             </nav>
         </div>
-        <div class="sidebar-footer">
-            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer;">Sair da Conta</button>
+        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Botão de Tema na Sidebar Admin -->
+            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
+                ☀️ / 🌙 Tema
+            </button>
+            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
         </div>
     </aside>
 
@@ -84,9 +88,9 @@
         <section style="margin-top: 40px;">
             <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
             <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; background: rgba(17, 24, 39, 0.75); border-radius: 10px; overflow: hidden; text-align: left; min-width: 500px;">
+                <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; overflow: hidden; text-align: left; min-width: 500px;">
                     <thead>
-                        <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                        <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
                             <th style="padding: 12px 15px;">Nome</th>
                             <th style="padding: 12px 15px;">E-mail</th>
                             <th style="padding: 12px 15px;">Matrícula</th>
@@ -101,6 +105,22 @@
     </main>
 
     <script>
+        // 1. Aplica o tema salvo imediatamente ao carregar
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        // Função para alternar entre claro e escuro
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
         // Trava de segurança: Garante que apenas a conta ADMIN acessa esta página
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
         if (!usuario || usuario.cargo !== 'admin') {
@@ -115,11 +135,11 @@
 
             alunos.forEach(aluno => {
                 const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+                tr.style.borderBottom = '1px solid var(--border-main)';
                 tr.innerHTML = `
-                    <td style="padding: 12px 15px;">${aluno.nome}</td>
-                    <td style="padding: 12px 15px;">${aluno.email}</td>
-                    <td style="padding: 12px 15px;">${aluno.matricula}</td>
+                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.nome}</td>
+                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.email}</td>
+                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.matricula}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -130,7 +150,7 @@
             e.preventDefault();
 
             const novoAluno = {
-                nome: document.getElementById('novoNome',).value,
+                nome: document.getElementById('novoNome').value,
                 email: document.getElementById('novoEmail').value,
                 matricula: document.getElementById('novaMatricula').value,
                 senha: document.getElementById('novaSenha').value

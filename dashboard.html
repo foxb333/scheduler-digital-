@@ -78,7 +78,9 @@
                 display: flex;
             }
             .sidebar-footer {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column;
+                gap: 10px;
                 width: 100%;
                 margin-top: 10px;
             }
@@ -115,7 +117,11 @@
             </nav>
         </div>
 
-        <div class="sidebar-footer">
+        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Botão de Tema na Sidebar -->
+            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
+                ☀️ / 🌙 Tema
+            </button>
             <a href="index.html" class="btn-logout">Sair</a>
         </div>
     </aside>
@@ -165,9 +171,26 @@
         </div>
     </main>
 
-    <!-- SCRIPT DO CALENDÁRIO E CONTROLE DO MENU -->
+    <!-- SCRIPT DO CALENDÁRIO, TEMA E CONTROLE DO MENU -->
     <script src="calendar.js"></script>
     <script>
+        // 1. Aplica o tema salvo imediatamente ao carregar
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        // Função para alternar entre claro e escuro
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // 2. Controle do Menu Sanduíche
         const menuToggle = document.getElementById('menuToggle');
         const sidebarContent = document.getElementById('sidebarContent');
 

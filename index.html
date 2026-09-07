@@ -10,9 +10,13 @@
 
     <header class="navbar">
         <div class="brand">Schedule Digital</div>
-        <nav class="nav-links">
+        <nav class="nav-links" style="display: flex; align-items: center; gap: 12px;">
             <a href="login.html" class="btn-auth btn-login">Entrar</a>
             <a href="criadores.html" class="nav-btn">Criadores</a>
+            <!-- Botão de Tema reposicionado na Navbar -->
+            <button id="toggleTheme" onclick="alternarTema()" class="nav-btn" style="background: transparent; border: 1px solid var(--border-main); color: var(--text-main); cursor: pointer;">
+                ☀️ / 🌙
+            </button>
         </nav>
     </header>
 
@@ -26,7 +30,24 @@
     <footer class="footer">
         <p>© 2026 <span class="schedule-brand">Schedule Digital</span>. Todos os direitos reservados.</p>
     </footer>
-    
 
+    <!-- Script unificado para alternar e persistir o tema em todas as páginas -->
+    <script>
+        // Aplica o tema salvo imediatamente assim que a página carrega
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            
+            // Salva a preferência do usuário no navegador
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    </script>
 </body>
 </html>

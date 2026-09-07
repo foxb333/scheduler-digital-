@@ -1,4 +1,33 @@
 /* ==========================================================================
+   VARIÁVEIS DE TEMA (CLARO E ESCURO)
+   ========================================================================== */
+:root {
+    --bg-body: linear-gradient(135deg, #050816, #111827, #1e3a8a);
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --bg-card: rgba(17, 24, 39, 0.75);
+    --border-main: rgba(255, 255, 255, 0.1);
+    --border-card: rgba(255, 255, 255, 0.12);
+    --bg-input: rgba(255, 255, 255, 0.05);
+    --bg-footer: rgba(5, 8, 22, 0.9);
+    --bg-sidebar: rgba(17, 24, 39, 0.9);
+    --bg-hover: rgba(255, 255, 255, 0.05);
+}
+
+body.light-mode {
+    --bg-body: linear-gradient(135deg, #e0e7ff, #f3f4f6, #ffffff);
+    --text-main: #1f2937;
+    --text-muted: #4b5563;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --border-main: rgba(0, 0, 0, 0.15);
+    --border-card: rgba(0, 0, 0, 0.2);
+    --bg-input: #ffffff;
+    --bg-footer: rgba(243, 244, 246, 0.9);
+    --bg-sidebar: rgba(255, 255, 255, 0.95);
+    --bg-hover: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
    1. ESTRUTURA BASE E RESET
    ========================================================================== */
 * {
@@ -10,15 +39,17 @@
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     text-align: center;
-    background: linear-gradient(135deg, #050816, #111827, #1e3a8a);
+    background: var(--bg-body);
     background-attachment: fixed;
-    color: #ffffff;
+    color: var(--text-main);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
 }
+
 /* ==========================================================================
    2. NAVBAR
    ========================================================================== */
@@ -27,12 +58,13 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 5%;
-    background: rgba(17, 24, 39, 0.75);
+    background: var(--bg-card);
     backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-main);
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 /* Lado Esquerdo: Marca */
@@ -77,7 +109,7 @@ body {
 .nav-btn {
     order: 3;
     background: rgba(37, 99, 235, 0.15);
-    color: #e0e7ff;
+    color: #3b82f6;
     border: 1px solid rgba(59, 130, 246, 0.3);
     padding: 8px 18px;
     border-radius: 20px;
@@ -127,17 +159,17 @@ body {
 }
 
 .welcome-title {
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 38px;
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 12px;
-    text-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    text-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
 }
 
 .description {
     font-size: 16px;
-    color: #9ca3af;
+    color: var(--text-muted);
     max-width: 550px;
     line-height: 1.5;
     margin-bottom: 30px;
@@ -176,23 +208,23 @@ body {
 }
 
 .team-card {
-    background: rgba(17, 24, 39, 0.75);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--border-card);
     border-radius: 20px;
     padding: 25px 20px;
     width: 280px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
 .team-card:hover {
     transform: translateY(-5px);
     border-color: rgba(96, 165, 250, 0.4);
-    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
 }
 
 .avatar-container {
@@ -203,7 +235,7 @@ body {
     margin-bottom: 15px;
     border: 3px solid #3b82f6;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-hover);
 }
 
 .profile-img {
@@ -214,13 +246,13 @@ body {
 
 .team-card h2 {
     font-size: 20px;
-    color: #ffffff;
+    color: var(--text-main);
     margin-bottom: 6px;
 }
 
 .role-badge {
-    background: rgba(37, 99, 235, 0.2);
-    color: #60a5fa;
+    background: rgba(37, 99, 235, 0.1);
+    color: #3b82f6;
     border: 1px solid rgba(59, 130, 246, 0.4);
     padding: 4px 12px;
     border-radius: 12px;
@@ -231,7 +263,7 @@ body {
 
 .team-card p {
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--text-muted);
     line-height: 1.4;
 }
 
@@ -247,14 +279,14 @@ body {
 }
 
 .calendario-card.grande {
-    background: rgba(17, 24, 39, 0.75);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--border-card);
     border-radius: 20px;
     padding: 30px;
     width: 100%;
     max-width: 520px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-header {
@@ -276,9 +308,9 @@ body {
 }
 
 .nav-arrow {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-main);
+    color: var(--text-main);
     width: 38px;
     height: 38px;
     border-radius: 10px;
@@ -288,8 +320,8 @@ body {
 }
 
 .nav-arrow:hover {
-    background: rgba(59, 130, 246, 0.4);
-    border-color: #60a5fa;
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
 }
 
 .calendar-table {
@@ -299,7 +331,7 @@ body {
 }
 
 .calendar-table th {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     font-weight: 600;
     padding-bottom: 12px;
@@ -320,13 +352,13 @@ body {
 
 .calendar-table td.dia {
     cursor: pointer;
-    color: #e5e7eb;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-main);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-main);
 }
 
 .calendar-table td.dia:hover {
-    background: rgba(59, 130, 246, 0.25);
+    background: rgba(59, 130, 246, 0.15);
     border-color: rgba(96, 165, 250, 0.5);
     transform: translateY(-1px);
 }
@@ -335,13 +367,13 @@ body {
     background: #2563eb !important;
     color: #ffffff !important;
     font-weight: 800;
-    box-shadow: 0 0 15px rgba(37, 99, 235, 0.8);
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
     border: none !important;
 }
 
 .calendar-table td.ativo:not(.hoje) {
     border: 2px solid #60a5fa !important;
-    background: rgba(96, 165, 250, 0.2) !important;
+    background: rgba(96, 165, 250, 0.1) !important;
 }
 
 /* ==========================================================================
@@ -349,16 +381,17 @@ body {
    ========================================================================== */
 .footer {
     padding: 20px;
-    background: rgba(5, 8, 22, 0.9);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-footer);
+    border-top: 1px solid var(--border-main);
     font-size: 13px;
-    color: #6b7280;
+    color: var(--text-muted);
 }
 
 .schedule-brand {
     color: #3b82f6;
     font-weight: 600;
 }
+
 /* ==========================================================================
    7. TELA DE LOGIN MODERNIZADA
    ========================================================================== */
@@ -370,26 +403,26 @@ body {
 }
 
 .login-card {
-    background: rgba(17, 24, 39, 0.75);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--border-card);
     border-radius: 20px;
     padding: 40px 30px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     text-align: left;
 }
 
 .login-title {
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 26px;
     font-weight: 800;
     margin-bottom: 6px;
 }
 
 .login-subtitle {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 14px;
     margin-bottom: 25px;
 }
@@ -400,7 +433,7 @@ body {
 
 .login-form label {
     display: block;
-    color: #e0e7ff;
+    color: var(--text-main);
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 8px;
@@ -409,10 +442,10 @@ body {
 .login-form input {
     width: 100%;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--bg-input);
+    border: 1px solid var(--border-main);
     border-radius: 10px;
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 14px;
     outline: none;
     transition: all 0.3s ease;
@@ -420,7 +453,7 @@ body {
 
 .login-form input:focus {
     border-color: #3b82f6;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
 }
 
 .btn-submit {
@@ -435,7 +468,7 @@ body {
 }
 
 .back-link {
-    color: #60a5fa;
+    color: #3b82f6;
     text-decoration: none;
     font-size: 13px;
 }
@@ -457,9 +490,9 @@ body {
 
 .sidebar {
     width: 250px;
-    background: rgba(17, 24, 39, 0.9);
+    background: var(--bg-sidebar);
     backdrop-filter: blur(15px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid var(--border-main);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -474,7 +507,7 @@ body {
 }
 
 .menu-empty {
-    color: #6b7280;
+    color: var(--text-muted);
     font-size: 13px;
     font-style: italic;
     margin-top: 30px;
@@ -488,14 +521,14 @@ body {
 
 .dashboard-header h1 {
     font-size: 32px;
-    color: #ffffff;
+    color: var(--text-main);
     text-align: left;
     margin: 0 0 8px 0;
     text-shadow: none;
 }
 
 .dashboard-header p {
-    color: #9ca3af;
+    color: var(--text-muted);
     font-size: 15px;
     text-align: left;
     margin: 0;
@@ -511,9 +544,9 @@ body {
 .btn-logout:hover {
     text-decoration: underline;
 }
+
 /* --- AJUSTES DE RESPONSIVIDADE PARA MOBILE --- */
 @media screen and (max-width: 768px) {
-    /* Organiza a barra superior para empilhar marca e links se necessário */
     .navbar {
         flex-direction: column;
         height: auto;
@@ -529,7 +562,6 @@ body {
         width: 100%;
     }
 
-    /* Corrige o título principal para não estourar a tela */
     .welcome-title {
         font-size: 1.8rem;
         padding: 0 15px;
@@ -541,7 +573,6 @@ body {
         text-align: center;
     }
 
-    /* Ajusta o botão central para ocupar um tamanho adequado no celular */
     .btn-central {
         width: 90%;
         max-width: 300px;
