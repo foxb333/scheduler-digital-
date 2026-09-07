@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - Schedule Digital</title>
     <link rel="stylesheet" href="design.css">
+    <style>
+        /* Ajustes de responsividade para o painel administrativo */
+        @media screen and (max-width: 768px) {
+            body.dashboard-body {
+                flex-direction: column !important;
+                display: flex !important;
+            }
+            .sidebar {
+                width: 100% !important;
+                height: auto !important;
+                position: relative !important;
+            }
+            .dashboard-content {
+                margin-left: 0 !important;
+                padding: 15px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
 
@@ -28,34 +48,34 @@
             <p>Cadastre e gerencie as contas de acesso dos estudantes.</p>
         </header>
 
-        <!-- FORMULÁRIO DE CADASTRO -->
-        <section class="admin-section">
-            <div class="login-card" style="max-width: 600px; margin: 0; padding: 25px;">
+        <!-- FORMULÁRIO DE CADASTRO CENTRALIZADO -->
+        <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
+            <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
                 <h3 style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
                 <form id="cadastrarAlunoForm" class="login-form">
-                    <div style="display: flex; gap: 15px;">
-                        <div class="input-group" style="flex: 1;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
                             <label>Nome Completo</label>
                             <input type="text" id="novoNome" placeholder="Ex: Ana Souza" required>
                         </div>
-                        <div class="input-group" style="flex: 1;">
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
                             <label>E-mail de Acesso</label>
-                            <input type="email" id="novoEmail" placeholder="aluno@escola.com" required>
+                            <input type="text" id="novoEmail" placeholder="00001105939352sp" required>
                         </div>
                     </div>
 
-                    <div style="display: flex; gap: 15px;">
-                        <div class="input-group" style="flex: 1;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
                             <label>Matrícula</label>
                             <input type="text" id="novaMatricula" placeholder="2026001" required>
                         </div>
-                        <div class="input-group" style="flex: 1;">
+                        <div class="input-group" style="flex: 1; min-width: 200px;">
                             <label>Senha Provisória</label>
                             <input type="password" id="novaSenha" placeholder="••••••••" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-central" style="max-width: 200px; margin-top: 10px;">Cadastrar Aluno</button>
+                    <button type="submit" class="btn-central" style="max-width: 200px; width: 100%; margin-top: 15px;">Cadastrar Aluno</button>
                 </form>
             </div>
         </section>
@@ -63,18 +83,20 @@
         <!-- TABELA DE ALUNOS CADASTRADOS -->
         <section style="margin-top: 40px;">
             <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
-            <table style="width: 100%; border-collapse: collapse; background: rgba(17, 24, 39, 0.75); border-radius: 10px; overflow: hidden; text-align: left;">
-                <thead>
-                    <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                        <th style="padding: 12px 15px;">Nome</th>
-                        <th style="padding: 12px 15px;">E-mail</th>
-                        <th style="padding: 12px 15px;">Matrícula</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaAlunos">
-                    <!-- Linhas inseridas via JS -->
-                </tbody>
-            </table>
+            <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; background: rgba(17, 24, 39, 0.75); border-radius: 10px; overflow: hidden; text-align: left; min-width: 500px;">
+                    <thead>
+                        <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <th style="padding: 12px 15px;">Nome</th>
+                            <th style="padding: 12px 15px;">E-mail</th>
+                            <th style="padding: 12px 15px;">Matrícula</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaAlunos">
+                        <!-- Linhas inseridas via JS -->
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
@@ -108,7 +130,7 @@
             e.preventDefault();
 
             const novoAluno = {
-                nome: document.getElementById('novoNome').value,
+                nome: document.getElementById('novoNome',).value,
                 email: document.getElementById('novoEmail').value,
                 matricula: document.getElementById('novaMatricula').value,
                 senha: document.getElementById('novaSenha').value
@@ -120,7 +142,7 @@
 
             this.reset();
             carregarTabela();
-            alert('Aluno cadastrado com sucesso!');
+            alert('Aluno cadastrado com sucesso, Sr. Fox!');
         });
 
         function logout() {

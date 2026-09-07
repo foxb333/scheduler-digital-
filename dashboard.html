@@ -5,6 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Digital - Painel do Aluno</title>
     <link rel="stylesheet" href="design.css">
+    <style>
+        /* Botão do menu sanduíche (oculto no desktop) */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 26px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        /* Estilo do botão "Voltar" perto das setinhas com adaptação mobile/desktop */
+        .btn-hoje {
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            color: #60a5fa;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-hoje:hover {
+            background: rgba(37, 99, 235, 0.4);
+        }
+
+        /* Texto dinâmico: mostra abreviado no mobile e inteiro no PC */
+        .texto-pc {
+            display: inline;
+        }
+        .texto-mobile {
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            .texto-pc {
+                display: none;
+            }
+            .texto-mobile {
+                display: inline;
+            }
+            body.dashboard-body {
+                flex-direction: column !important;
+                display: flex !important;
+            }
+            .sidebar {
+                width: 100% !important;
+                height: auto !important;
+                position: relative !important;
+                display: flex;
+                flex-direction: column;
+            }
+            .sidebar-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .sidebar-collapse {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+            }
+            .sidebar-collapse.open {
+                display: flex;
+            }
+            .sidebar-footer {
+                display: block !important;
+                width: 100%;
+                margin-top: 10px;
+            }
+            .dashboard-content {
+                margin-left: 0 !important;
+                padding: 15px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .agenda-wrapper {
+                width: 100% !important;
+                overflow-x: auto !important;
+            }
+            .calendario-card.grande {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 10px !important;
+            }
+        }
+    </style>
 </head>
 <body class="dashboard-body">
 
@@ -12,23 +106,104 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2 class="sidebar-brand">Schedule</h2>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">☰</button>
         </div>
-        <nav class="sidebar-menu">
-            <!-- Espaço reservado para as abas/ferramentas futuras -->
-            <p class="menu-empty">Recursos em breve...</p>
-        </nav>
+
+        <div class="sidebar-collapse" id="sidebarContent">
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="sidebar-btn active">Agenda</a>
+            </nav>
+        </div>
+
         <div class="sidebar-footer">
             <a href="index.html" class="btn-logout">Sair</a>
         </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL DO ALUNO -->
+    <!-- ÁREA PRINCIPAL DO ALUNO COM O CALENDÁRIO -->
     <main class="dashboard-content">
         <header class="dashboard-header">
             <h1>Área do Estudante</h1>
-            <p>Selecione um item na aba lateral para acessar seu conteúdo.</p>
+            <p>Seu cronograma completo integrado ao painel.</p>
         </header>
+
+        <!-- CONTAINER DA AGENDA MOVIDO PARA O DASHBOARD -->
+        <div class="agenda-wrapper">
+            <div class="calendario-card grande">
+                <div class="calendar-header">
+                    <!-- Nome do Mês e Ano -->
+                    <h3 id="monthYear"></h3>
+                    <div class="calendar-nav">
+                        <!-- Botão "Voltar" com texto adaptativo (Inteiro no PC, Abreviado no Mobile) -->
+                        <button class="btn-hoje" id="btnHoje" title="Voltar para o mês e dia atual">
+                            <span class="texto-pc">Voltar</span>
+                            <span class="texto-mobile">Volt.</span>
+                        </button>
+                        <button class="nav-arrow" id="prevMonth" aria-label="Mês Anterior">&lt;</button>
+                        <button class="nav-arrow" id="nextMonth" aria-label="Próximo Mês">&gt;</button>
+                    </div>
+                </div>
+
+                <!-- TABELA DO CALENDÁRIO -->
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Dom</th>
+                            <th>Seg</th>
+                            <th>Ter</th>
+                            <th>Qua</th>
+                            <th>Qui</th>
+                            <th>Sex</th>
+                            <th>Sáb</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendarBody">
+                        <!-- Gerado dinamicamente via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
+    <!-- SCRIPT DO CALENDÁRIO E CONTROLE DO MENU -->
+    <script src="calendar.js"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarContent = document.getElementById('sidebarContent');
+
+        menuToggle.addEventListener('click', () => {
+            sidebarContent.classList.toggle('open');
+        });
+
+        // Força o reconhecimento automático do mês e dia atual ao abrir ou atualizar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            const dataHoje = new Date();
+            if (typeof mesAtual !== 'undefined' && typeof anoAtual !== 'undefined' && typeof carregarCalendario === 'function') {
+                mesAtual = dataHoje.getMonth();
+                anoAtual = dataHoje.getFullYear();
+                carregarCalendario(mesAtual, anoAtual);
+            } else if (typeof currentMonth !== 'undefined' && typeof currentYear !== 'undefined' && typeof renderCalendar === 'function') {
+                currentMonth = dataHoje.getMonth();
+                currentYear = dataHoje.getFullYear();
+                renderCalendar();
+            }
+        });
+
+        // Ação do botão de Voltar para o mês e dia atual
+        document.getElementById('btnHoje').addEventListener('click', () => {
+            const dataHoje = new Date();
+            if (typeof mesAtual !== 'undefined' && typeof anoAtual !== 'undefined' && typeof carregarCalendario === 'function') {
+                mesAtual = dataHoje.getMonth();
+                anoAtual = dataHoje.getFullYear();
+                carregarCalendario(mesAtual, anoAtual);
+            } else if (typeof currentMonth !== 'undefined' && typeof currentYear !== 'undefined' && typeof renderCalendar === 'function') {
+                currentMonth = dataHoje.getMonth();
+                currentYear = dataHoje.getFullYear();
+                renderCalendar();
+            } else {
+                location.reload();
+            }
+        });
+    </script>
 </body>
 </html>

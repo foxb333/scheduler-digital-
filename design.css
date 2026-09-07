@@ -511,3 +511,40 @@ body {
 .btn-logout:hover {
     text-decoration: underline;
 }
+/* --- AJUSTES DE RESPONSIVIDADE PARA MOBILE --- */
+@media screen and (max-width: 768px) {
+    /* Organiza a barra superior para empilhar marca e links se necessário */
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* Corrige o título principal para não estourar a tela */
+    .welcome-title {
+        font-size: 1.8rem;
+        padding: 0 15px;
+        text-align: center;
+    }
+
+    .description {
+        padding: 0 15px;
+        text-align: center;
+    }
+
+    /* Ajusta o botão central para ocupar um tamanho adequado no celular */
+    .btn-central {
+        width: 90%;
+        max-width: 300px;
+        text-align: center;
+    }
+}
