@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Digital - Painel da Direção</title>
+    <link rel="stylesheet" href="design.css">
+    <style>
+        .nav-btn-direcao {
+            display: block; padding: 10px 15px; color: #94a3b8; text-decoration: none;
+            border-radius: 8px; font-weight: 500; margin-bottom: 5px; cursor: pointer; transition: 0.2s;
+        }
+        .nav-btn-direcao.active, .nav-btn-direcao:hover {
+            background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600;
+        }
+        .card-aviso {
+            background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px;
+            padding: 15px; margin-bottom: 15px; position: relative;
+        }
+        .acoes-aviso {
+            float: right; display: flex; gap: 8px;
+        }
+        .btn-excluir {
+            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 6px;
+            cursor: pointer; font-size: 12px;
+        }
+        .btn-editar-aviso {
+            background: #2563eb; color: white; border: none; padding: 4px 10px; border-radius: 6px;
+            cursor: pointer; font-size: 12px;
+        }
+        @media screen and (max-width: 768px) {
+            body.dashboard-body { flex-direction: column !important; display: flex !important; }
+            .sidebar { width: 100% !important; height: auto !important; position: relative !important; }
+            .dashboard-content { margin-left: 0 !important; padding: 15px !important; width: 100% !important; box-sizing: border-box !important; }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <!-- BARRA LATERAL DIREÇÃO -->
+    <aside class="sidebar">
+        <div>
+            <div class="sidebar-header">
+                <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #a855f7;">[DIREÇÃO]</span></h2>
+            </div>
+            <nav class="sidebar-menu" style="margin-top: 25px;">
+                <span id="btnAbaTurmas" onclick="alternarAbaDiretor('turmas')" class="nav-btn-direcao active">Gestão de Turmas</span>
+                <span id="btnAbaMural" onclick="alternarAbaDiretor('mural')" class="nav-btn-direcao">Mural de Avisos</span>
+            </nav>
+        </div>
+        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
+            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
+                ☀️ / 🌙 Tema
+            </button>
+            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
+        </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="dashboard-content">
+        <header class="dashboard-header">
+            <h1 id="boasVindasDiretor">Painel de Controle da Direção</h1>
+            <p>Acompanhe turmas, alunos e publique comunicados gerais.</p>
+        </header>
+
+        <!-- SEÇÃO 1: CONSULTA DE TURMAS -->
+        <div id="secaoTurmas">
+            <div class="login-card" style="max-width: 600px; padding: 20px; margin-bottom: 25px;">
+                <h3 style="color: #60a5fa; margin-bottom: 10px;">Selecionar Turma para Visualização</h3>
+                <div class="input-group">
+                    <label>Escolha a Turma:</label>
+                    <select id="selectTurmasDirecao" onchange="carregarAlunosDaTurma()" style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-main);">
+                        <option value="">Selecione uma turma...</option>
+                    </select>
+                </div>
+            </div>
+
+            <section>
+                <h3 id="tituloTabelaTurma" style="margin-bottom: 15px;">Alunos da Turma</h3>
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
+                        <thead>
+                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
+                                <th style="padding: 12px 15px;">Nome do Aluno</th>
+                                <th style="padding: 12px 15px;">Matrícula</th>
+                                <th style="padding: 12px 15px;">Acesso</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAlunosDirecao">
+                            <tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Selecione uma turma para carregar os estudantes.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- SEÇÃO 2: MURAL DE AVISOS -->
+        <div id="secaoMural" style="display: none;">
+            <div class="login-card" style="max-width: 600px; padding: 20px; margin-bottom: 25px;">
+                <h3 id="tituloFormAviso" style="color: #60a5fa; margin-bottom: 15px;">Publicar Novo Aviso</h3>
+                <form id="formAvisoDirecao" class="login-form">
+                    <input type="hidden" id="editAvisoIndex" value="">
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Título do Aviso</label>
+                        <input type="text" id="avisoTitulo" placeholder="Ex: Não haverá aula nesta sexta-feira" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Descrição do Comunicado</label>
+                        <textarea id="avisoConteudo" rows="4" placeholder="Detalhes do aviso..." style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-main);" required></textarea>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Tempo de Exposição (Dias - Máximo 365)</label>
+                        <input type="number" id="avisoDias" min="1" max="365" value="7" placeholder="Ex: 7" required>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" id="btnSalvarAviso" class="btn-central" style="max-width: 200px;">Publicar Aviso</button>
+                        <button type="button" id="btnCancelarEdicaoAviso" onclick="cancelarEdicaoAviso()" class="btn-central" style="max-width: 120px; background: #64748b; display: none;">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <section>
+                <h3 style="margin-bottom: 15px;">Avisos Publicados</h3>
+                <div id="containerAvisosDirecao">
+                    <!-- Avisos gerados via JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+
+        function alternarTema() {
+            document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+        if (!usuario || (usuario.permissao !== 'diretores' && usuario.cargo !== 'diretor' && usuario.cargo !== 'admin')) {
+            window.location.href = 'login.html';
+        } else if (usuario.nome) {
+            document.getElementById('boasVindasDiretor').innerText = `Painel de Controle - ${usuario.nome}`;
+        }
+
+        function alternarAbaDiretor(aba) {
+            if (aba === 'turmas') {
+                document.getElementById('secaoTurmas').style.display = 'block';
+                document.getElementById('secaoMural').style.display = 'none';
+                document.getElementById('btnAbaTurmas').classList.add('active');
+                document.getElementById('btnAbaMural').classList.remove('active');
+            } else {
+                document.getElementById('secaoTurmas').style.display = 'none';
+                document.getElementById('secaoMural').style.display = 'block';
+                document.getElementById('btnAbaMural').classList.add('active');
+                document.getElementById('btnAbaTurmas').classList.remove('active');
+            }
+        }
+
+        // Popula o select com todas as turmas
+        function popularTurmasSelect() {
+            const select = document.getElementById('selectTurmasDirecao');
+            select.innerHTML = '<option value="">Selecione uma turma...</option>';
+            
+            for (let ano = 5; ano <= 9; ano++) {
+                ['A', 'B', 'C'].forEach(t => select.innerHTML += `<option value="${ano}º Ano ${t} (Fundamental)">${ano}º Ano ${t} (Fundamental)</option>`);
+            }
+            for (let ano = 1; ano <= 3; ano++) {
+                ['A', 'B', 'C'].forEach(t => select.innerHTML += `<option value="${ano}º Ano ${t} (Ensino Médio)">${ano}º Ano ${t} (Ensino Médio)</option>`);
+            }
+        }
+
+        function carregarAlunosDaTurma() {
+            const turmaSel = document.getElementById('selectTurmasDirecao').value;
+            const tbody = document.getElementById('tabelaAlunosDirecao');
+            tbody.innerHTML = '';
+
+            if (!turmaSel) {
+                tbody.innerHTML = '<tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Selecione uma turma para carregar os estudantes.</td></tr>';
+                return;
+            }
+
+            document.getElementById('tituloTabelaTurma').innerText = `Alunos Registrados no ${turmaSel}`;
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const alunosFiltrados = alunos.filter(a => a.sala === turmaSel);
+
+            if (alunosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Nenhum aluno cadastrado nesta turma ainda.</td></tr>';
+                return;
+            }
+
+            alunosFiltrados.forEach(a => {
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid var(--border-main);">
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.nome}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.matricula}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.email}</td>
+                    </tr>`;
+            });
+        }
+
+        // Gerenciamento do Mural
+        function carregarAvisosDiretor() {
+            let avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
+            const container = document.getElementById('containerAvisosDirecao');
+            container.innerHTML = '';
+
+            // Filtra e remove avisos expirados automaticamente
+            const agora = new Date().getTime();
+            avisos = avisos.filter(av => new Date(av.expiracao).getTime() > agora);
+            localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
+
+            if (avisos.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aviso ativo no mural.</p>';
+                return;
+            }
+
+            avisos.forEach((av, index) => {
+                // Calcula dias restantes para o reloginho da diretora
+                const diffTime = Math.abs(new Date(av.expiracao) - new Date());
+                const diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                container.innerHTML += `
+                    <div class="card-aviso">
+                        <div class="acoes-aviso">
+                            <button class="btn-editar-aviso" onclick="prepararEdicaoAviso(${index})">Editar</button>
+                            <button class="btn-excluir" onclick="excluirAviso(${index})">Excluir</button>
+                        </div>
+                        <h4 style="color: #60a5fa; margin-bottom: 5px;">${av.titulo}</h4>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Publicado em: ${av.data}</span>
+                        <span style="font-size: 11px; color: #a855f7; display: block; margin-bottom: 10px;">⏱️ Expira em aproximadamente ${diasRestantes} dia(s)</span>
+                        <p style="margin: 0; color: var(--text-main); font-size: 14px;">${av.conteudo}</p>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('formAvisoDirecao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editIndex = document.getElementById('editAvisoIndex').value;
+            let dias = parseInt(document.getElementById('avisoDias').value);
+
+            if (dias > 365) {
+                alert('O limite máximo de exposição é de 365 dias (1 ano).');
+                return;
+            }
+
+            const dataExpiracao = new Date();
+            dataExpiracao.setDate(dataExpiracao.getDate() + dias);
+
+            const avisoObj = {
+                titulo: document.getElementById('avisoTitulo').value.trim(),
+                conteudo: document.getElementById('avisoConteudo').value.trim(),
+                data: new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+                expiracao: dataExpiracao.toISOString()
+            };
+
+            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
+
+            if (editIndex !== "") {
+                avisos[editIndex] = avisoObj;
+                alert('Aviso atualizado com sucesso!');
+            } else {
+                avisos.unshift(avisoObj);
+                alert('Aviso publicado com sucesso no Mural!');
+            }
+
+            localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
+            cancelarEdicaoAviso();
+            carregarAvisosDiretor();
+        });
+
+        function prepararEdicaoAviso(index) {
+            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
+            const av = avisos[index];
+
+            document.getElementById('editAvisoIndex').value = index;
+            document.getElementById('avisoTitulo').value = av.titulo;
+            document.getElementById('avisoConteudo').value = av.conteudo;
+            document.getElementById('avisoDias').value = 7; // valor padrão ou recalculado se necessário
+
+            document.getElementById('tituloFormAviso').innerText = 'Editar Aviso';
+            document.getElementById('btnSalvarAviso').innerText = 'Salvar Alterações';
+            document.getElementById('btnCancelarEdicaoAviso').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicaoAviso() {
+            document.getElementById('formAvisoDirecao').reset();
+            document.getElementById('editAvisoIndex').value = '';
+            document.getElementById('tituloFormAviso').innerText = 'Publicar Novo Aviso';
+            document.getElementById('btnSalvarAviso').innerText = 'Publicar Aviso';
+            document.getElementById('btnCancelarEdicaoAviso').style.display = 'none';
+        }
+
+        function excluirAviso(index) {
+            if (confirm('Deseja realmente remover este aviso do mural?')) {
+                const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
+                avisos.splice(index, 1);
+                localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
+                carregarAvisosDiretor();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('usuarioLogado');
+            window.location.href = 'login.html';
+        }
+
+        popularTurmasSelect();
+        carregarAvisosDiretor();
+    </script>
+</body>
+</html>

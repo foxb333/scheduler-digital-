@@ -8,10 +8,7 @@
 </head>
 <body class="login-body">
 
-    <!-- CARD DE LOGIN CENTRALIZADO -->
     <div class="login-card" style="position: relative;">
-        
-        <!-- Botão de Tema no topo do card -->
         <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
             <button id="toggleTheme" onclick="alternarTema()" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 13px;">
                 ☀️ / 🌙 Tema
@@ -19,12 +16,12 @@
         </div>
 
         <h2 class="login-title">Acessar Conta</h2>
-        <p class="login-subtitle">Entre com suas credenciais</p>
+        <p class="login-subtitle">Entre com suas credenciais (Acesso, CPF ou E-mail)</p>
         
         <form id="loginForm" class="login-form">
             <div class="input-group">
-                <label for="email">E-mail ou Matrícula</label>
-                <input type="text" id="email" placeholder="ex: 0000110949562" maxlength="25" required>
+                <label for="email">E-mail, Acesso ou CPF</label>
+                <input type="text" id="email" placeholder="Digite seu e-mail, acesso ou CPF" maxlength="50" required>
             </div>
 
             <div class="input-group">
@@ -32,7 +29,7 @@
                 <input type="password" id="password" placeholder="••••••••" maxlength="25" required>
             </div>
 
-            <p id="errorMessage" style="color: #ef4444; font-size: 13px; display: none; margin-bottom: 10px;">E-mail ou senha incorretos!</p>
+            <p id="errorMessage" style="color: #ef4444; font-size: 13px; display: none; margin-bottom: 10px;">Credenciais incorretas!</p>
 
             <button type="submit" class="btn-central btn-submit">Entrar no Sistema</button>
         </form>
@@ -42,52 +39,63 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE LÓGICA DE TEMA E AUTENTICAÇÃO -->
     <script>
-        // 1. Aplica o tema salvo (claro ou escuro) ao carregar a página
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
-        // Função para alternar o tema com o botão
         function alternarTema() {
             document.body.classList.toggle('light-mode');
-            
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-            } else {
-                localStorage.setItem('theme', 'dark');
-            }
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         }
 
-        // 2. Lógica de Autenticação
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value.trim();
+            const campoIdentificador = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('errorMessage');
 
-            // Validação da conta Admin (adm.com / adm1234)
-            if (email === 'adm.com' && password === 'adm1234') {
-                localStorage.setItem('usuarioLogado', JSON.stringify({ email: email, cargo: 'admin' }));
+            // 1. Admin
+            if (campoIdentificador === 'adm.com' && password === 'adm1234') {
+                localStorage.setItem('usuarioLogado', JSON.stringify({ identificador: campoIdentificador, cargo: 'admin' }));
                 window.location.href = 'admin-dashboard.html';
                 return;
             }
 
-            // Validação de Alunos cadastrados via localStorage
+            // 2. Professores, Gestão e Diretores
+            const professoresCadastrados = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            const profEncontrado = professoresCadastrados.find(p => 
+                (p.cpf === campoIdentificador || p.cpf.replace(/\D/g, '') === campoIdentificador.replace(/\D/g, '')) && p.senha === password
+            );
+
+            if (profEncontrado) {
+                localStorage.setItem('usuarioLogado', JSON.stringify({ 
+                    cpf: profEncontrado.cpf, 
+                    nome: profEncontrado.nome,
+                    permissao: profEncontrado.permissao, 
+                    materia: profEncontrado.materia,
+                    cargo: profEncontrado.permissao === 'diretores' ? 'diretor' : 'professor' 
+                }));
+
+                if (profEncontrado.permissao === 'diretores') {
+                    window.location.href = 'diretores.html';
+                } else {
+                    window.location.href = 'professores.html';
+                }
+                return;
+            }
+
+            // 3. Alunos
             const alunosCadastrados = JSON.parse(localStorage.getItem('alunosDB')) || [];
             const alunoEncontrado = alunosCadastrados.find(aluno => 
-                (aluno.email === email || aluno.matricula === email) && aluno.senha === password
+                (aluno.email === campoIdentificador || aluno.matricula === campoIdentificador) && aluno.senha === password
             );
 
             if (alunoEncontrado) {
-                localStorage.setItem('usuarioLogado', JSON.stringify({ email: email, nome: alunoEncontrado.nome, cargo: 'aluno' }));
+                localStorage.setItem('usuarioLogado', JSON.stringify({ email: campoIdentificador, nome: alunoEncontrado.nome, cargo: 'aluno' }));
                 window.location.href = 'dashboard.html';
                 return;
             }
 
-            // Exibe mensagem de erro se a conta não existir
             errorMsg.style.display = 'block';
         });
     </script>

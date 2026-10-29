@@ -6,23 +6,28 @@
     <title>Painel Administrativo - Schedule Digital</title>
     <link rel="stylesheet" href="design.css">
     <style>
-        /* Ajustes de responsividade para o painel administrativo */
         @media screen and (max-width: 768px) {
-            body.dashboard-body {
-                flex-direction: column !important;
-                display: flex !important;
-            }
-            .sidebar {
-                width: 100% !important;
-                height: auto !important;
-                position: relative !important;
-            }
-            .dashboard-content {
-                margin-left: 0 !important;
-                padding: 15px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
+            body.dashboard-body { flex-direction: column !important; display: flex !important; }
+            .sidebar { width: 100% !important; height: auto !important; position: relative !important; }
+            .dashboard-content { margin-left: 0 !important; padding: 15px !important; width: 100% !important; box-sizing: border-box !important; }
+        }
+        .nav-link { color: #94a3b8; text-decoration: none; display: block; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; }
+        .nav-link.active { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
+        .btn-editar { background: #2563eb; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-editar:hover { background: #1d4ed8; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; background: var(--bg-hover); border: 1px solid var(--border-main); border-radius: 8px; }
+        .checkbox-item { font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+        /* Ajuste de contraste para campos SELECT e OPTION no Modo Escuro e Claro */
+        select, option {
+            background-color: var(--bg-card, #0f172a) !important;
+            color: var(--text-main, #f8fafc) !important;
+        }
+
+        body.light-mode select, 
+        body.light-mode option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
         }
     </style>
 </head>
@@ -33,11 +38,11 @@
         <div>
             <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #ef4444;">[ADMIN]</span></h2>
             <nav class="sidebar-menu" style="margin-top: 25px;">
-                <p style="color: #60a5fa; font-weight: 600;">Gestão de Alunos</p>
+                <span class="nav-link active" id="btnAbaAlunos" onclick="alternarAba('alunos')">Gestão de Alunos</span>
+                <span class="nav-link" id="btnAbaProfessores" onclick="alternarAba('professores')">Cadastrar Professores</span>
             </nav>
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Botão de Tema na Sidebar Admin -->
             <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
                 ☀️ / 🌙 Tema
             </button>
@@ -49,120 +54,349 @@
     <main class="dashboard-content">
         <header class="dashboard-header">
             <h1>Painel de Controle Administrativo</h1>
-            <p>Cadastre e gerencie as contas de acesso dos estudantes.</p>
+            <p id="subtituloHeader">Cadastre e gerencie as contas dos estudantes e corpo docente.</p>
         </header>
 
-        <!-- FORMULÁRIO DE CADASTRO CENTRALIZADO -->
-        <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
-            <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
-                <h3 style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
-                <form id="cadastrarAlunoForm" class="login-form">
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <div class="input-group" style="flex: 1; min-width: 200px;">
-                            <label>Nome Completo</label>
-                            <input type="text" id="novoNome" placeholder="Ex: Ana Souza" required>
+        <!-- SEÇÃO: GESTÃO DE ALUNOS -->
+        <div id="secaoAlunos">
+            <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
+                <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
+                    <h3 id="tituloFormAluno" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
+                    <form id="cadastrarAlunoForm" class="login-form">
+                        <input type="hidden" id="editAlunoIndex" value="">
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Nome Completo</label>
+                                <input type="text" id="novoNome" placeholder="Ex: Ana Souza" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Acesso</label>
+                                <input type="text" id="novoEmail" placeholder="00001105939352sp" pattern=".*\d+sp$" title="Acesso no formato numérico seguido de sp" required>
+                            </div>
                         </div>
-                        <div class="input-group" style="flex: 1; min-width: 200px;">
-                            <label>E-mail de Acesso</label>
-                            <input type="text" id="novoEmail" placeholder="00001105939352sp" required>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Matrícula</label>
+                                <input type="text" id="novaMatricula" placeholder="00001105939352sp@aluno.educacao.sp.gov.br" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Senha Provisória</label>
+                                <input type="password" id="novaSenha" placeholder="••••••••" required>
+                            </div>
                         </div>
-                    </div>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Turma / Sala do Aluno</label>
+                                <select id="alunoSala" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
+                                    <option value="">Selecione a Turma...</option>
+                                    <!-- Opções geradas dinamicamente via Script -->
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSalvarAluno" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Aluno</button>
+                            <button type="button" id="btnCancelarAluno" onclick="cancelarEdicaoAluno()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
 
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                        <div class="input-group" style="flex: 1; min-width: 200px;">
-                            <label>Matrícula</label>
-                            <input type="text" id="novaMatricula" placeholder="2026001" required>
-                        </div>
-                        <div class="input-group" style="flex: 1; min-width: 200px;">
-                            <label>Senha Provisória</label>
-                            <input type="password" id="novaSenha" placeholder="••••••••" required>
-                        </div>
-                    </div>
+            <section style="margin-top: 40px;">
+                <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
+                        <thead>
+                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
+                                <th style="padding: 12px 15px;">Nome</th>
+                                <th style="padding: 12px 15px;">Acesso</th>
+                                <th style="padding: 12px 15px;">Matrícula</th>
+                                <th style="padding: 12px 15px;">Turma</th>
+                                <th style="padding: 12px 15px; text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAlunos"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
 
-                    <button type="submit" class="btn-central" style="max-width: 200px; width: 100%; margin-top: 15px;">Cadastrar Aluno</button>
-                </form>
-            </div>
-        </section>
+        <!-- SEÇÃO: GESTÃO DE PROFESSORES -->
+        <div id="secaoProfessores" style="display: none;">
+            <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
+                <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
+                    <h3 id="tituloFormProf" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Professor / Gestão</h3>
+                    <form id="cadastrarProfessorForm" class="login-form">
+                        <input type="hidden" id="editProfIndex" value="">
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Nome do Professor</label>
+                                <input type="text" id="profNome" placeholder="Ex: Carlos Alberto" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>CPF do Professor (11 dígitos)</label>
+                                <input type="text" id="profCpf" placeholder="Ex: 42141918663" maxlength="11" pattern="\d{11}" title="Insira exatamente 11 dígitos numéricos" required>
+                            </div>
+                        </div>
 
-        <!-- TABELA DE ALUNOS CADASTRADOS -->
-        <section style="margin-top: 40px;">
-            <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
-            <div style="overflow-x: auto; width: 100%;">
-                <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; overflow: hidden; text-align: left; min-width: 500px;">
-                    <thead>
-                        <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
-                            <th style="padding: 12px 15px;">Nome</th>
-                            <th style="padding: 12px 15px;">E-mail</th>
-                            <th style="padding: 12px 15px;">Matrícula</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaAlunos">
-                        <!-- Linhas inseridas via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Senha de Acesso</label>
+                                <input type="password" id="profSenha" placeholder="••••••••" maxlength="25" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Tipo de Permissão</label>
+                                <select id="profPermissao" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
+                                    <option value="professores">Acesso dos Professores</option>
+                                    <option value="gestao">Acesso da Gestão</option>
+                                    <option value="diretores">Acesso dos Diretores</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Matéria do Professor</label>
+                                <input type="text" id="profMateria" placeholder="Ex: Matemática, História..." required>
+                            </div>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label style="margin-bottom: 5px; display: block;">Selecione as Turmas / Salas que o Professor Leciona:</label>
+                            <div id="salasCheckboxContainer" class="checkbox-grid">
+                                <!-- Preenchido dinamicamente via script -->
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSalvarProf" class="btn-central" style="max-width: 220px; width: 100%;">Cadastrar Professor</button>
+                            <button type="button" id="btnCancelarProf" onclick="cancelarEdicaoProf()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section style="margin-top: 40px;">
+                <h3 style="margin-bottom: 15px;">Professores Registrados</h3>
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
+                        <thead>
+                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
+                                <th style="padding: 12px 15px;">Nome</th>
+                                <th style="padding: 12px 15px;">CPF</th>
+                                <th style="padding: 12px 15px;">Permissão</th>
+                                <th style="padding: 12px 15px;">Matéria</th>
+                                <th style="padding: 12px 15px;">Turmas</th>
+                                <th style="padding: 12px 15px; text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaProfessores"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
     </main>
 
     <script>
-        // 1. Aplica o tema salvo imediatamente ao carregar
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
-        // Função para alternar entre claro e escuro
         function alternarTema() {
             document.body.classList.toggle('light-mode');
-            
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-            } else {
-                localStorage.setItem('theme', 'dark');
-            }
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
         }
 
-        // Trava de segurança: Garante que apenas a conta ADMIN acessa esta página
         const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if (!usuario || usuario.cargo !== 'admin') {
-            window.location.href = 'login.html';
+        if (!usuario || usuario.cargo !== 'admin') window.location.href = 'login.html';
+
+        const listaTurmas = [];
+        for (let ano = 5; ano <= 9; ano++) {
+            ['A', 'B', 'C'].forEach(turma => {
+                listaTurmas.push(`${ano}º Ano ${turma} (Fundamental)`);
+            });
         }
-
-        // Função para atualizar a tabela na tela
-        function carregarTabela() {
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const tbody = document.getElementById('tabelaAlunos');
-            tbody.innerHTML = '';
-
-            alunos.forEach(aluno => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid var(--border-main)';
-                tr.innerHTML = `
-                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.nome}</td>
-                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.email}</td>
-                    <td style="padding: 12px 15px; color: var(--text-main);">${aluno.matricula}</td>
-                `;
-                tbody.appendChild(tr);
+        for (let ano = 1; ano <= 3; ano++) {
+            ['A', 'B', 'C'].forEach(turma => {
+                listaTurmas.push(`${ano}º Ano ${turma} (Ensino Médio)`);
             });
         }
 
-        // Salvar novo aluno no localStorage
+        function inicializarTurmas() {
+            const selectAluno = document.getElementById('alunoSala');
+            const containerProf = document.getElementById('salasCheckboxContainer');
+
+            listaTurmas.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                selectAluno.appendChild(opt);
+
+                const label = document.createElement('label');
+                label.className = 'checkbox-item';
+                label.innerHTML = `<input type="checkbox" name="profSalas" value="${t}"> ${t}`;
+                containerProf.appendChild(label);
+            });
+        }
+        inicializarTurmas();
+
+        function alternarAba(aba) {
+            if (aba === 'alunos') {
+                document.getElementById('secaoAlunos').style.display = 'block';
+                document.getElementById('secaoProfessores').style.display = 'none';
+                document.getElementById('btnAbaAlunos').classList.add('active');
+                document.getElementById('btnAbaProfessores').classList.remove('active');
+            } else {
+                document.getElementById('secaoAlunos').style.display = 'none';
+                document.getElementById('secaoProfessores').style.display = 'block';
+                document.getElementById('btnAbaProfessores').classList.add('active');
+                document.getElementById('btnAbaAlunos').classList.remove('active');
+            }
+        }
+
+        function carregarTabelaAlunos() {
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const tbody = document.getElementById('tabelaAlunos');
+            tbody.innerHTML = '';
+            alunos.forEach((a, index) => {
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid var(--border-main);">
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.nome}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.email}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.matricula}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.sala || 'Não atribuída'}</td>
+                        <td style="padding: 12px 15px; text-align: center;">
+                            <button class="btn-editar" onclick="prepararEdicaoAluno(${index})">Editar</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function carregarTabelaProfessores() {
+            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            const tbody = document.getElementById('tabelaProfessores');
+            tbody.innerHTML = '';
+            professores.forEach((p, index) => {
+                const salasStr = p.salas ? p.salas.join(', ') : 'Nenhuma';
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid var(--border-main);">
+                        <td style="padding: 12px 15px; color: var(--text-main);">${p.nome || 'Não informado'}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${p.cpf}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${p.permissao}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${p.materia}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main); font-size: 12px;">${salasStr}</td>
+                        <td style="padding: 12px 15px; text-align: center;">
+                            <button class="btn-editar" onclick="prepararEdicaoProf(${index})">Editar</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function prepararEdicaoAluno(index) {
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const aluno = alunos[index];
+            document.getElementById('editAlunoIndex').value = index;
+            document.getElementById('novoNome').value = aluno.nome;
+            document.getElementById('novoEmail').value = aluno.email;
+            document.getElementById('novaMatricula').value = aluno.matricula;
+            document.getElementById('novaSenha').value = aluno.senha;
+            document.getElementById('alunoSala').value = aluno.sala || '';
+            document.getElementById('tituloFormAluno').innerText = 'Editar Aluno';
+            document.getElementById('btnSalvarAluno').innerText = 'Salvar Alterações';
+            document.getElementById('btnCancelarAluno').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicaoAluno() {
+            document.getElementById('cadastrarAlunoForm').reset();
+            document.getElementById('editAlunoIndex').value = '';
+            document.getElementById('tituloFormAluno').innerText = 'Cadastrar Novo Aluno';
+            document.getElementById('btnSalvarAluno').innerText = 'Cadastrar Aluno';
+            document.getElementById('btnCancelarAluno').style.display = 'none';
+        }
+
+        function prepararEdicaoProf(index) {
+            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            const prof = professores[index];
+            document.getElementById('editProfIndex').value = index;
+            document.getElementById('profNome').value = prof.nome;
+            document.getElementById('profCpf').value = prof.cpf;
+            document.getElementById('profSenha').value = prof.senha;
+            document.getElementById('profPermissao').value = prof.permissao;
+            document.getElementById('profMateria').value = prof.materia;
+
+            const checkboxes = document.querySelectorAll('input[name="profSalas"]');
+            checkboxes.forEach(cb => {
+                cb.checked = prof.salas && prof.salas.includes(cb.value);
+            });
+
+            document.getElementById('tituloFormProf').innerText = 'Editar Professor / Gestão';
+            document.getElementById('btnSalvarProf').innerText = 'Salvar Alterações';
+            document.getElementById('btnCancelarProf').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicaoProf() {
+            document.getElementById('cadastrarProfessorForm').reset();
+            document.getElementById('editProfIndex').value = '';
+            document.querySelectorAll('input[name="profSalas"]').forEach(cb => cb.checked = false);
+            document.getElementById('tituloFormProf').innerText = 'Cadastrar Novo Professor / Gestão';
+            document.getElementById('btnSalvarProf').innerText = 'Cadastrar Professor';
+            document.getElementById('btnCancelarProf').style.display = 'none';
+        }
+
         document.getElementById('cadastrarAlunoForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
+            const editIndex = document.getElementById('editAlunoIndex').value;
             const novoAluno = {
                 nome: document.getElementById('novoNome').value,
                 email: document.getElementById('novoEmail').value,
                 matricula: document.getElementById('novaMatricula').value,
-                senha: document.getElementById('novaSenha').value
+                senha: document.getElementById('novaSenha').value,
+                sala: document.getElementById('alunoSala').value
             };
-
             const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            alunos.push(novoAluno);
-            localStorage.setItem('alunosDB', JSON.stringify(alunos));
 
-            this.reset();
-            carregarTabela();
-            alert('Aluno cadastrado com sucesso,');
+            if (editIndex !== "") {
+                alunos[editIndex] = novoAluno;
+                alert('Dados do aluno atualizados com sucesso!');
+            } else {
+                alunos.push(novoAluno);
+                alert('Aluno cadastrado com sucesso!');
+            }
+
+            localStorage.setItem('alunosDB', JSON.stringify(alunos));
+            cancelarEdicaoAluno();
+            carregarTabelaAlunos();
+        });
+
+        document.getElementById('cadastrarProfessorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editIndex = document.getElementById('editProfIndex').value;
+            
+            const salasSelecionadas = [];
+            document.querySelectorAll('input[name="profSalas"]:checked').forEach(cb => {
+                salasSelecionadas.push(cb.value);
+            });
+
+            const novoProf = {
+                nome: document.getElementById('profNome').value.trim(),
+                cpf: document.getElementById('profCpf').value.trim(),
+                senha: document.getElementById('profSenha').value.trim(),
+                permissao: document.getElementById('profPermissao').value,
+                materia: document.getElementById('profMateria').value.trim(),
+                salas: salasSelecionadas
+            };
+            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+
+            if (editIndex !== "") {
+                professores[editIndex] = novoProf;
+                alert('Dados do professor atualizados com sucesso!');
+            } else {
+                professores.push(novoProf);
+                alert('Professor cadastrado com sucesso!');
+            }
+
+            localStorage.setItem('professoresDB', JSON.stringify(professores));
+            cancelarEdicaoProf();
+            carregarTabelaProfessores();
         });
 
         function logout() {
@@ -170,8 +404,8 @@
             window.location.href = 'login.html';
         }
 
-        // Carrega os alunos salvos ao abrir a página
-        carregarTabela();
+        carregarTabelaAlunos();
+        carregarTabelaProfessores();
     </script>
 </body>
 </html>

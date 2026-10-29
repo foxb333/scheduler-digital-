@@ -6,119 +6,50 @@
     <title>Schedule Digital - Painel do Aluno</title>
     <link rel="stylesheet" href="design.css">
     <style>
-        /* Botão do menu sanduíche (oculto no desktop) */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 26px;
-            cursor: pointer;
-            padding: 5px 10px;
-        }
-
-        /* Estilo do botão "Voltar" perto das setinhas com adaptação mobile/desktop */
-        .btn-hoje {
-            background: rgba(37, 99, 235, 0.2);
-            border: 1px solid rgba(96, 165, 250, 0.4);
-            color: #60a5fa;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        .btn-hoje:hover {
-            background: rgba(37, 99, 235, 0.4);
-        }
-
-        /* Texto dinâmico: mostra abreviado no mobile e inteiro no PC */
-        .texto-pc {
-            display: inline;
-        }
-        .texto-mobile {
-            display: none;
-        }
+        .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 26px; cursor: pointer; padding: 5px 10px; }
+        .sidebar-btn { display: block; padding: 10px 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-weight: 500; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
+        .sidebar-btn.active, .sidebar-btn:hover { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
+        .btn-hoje { background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(96, 165, 250, 0.4); color: #60a5fa; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .texto-pc { display: inline; }
+        .texto-mobile { display: none; }
+        .materias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-top: 20px; }
+        .materia-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 20px; }
+        .card-aviso-aluno { background: var(--bg-card); border-left: 4px solid #60a5fa; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
 
         @media screen and (max-width: 768px) {
-            .texto-pc {
-                display: none;
-            }
-            .texto-mobile {
-                display: inline;
-            }
-            body.dashboard-body {
-                flex-direction: column !important;
-                display: flex !important;
-            }
-            .sidebar {
-                width: 100% !important;
-                height: auto !important;
-                position: relative !important;
-                display: flex;
-                flex-direction: column;
-            }
-            .sidebar-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-            }
-            .menu-toggle {
-                display: block;
-            }
-            .sidebar-collapse {
-                display: none;
-                width: 100%;
-                flex-direction: column;
-            }
-            .sidebar-collapse.open {
-                display: flex;
-            }
-            .sidebar-footer {
-                display: flex !important;
-                flex-direction: column;
-                gap: 10px;
-                width: 100%;
-                margin-top: 10px;
-            }
-            .dashboard-content {
-                margin-left: 0 !important;
-                padding: 15px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            .agenda-wrapper {
-                width: 100% !important;
-                overflow-x: auto !important;
-            }
-            .calendario-card.grande {
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 10px !important;
-            }
+            .texto-pc { display: none; }
+            .texto-mobile { display: inline; }
+            body.dashboard-body { flex-direction: column !important; display: flex !important; }
+            .sidebar { width: 100% !important; height: auto !important; position: relative !important; display: flex; flex-direction: column; }
+            .sidebar-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+            .menu-toggle { display: block; }
+            .sidebar-collapse { display: none; width: 100%; flex-direction: column; }
+            .sidebar-collapse.open { display: flex; }
+            .sidebar-footer { display: flex !important; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; }
+            .dashboard-content { margin-left: 0 !important; padding: 15px !important; width: 100% !important; box-sizing: border-box !important; }
         }
     </style>
 </head>
 <body class="dashboard-body">
 
-    <!-- ABA LATERAL (SIDEBAR NA ESQUERDA) -->
+    <!-- BARRA LATERAL -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2 class="sidebar-brand">Schedule</h2>
-            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">☰</button>
-        </div>
+        <div>
+            <div class="sidebar-header">
+                <h2 class="sidebar-brand">Schedule</h2>
+                <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">☰</button>
+            </div>
 
-        <div class="sidebar-collapse" id="sidebarContent">
-            <nav class="sidebar-menu">
-                <a href="dashboard.html" class="sidebar-btn active">Agenda</a>
-            </nav>
+            <div class="sidebar-collapse open" id="sidebarContent" style="display: flex; flex-direction: column;">
+                <nav class="sidebar-menu" style="margin-top: 20px;">
+                    <span id="btnNavAgenda" onclick="alternarTelaAluno('agenda')" class="sidebar-btn active">Agenda</span>
+                    <span id="btnNavMaterias" onclick="alternarTelaAluno('materias')" class="sidebar-btn">Matérias</span>
+                    <span id="btnNavMural" onclick="alternarTelaAluno('mural')" class="sidebar-btn">Mural de Avisos</span>
+                </nav>
+            </div>
         </div>
 
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- Botão de Tema na Sidebar -->
             <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
                 ☀️ / 🌙 Tema
             </button>
@@ -126,21 +57,19 @@
         </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL DO ALUNO COM O CALENDÁRIO -->
+    <!-- ÁREA PRINCIPAL DO ALUNO -->
     <main class="dashboard-content">
         <header class="dashboard-header">
-            <h1>Área do Estudante</h1>
-            <p>Seu cronograma completo integrado ao painel.</p>
+            <h1 id="tituloBoasVindas">Área do Estudante</h1>
+            <p id="subtituloTurma">Seu cronograma completo integrado ao painel.</p>
         </header>
 
-        <!-- CONTAINER DA AGENDA MOVIDO PARA O DASHBOARD -->
-        <div class="agenda-wrapper">
+        <!-- ABA 1: AGENDA / CALENDÁRIO -->
+        <div id="abaAgenda" class="agenda-wrapper">
             <div class="calendario-card grande">
                 <div class="calendar-header">
-                    <!-- Nome do Mês e Ano -->
                     <h3 id="monthYear"></h3>
                     <div class="calendar-nav">
-                        <!-- Botão "Voltar" com texto adaptativo (Inteiro no PC, Abreviado no Mobile) -->
                         <button class="btn-hoje" id="btnHoje" title="Voltar para o mês e dia atual">
                             <span class="texto-pc">Voltar</span>
                             <span class="texto-mobile">Volt.</span>
@@ -150,82 +79,131 @@
                     </div>
                 </div>
 
-                <!-- TABELA DO CALENDÁRIO -->
                 <table class="calendar-table">
                     <thead>
                         <tr>
-                            <th>Dom</th>
-                            <th>Seg</th>
-                            <th>Ter</th>
-                            <th>Qua</th>
-                            <th>Qui</th>
-                            <th>Sex</th>
-                            <th>Sáb</th>
+                            <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>
                         </tr>
                     </thead>
-                    <tbody id="calendarBody">
-                        <!-- Gerado dinamicamente via JS -->
-                    </tbody>
+                    <tbody id="calendarBody"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- ABA 2: QUADRO DE MATÉRIAS E PROFESSORES -->
+        <div id="abaMaterias" style="display: none;">
+            <h3 style="margin-bottom: 5px; color: #60a5fa;">Professores e Matérias</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Abaixo estão as disciplinas e os professores cadastrados para a sua turma.</p>
+            <div id="listaMateriasAluno" class="materias-grid"></div>
+        </div>
+
+        <!-- ABA 3: MURAL DE AVISOS -->
+        <div id="abaMural" style="display: none;">
+            <h3 style="margin-bottom: 5px; color: #60a5fa;">Mural de Avisos da Direção</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Acompanhe os comunicados importantes publicados pela escola.</p>
+            <div id="containerMuralAluno">
+                <!-- Preenchido via JS -->
             </div>
         </div>
     </main>
 
-    <!-- SCRIPT DO CALENDÁRIO, TEMA E CONTROLE DO MENU -->
     <script src="calendar.js"></script>
     <script>
-        // 1. Aplica o tema salvo imediatamente ao carregar
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
-        // Função para alternar entre claro e escuro
         function alternarTema() {
             document.body.classList.toggle('light-mode');
-            
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-            } else {
-                localStorage.setItem('theme', 'dark');
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarContent = document.getElementById('sidebarContent');
+        menuToggle.addEventListener('click', () => { sidebarContent.classList.toggle('open'); });
+
+        function alternarTelaAluno(tela) {
+            document.getElementById('abaAgenda').style.display = tela === 'agenda' ? 'block' : 'none';
+            document.getElementById('abaMaterias').style.display = tela === 'materias' ? 'block' : 'none';
+            document.getElementById('abaMural').style.display = tela === 'mural' ? 'block' : 'none';
+
+            document.getElementById('btnNavAgenda').classList.toggle('active', tela === 'agenda');
+            document.getElementById('btnNavMaterias').classList.toggle('active', tela === 'materias');
+            document.getElementById('btnNavMural').classList.toggle('active', tela === 'mural');
+        }
+
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
+        if (!usuarioLogado || (usuarioLogado.cargo !== 'aluno' && usuarioLogado.cargo !== 'admin')) {
+            window.location.href = 'login.html';
+        }
+
+        const alunosDB = JSON.parse(localStorage.getItem('alunosDB')) || [];
+        const alunoAtual = alunosDB.find(a => 
+            a.email === usuarioLogado?.email || 
+            a.matricula === usuarioLogado?.email || 
+            a.nome === usuarioLogado?.nome ||
+            a.email === usuarioLogado?.identificador
+        );
+
+        if (alunoAtual) {
+            if (alunoAtual.nome) document.getElementById('tituloBoasVindas').innerText = `Olá, ${alunoAtual.nome}!`;
+            if (alunoAtual.sala) {
+                document.getElementById('subtituloTurma').innerText = `Turma: ${alunoAtual.sala} | Seu cronograma completo.`;
+                
+                const professoresDB = JSON.parse(localStorage.getItem('professoresDB')) || [];
+                const professoresDaTurma = professoresDB.filter(p => p.salas && p.salas.includes(alunoAtual.sala));
+                
+                const containerMaterias = document.getElementById('listaMateriasAluno');
+                containerMaterias.innerHTML = '';
+
+                if (professoresDaTurma.length > 0) {
+                    professoresDaTurma.forEach(prof => {
+                        containerMaterias.innerHTML += `
+                            <div class="materia-card">
+                                <div style="color: #60a5fa; font-size: 18px; font-weight: 600; margin-bottom: 8px;">${prof.materia}</div>
+                                <div style="font-size: 14px; color: var(--text-main);"><strong>Professor(a):</strong> ${prof.nome || 'Não informado'}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    containerMaterias.innerHTML = `<p style="color: var(--text-muted);">Nenhum professor cadastrado para a sua turma (${alunoAtual.sala}).</p>`;
+                }
             }
         }
 
-        // 2. Controle do Menu Sanduíche
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebarContent = document.getElementById('sidebarContent');
+        // Carrega os avisos do Mural para os alunos
+        function carregarMuralAluno() {
+            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
+            const container = document.getElementById('containerMuralAluno');
+            container.innerHTML = '';
 
-        menuToggle.addEventListener('click', () => {
-            sidebarContent.classList.toggle('open');
-        });
+            if (avisos.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aviso novo no mural.</p>';
+                return;
+            }
 
-        // Força o reconhecimento automático do mês e dia atual ao abrir ou atualizar a página
+            avisos.forEach(av => {
+                container.innerHTML += `
+                    <div class="card-aviso-aluno">
+                        <h4 style="color: #60a5fa; margin-bottom: 5px;">${av.titulo}</h4>
+                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px;">${av.data}</span>
+                        <p style="margin: 0; color: var(--text-main); font-size: 14px;">${av.conteudo}</p>
+                    </div>
+                `;
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
+            carregarMuralAluno();
             const dataHoje = new Date();
-            if (typeof mesAtual !== 'undefined' && typeof anoAtual !== 'undefined' && typeof carregarCalendario === 'function') {
-                mesAtual = dataHoje.getMonth();
-                anoAtual = dataHoje.getFullYear();
-                carregarCalendario(mesAtual, anoAtual);
-            } else if (typeof currentMonth !== 'undefined' && typeof currentYear !== 'undefined' && typeof renderCalendar === 'function') {
-                currentMonth = dataHoje.getMonth();
-                currentYear = dataHoje.getFullYear();
-                renderCalendar();
+            if (typeof mesAtual !== 'undefined' && typeof carregarCalendario === 'function') {
+                carregarCalendario(dataHoje.getMonth(), dataHoje.getFullYear());
             }
         });
 
-        // Ação do botão de Voltar para o mês e dia atual
         document.getElementById('btnHoje').addEventListener('click', () => {
             const dataHoje = new Date();
-            if (typeof mesAtual !== 'undefined' && typeof anoAtual !== 'undefined' && typeof carregarCalendario === 'function') {
-                mesAtual = dataHoje.getMonth();
-                anoAtual = dataHoje.getFullYear();
-                carregarCalendario(mesAtual, anoAtual);
-            } else if (typeof currentMonth !== 'undefined' && typeof currentYear !== 'undefined' && typeof renderCalendar === 'function') {
-                currentMonth = dataHoje.getMonth();
-                currentYear = dataHoje.getFullYear();
-                renderCalendar();
-            } else {
-                location.reload();
-            }
+            if (typeof carregarCalendario === 'function') {
+                carregarCalendario(dataHoje.getMonth(), dataHoje.getFullYear());
+            } else { location.reload(); }
         });
     </script>
 </body>
