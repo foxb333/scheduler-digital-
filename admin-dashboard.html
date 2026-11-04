@@ -13,22 +13,19 @@
         }
         .nav-link { color: #94a3b8; text-decoration: none; display: block; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; }
         .nav-link.active { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
-        .btn-editar { background: #2563eb; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-acao { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; color: #fff; }
+        .btn-editar { background: #2563eb; }
         .btn-editar:hover { background: #1d4ed8; }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; background: var(--bg-hover); border: 1px solid var(--border-main); border-radius: 8px; }
+        .btn-excluir { background: #ef4444; }
+        .btn-excluir:hover { background: #dc2626; }
+        .btn-aprovar { background: #16a34a; }
+        .btn-rejeitar { background: #dc2626; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; background: var(--bg-hover); border: 1px solid var(--border-main); border-radius: 8px; }
         .checkbox-item { font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 5px; cursor: pointer; }
-
-        /* Ajuste de contraste para campos SELECT e OPTION no Modo Escuro e Claro */
-        select, option {
-            background-color: var(--bg-card, #0f172a) !important;
-            color: var(--text-main, #f8fafc) !important;
-        }
-
-        body.light-mode select, 
-        body.light-mode option {
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-        }
+        select, option { background-color: var(--bg-card, #0f172a) !important; color: var(--text-main, #f8fafc) !important; }
+        body.light-mode select, body.light-mode option { background-color: #ffffff !important; color: #0f172a !important; }
+        .atribuicao-box { background: var(--bg-hover); border: 1px solid var(--border-main); padding: 12px; border-radius: 8px; margin-top: 10px; }
+        .desativado { opacity: 0.4; pointer-events: none; }
     </style>
 </head>
 <body class="dashboard-body">
@@ -39,7 +36,8 @@
             <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #ef4444;">[ADMIN]</span></h2>
             <nav class="sidebar-menu" style="margin-top: 25px;">
                 <span class="nav-link active" id="btnAbaAlunos" onclick="alternarAba('alunos')">Gestão de Alunos</span>
-                <span class="nav-link" id="btnAbaProfessores" onclick="alternarAba('professores')">Cadastrar Professores</span>
+                <span class="nav-link" id="btnAbaProfessores" onclick="alternarAba('professores')">Gestão da Equipe Gestora</span>
+                <span class="nav-link" id="btnAbaFotos" onclick="alternarAba('fotos')">Análise de Fotos</span>
             </nav>
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
@@ -53,14 +51,14 @@
     <!-- ÁREA PRINCIPAL -->
     <main class="dashboard-content">
         <header class="dashboard-header">
-            <h1>Painel de Controle Administrativo</h1>
-            <p id="subtituloHeader">Cadastre e gerencie as contas dos estudantes e corpo docente.</p>
+            <h1 id="tituloPainelPrincipal">Painel de Controle Administrativo</h1>
+            <p id="subtituloHeader">Cadastre e gerencie as contas dos estudantes.</p>
         </header>
 
         <!-- SEÇÃO: GESTÃO DE ALUNOS -->
         <div id="secaoAlunos">
             <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
-                <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
+                <div class="login-card" style="max-width: 650px; width: 100%; padding: 25px; box-sizing: border-box;">
                     <h3 id="tituloFormAluno" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
                     <form id="cadastrarAlunoForm" class="login-form">
                         <input type="hidden" id="editAlunoIndex" value="">
@@ -71,7 +69,7 @@
                             </div>
                             <div class="input-group" style="flex: 1; min-width: 200px;">
                                 <label>Acesso</label>
-                                <input type="text" id="novoEmail" placeholder="00001105939352sp" pattern=".*\d+sp$" title="Acesso no formato numérico seguido de sp" required>
+                                <input type="text" id="novoEmail" placeholder="00001105939352sp" pattern=".*\d+sp$" required>
                             </div>
                         </div>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
@@ -84,16 +82,48 @@
                                 <input type="password" id="novaSenha" placeholder="••••••••" required>
                             </div>
                         </div>
+                        
+                        <h4 style="color: #60a5fa; margin-top: 20px; margin-bottom: 10px; font-size: 14px;">Informações Pessoais e Familiares</h4>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                            <div class="input-group" style="flex: 1; min-width: 150px;">
+                                <label>CPF</label>
+                                <input type="text" id="alunoCpf" placeholder="Ex: 12345678901" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 150px;">
+                                <label>Data de Nascimento</label>
+                                <input type="date" id="alunoNascimento" required>
+                            </div>
+                        </div>
                         <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Turma / Sala do Aluno</label>
+                            <div class="input-group" style="flex: 2; min-width: 250px;">
+                                <label>Endereço (Rua, Número, Apto / Bloco)</label>
+                                <input type="text" id="alunoEndereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" required>
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 150px;">
+                                <label>Turma / Sala</label>
                                 <select id="alunoSala" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
-                                    <option value="">Selecione a Turma...</option>
-                                    <!-- Opções geradas dinamicamente via Script -->
+                                    <option value="">Selecione...</option>
                                 </select>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Nome da Mãe</label>
+                                <input type="text" id="alunoMae" placeholder="Nome completo da mãe">
+                            </div>
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Nome do Pai / Responsável</label>
+                                <input type="text" id="alunoPai" placeholder="Nome completo do pai ou responsável">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                            <div class="input-group" style="flex: 1; min-width: 200px;">
+                                <label>Telefone de Contato</label>
+                                <input type="text" id="alunoTelefone" placeholder="(11) 98888-7777" required>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
                             <button type="submit" id="btnSalvarAluno" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Aluno</button>
                             <button type="button" id="btnCancelarAluno" onclick="cancelarEdicaoAluno()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
                         </div>
@@ -108,8 +138,7 @@
                         <thead>
                             <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
                                 <th style="padding: 12px 15px;">Nome</th>
-                                <th style="padding: 12px 15px;">Acesso</th>
-                                <th style="padding: 12px 15px;">Matrícula</th>
+                                <th style="padding: 12px 15px;">CPF</th>
                                 <th style="padding: 12px 15px;">Turma</th>
                                 <th style="padding: 12px 15px; text-align: center;">Ações</th>
                             </tr>
@@ -120,21 +149,21 @@
             </section>
         </div>
 
-        <!-- SEÇÃO: GESTÃO DE PROFESSORES -->
+        <!-- SEÇÃO: GESTÃO DA EQUIPE GESTORA -->
         <div id="secaoProfessores" style="display: none;">
             <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
-                <div class="login-card" style="max-width: 600px; width: 100%; padding: 25px; box-sizing: border-box;">
-                    <h3 id="tituloFormProf" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Professor / Gestão</h3>
+                <div class="login-card" style="max-width: 650px; width: 100%; padding: 25px; box-sizing: border-box;">
+                    <h3 id="tituloFormProf" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Equipe Gestora</h3>
                     <form id="cadastrarProfessorForm" class="login-form">
                         <input type="hidden" id="editProfIndex" value="">
                         <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                             <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Nome do Professor</label>
+                                <label>Nome Completo</label>
                                 <input type="text" id="profNome" placeholder="Ex: Carlos Alberto" required>
                             </div>
                             <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>CPF do Professor (11 dígitos)</label>
-                                <input type="text" id="profCpf" placeholder="Ex: 42141918663" maxlength="11" pattern="\d{11}" title="Insira exatamente 11 dígitos numéricos" required>
+                                <label>CPF</label>
+                                <input type="text" id="profCpf" placeholder="Ex: 42141918663" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')" required>
                             </div>
                         </div>
 
@@ -145,7 +174,7 @@
                             </div>
                             <div class="input-group" style="flex: 1; min-width: 200px;">
                                 <label>Tipo de Permissão</label>
-                                <select id="profPermissao" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
+                                <select id="profPermissao" onchange="atualizarTipoPermissao()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
                                     <option value="professores">Acesso dos Professores</option>
                                     <option value="gestao">Acesso da Gestão</option>
                                     <option value="diretores">Acesso dos Diretores</option>
@@ -153,22 +182,42 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Matéria do Professor</label>
-                                <input type="text" id="profMateria" placeholder="Ex: Matemática, História..." required>
+                        <!-- QUADRO 1 E 2 DE MATÉRIAS (Ficam inativos se for Gestão ou Diretores) -->
+                        <div id="containerQuadrosMatérias">
+                            <div class="input-group" style="margin-top: 15px;">
+                                <label style="display: block; font-weight: 600; color: #60a5fa; margin-bottom: 5px;">Quadro 1: Selecionar Matérias do Professor</label>
+                                <div class="atribuicao-box">
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                        <select id="selectMatériaPreDefinida" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-main);">
+                                            <option value="">Escolher Matéria...</option>
+                                            <option value="Matemática">Matemática</option>
+                                            <option value="Português">Português</option>
+                                            <option value="História">História</option>
+                                            <option value="Geografia">Geografia</option>
+                                            <option value="Ciências">Ciências</option>
+                                            <option value="Biologia">Biologia</option>
+                                            <option value="Física">Física</option>
+                                            <option value="Química">Química</option>
+                                            <option value="Inglês">Inglês</option>
+                                            <option value="Educação Física">Educação Física</option>
+                                            <option value="Sistemas">Desenvolvimento de Sistemas</option>
+                                        </select>
+                                        <button type="button" onclick="adicionarMateriaProfessor()" style="background: #2563eb; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Adicionar</button>
+                                    </div>
+                                    <div id="listaMateriasSelecionadas" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                                </div>
+                            </div>
+
+                            <div class="input-group" style="margin-top: 15px;">
+                                <label style="display: block; font-weight: 600; color: #60a5fa; margin-bottom: 5px;">Quadro 2: Atribuir Matérias às Salas</label>
+                                <div class="atribuicao-box" id="quadroAtribuicaoSalas">
+                                    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="input-group" style="margin-top: 15px;">
-                            <label style="margin-bottom: 5px; display: block;">Selecione as Turmas / Salas que o Professor Leciona:</label>
-                            <div id="salasCheckboxContainer" class="checkbox-grid">
-                                <!-- Preenchido dinamicamente via script -->
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="submit" id="btnSalvarProf" class="btn-central" style="max-width: 220px; width: 100%;">Cadastrar Professor</button>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" id="btnSalvarProf" class="btn-central" style="max-width: 240px; width: 100%;">Cadastrar Professores</button>
                             <button type="button" id="btnCancelarProf" onclick="cancelarEdicaoProf()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
                         </div>
                     </form>
@@ -176,7 +225,7 @@
             </section>
 
             <section style="margin-top: 40px;">
-                <h3 style="margin-bottom: 15px;">Professores Registrados</h3>
+                <h3 style="margin-bottom: 15px;">Equipe Registrada (<span id="contadorTotalEquipe">0</span>)</h3>
                 <div style="overflow-x: auto; width: 100%;">
                     <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
                         <thead>
@@ -184,12 +233,33 @@
                                 <th style="padding: 12px 15px;">Nome</th>
                                 <th style="padding: 12px 15px;">CPF</th>
                                 <th style="padding: 12px 15px;">Permissão</th>
-                                <th style="padding: 12px 15px;">Matéria</th>
-                                <th style="padding: 12px 15px;">Turmas</th>
+                                <th style="padding: 12px 15px;">Atribuições</th>
                                 <th style="padding: 12px 15px; text-align: center;">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tabelaProfessores"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- SEÇÃO: ANÁLISE DE FOTOS DE PERFIL -->
+        <div id="secaoFotos" style="display: none;">
+            <section style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #60a5fa;">Pedidos de Alteração de Foto de Perfil</h3>
+                <div style="overflow-x: auto; width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
+                        <thead>
+                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
+                                <th style="padding: 12px 15px;">Aluno</th>
+                                <th style="padding: 12px 15px;">Turma / RA</th>
+                                <th style="padding: 12px 15px;">Foto Solicitada</th>
+                                <th style="padding: 12px 15px; text-align: center;">Aprovação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAnaliseFotos">
+                            <tr><td colspan="4" style="padding: 15px; color: var(--text-muted);">Nenhum pedido de foto pendente.</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -209,45 +279,125 @@
 
         const listaTurmas = [];
         for (let ano = 5; ano <= 9; ano++) {
-            ['A', 'B', 'C'].forEach(turma => {
-                listaTurmas.push(`${ano}º Ano ${turma} (Fundamental)`);
-            });
+            ['A', 'B', 'C'].forEach(t => listaTurmas.push(`${ano}º Ano ${t} (Fundamental)`));
         }
         for (let ano = 1; ano <= 3; ano++) {
-            ['A', 'B', 'C'].forEach(turma => {
-                listaTurmas.push(`${ano}º Ano ${turma} (Ensino Médio)`);
-            });
+            ['A', 'B', 'C'].forEach(t => listaTurmas.push(`${ano}º Ano ${t} (Ensino Médio)`));
         }
 
         function inicializarTurmas() {
             const selectAluno = document.getElementById('alunoSala');
-            const containerProf = document.getElementById('salasCheckboxContainer');
-
             listaTurmas.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t;
                 opt.textContent = t;
                 selectAluno.appendChild(opt);
-
-                const label = document.createElement('label');
-                label.className = 'checkbox-item';
-                label.innerHTML = `<input type="checkbox" name="profSalas" value="${t}"> ${t}`;
-                containerProf.appendChild(label);
             });
         }
         inicializarTurmas();
 
-        function alternarAba(aba) {
-            if (aba === 'alunos') {
-                document.getElementById('secaoAlunos').style.display = 'block';
-                document.getElementById('secaoProfessores').style.display = 'none';
-                document.getElementById('btnAbaAlunos').classList.add('active');
-                document.getElementById('btnAbaProfessores').classList.remove('active');
+        let materiasSelecionadas = [];
+        let atribuicoesPorMateria = {};
+
+        function adicionarMateriaProfessor() {
+            const mat = document.getElementById('selectMatériaPreDefinida').value;
+            if (!mat) { alert('Selecione uma matéria.'); return; }
+            if (materiasSelecionadas.includes(mat)) { alert('Esta matéria já foi adicionada.'); return; }
+
+            materiasSelecionadas.push(mat);
+            if (!atribuicoesPorMateria[mat]) atribuicoesPorMateria[mat] = [];
+            atualizarQuadrosAtribuicao();
+        }
+
+        function removerMateriaProfessor(mat) {
+            materiasSelecionadas = materiasSelecionadas.filter(m => m !== mat);
+            delete atribuicoesPorMateria[mat];
+            atualizarQuadrosAtribuicao();
+        }
+
+        function atualizarQuadrosAtribuicao() {
+            const containerMat = document.getElementById('listaMateriasSelecionadas');
+            containerMat.innerHTML = '';
+            if (materiasSelecionadas.length === 0) {
+                containerMat.innerHTML = '<span style="font-size:13px; color:var(--text-muted);">Nenhuma matéria selecionada.</span>';
             } else {
-                document.getElementById('secaoAlunos').style.display = 'none';
-                document.getElementById('secaoProfessores').style.display = 'block';
-                document.getElementById('btnAbaProfessores').classList.add('active');
-                document.getElementById('btnAbaAlunos').classList.remove('active');
+                materiasSelecionadas.forEach(m => {
+                    containerMat.innerHTML += `<span style="background: rgba(37,99,235,0.3); color:#60a5fa; padding:4px 10px; border-radius:6px; font-size:13px; display:flex; align-items:center; gap:8px;">${m} <button type="button" onclick="removerMateriaProfessor('${m}')" style="background:none; border:none; color:#ef4444; font-weight:bold; cursor:pointer;">×</button></span>`;
+                });
+            }
+
+            const containerQuadro2 = document.getElementById('quadroAtribuicaoSalas');
+            containerQuadro2.innerHTML = '';
+            if (materiasSelecionadas.length === 0) {
+                containerQuadro2.innerHTML = '<p style="font-size: 13px; color: var(--text-muted); margin: 0;">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>';
+                return;
+            }
+
+            materiasSelecionadas.forEach(mat => {
+                let htmlSalas = `<div style="margin-bottom: 12px; border-bottom: 1px solid var(--border-main); padding-bottom: 10px;">
+                    <div style="font-weight:600; color:#60a5fa; margin-bottom:6px;">Atribuir salas para a matéria: <u>${mat}</u></div>
+                    <div class="checkbox-grid">`;
+                
+                listaTurmas.forEach(t => {
+                    const isChecked = atribuicoesPorMateria[mat] && atribuicoesPorMateria[mat].includes(t) ? 'checked' : '';
+                    htmlSalas += `<label class="checkbox-item"><input type="checkbox" value="${t}" ${isChecked} onchange="atualizarSalasMateria('${mat}', this)"> ${t}</label>`;
+                });
+                htmlSalas += `</div></div>`;
+                containerQuadro2.innerHTML += htmlSalas;
+            });
+        }
+
+        function atualizarSalasMateria(mat, checkbox) {
+            if (!atribuicoesPorMateria[mat]) atribuicoesPorMateria[mat] = [];
+            if (checkbox.checked) {
+                if (!atribuicoesPorMateria[mat].includes(checkbox.value)) atribuicoesPorMateria[mat].push(checkbox.value);
+            } else {
+                atribuicoesPorMateria[mat] = atribuicoesPorMateria[mat].filter(s => s !== checkbox.value);
+            }
+        }
+
+        function atualizarTipoPermissao() {
+            const perm = document.getElementById('profPermissao').value;
+            const btn = document.getElementById('btnSalvarProf');
+            const containerQuadros = document.getElementById('containerQuadrosMatérias');
+
+            if (perm === 'professores') {
+                btn.innerText = 'Cadastrar Professores';
+                containerQuadros.classList.remove('desativado');
+            } else if (perm === 'gestao') {
+                btn.innerText = 'Cadastrar Gestão';
+                containerQuadros.classList.add('desativado');
+                materiasSelecionadas = [];
+                atribuicoesPorMateria = {};
+                atualizarQuadrosAtribuicao();
+            } else if (perm === 'diretores') {
+                btn.innerText = 'Cadastrar Diretores';
+                containerQuadros.classList.add('desativado');
+                materiasSelecionadas = [];
+                atribuicoesPorMateria = {};
+                atualizarQuadrosAtribuicao();
+            }
+        }
+
+        function alternarAba(aba) {
+            document.getElementById('secaoAlunos').style.display = aba === 'alunos' ? 'block' : 'none';
+            document.getElementById('secaoProfessores').style.display = aba === 'professores' ? 'block' : 'none';
+            document.getElementById('secaoFotos').style.display = aba === 'fotos' ? 'block' : 'none';
+
+            document.getElementById('btnAbaAlunos').classList.toggle('active', aba === 'alunos');
+            document.getElementById('btnAbaProfessores').classList.toggle('active', aba === 'professores');
+            document.getElementById('btnAbaFotos').classList.toggle('active', aba === 'fotos');
+
+            if (aba === 'alunos') {
+                document.getElementById('tituloPainelPrincipal').innerText = 'Painel de Controle Administrativo';
+                document.getElementById('subtituloHeader').innerText = 'Cadastre e gerencie as contas dos estudantes.';
+            } else if (aba === 'professores') {
+                document.getElementById('tituloPainelPrincipal').innerText = 'Gestão da Equipe Gestora';
+                document.getElementById('subtituloHeader').innerText = 'Cadastre e gerencie contas de professores, gestores e diretores.';
+            } else {
+                document.getElementById('tituloPainelPrincipal').innerText = 'Análise de Fotos de Perfil';
+                document.getElementById('subtituloHeader').innerText = 'Aprove ou recuse as solicitações de alteração de foto.';
+                carregarTabelaAnaliseFotos();
             }
         }
 
@@ -259,34 +409,104 @@
                 tbody.innerHTML += `
                     <tr style="border-bottom: 1px solid var(--border-main);">
                         <td style="padding: 12px 15px; color: var(--text-main);">${a.nome}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.email}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.matricula}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${a.cpf || '-'}</td>
                         <td style="padding: 12px 15px; color: var(--text-main);">${a.sala || 'Não atribuída'}</td>
-                        <td style="padding: 12px 15px; text-align: center;">
-                            <button class="btn-editar" onclick="prepararEdicaoAluno(${index})">Editar</button>
+                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                            <button class="btn-acao btn-editar" onclick="prepararEdicaoAluno(${index})">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirAluno(${index})">🗑️</button>
                         </td>
                     </tr>`;
             });
         }
 
+        function excluirAluno(index) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                let alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+                alunos.splice(index, 1);
+                localStorage.setItem('alunosDB', JSON.stringify(alunos));
+                carregarTabelaAlunos();
+            }
+        }
+
         function carregarTabelaProfessores() {
             const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            document.getElementById('contadorTotalEquipe').innerText = professores.length;
             const tbody = document.getElementById('tabelaProfessores');
             tbody.innerHTML = '';
             professores.forEach((p, index) => {
-                const salasStr = p.salas ? p.salas.join(', ') : 'Nenhuma';
+                let atribsStr = '';
+                if (p.atribuicoes && p.atribuicoes.length > 0) {
+                    atribsStr = p.atribuicoes.map(at => `<strong>${at.materia}:</strong> ${at.salas.join(', ')}`).join('<br>');
+                } else if (p.materia) {
+                    atribsStr = `<strong>${p.materia}:</strong> ${p.salas ? p.salas.join(', ') : 'Nenhuma'}`;
+                } else {
+                    atribsStr = 'Nenhuma matéria (Cargo Administrativo/Direção)';
+                }
+
                 tbody.innerHTML += `
                     <tr style="border-bottom: 1px solid var(--border-main);">
-                        <td style="padding: 12px 15px; color: var(--text-main);">${p.nome || 'Não informado'}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${p.nome}</td>
                         <td style="padding: 12px 15px; color: var(--text-main);">${p.cpf}</td>
                         <td style="padding: 12px 15px; color: var(--text-main);">${p.permissao}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${p.materia}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main); font-size: 12px;">${salasStr}</td>
-                        <td style="padding: 12px 15px; text-align: center;">
-                            <button class="btn-editar" onclick="prepararEdicaoProf(${index})">Editar</button>
+                        <td style="padding: 12px 15px; color: var(--text-main); font-size: 12px;">${atribsStr}</td>
+                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                            <button class="btn-acao btn-editar" onclick="prepararEdicaoProf(${index})">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirProfessor(${index})">🗑️</button>
                         </td>
                     </tr>`;
             });
+        }
+
+        function excluirProfessor(index) {
+            if (confirm('Tem certeza que deseja excluir este usuário?')) {
+                let professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+                professores.splice(index, 1);
+                localStorage.setItem('professoresDB', JSON.stringify(professores));
+                carregarTabelaProfessores();
+            }
+        }
+
+        function carregarTabelaAnaliseFotos() {
+            const pedidos = JSON.parse(localStorage.getItem('pedidosFotoDB')) || [];
+            const tbody = document.getElementById('tabelaAnaliseFotos');
+            tbody.innerHTML = '';
+
+            if (pedidos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 15px; color: var(--text-muted);">Nenhum pedido de foto pendente.</td></tr>';
+                return;
+            }
+
+            pedidos.forEach((ped, index) => {
+                tbody.innerHTML += `
+                    <tr style="border-bottom: 1px solid var(--border-main);">
+                        <td style="padding: 12px 15px; color: var(--text-main);">${ped.nomeAluno}</td>
+                        <td style="padding: 12px 15px; color: var(--text-main);">${ped.sala}</td>
+                        <td style="padding: 12px 15px;"><img src="${ped.novaFoto}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></td>
+                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
+                            <button class="btn-acao btn-aprovar" onclick="avaliarFoto(${index}, true)">Aprovar</button>
+                            <button class="btn-acao btn-rejeitar" onclick="avaliarFoto(${index}, false)">Recusar</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function avaliarFoto(index, aprovado) {
+            let pedidos = JSON.parse(localStorage.getItem('pedidosFotoDB')) || [];
+            let alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const pedido = pedidos[index];
+
+            if (aprovado) {
+                const alunoIdx = alunos.findIndex(a => a.email === pedido.alunoEmail || a.matricula === pedido.alunoEmail);
+                if (alunoIdx !== -1) {
+                    alunos[alunoIdx].fotoPerfil = pedido.novaFoto;
+                    localStorage.setItem('alunosDB', JSON.stringify(alunos));
+                }
+            }
+
+            pedidos.splice(index, 1);
+            localStorage.setItem('pedidosFotoDB', JSON.stringify(pedidos));
+            carregarTabelaAnaliseFotos();
+            alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
         }
 
         function prepararEdicaoAluno(index) {
@@ -297,7 +517,13 @@
             document.getElementById('novoEmail').value = aluno.email;
             document.getElementById('novaMatricula').value = aluno.matricula;
             document.getElementById('novaSenha').value = aluno.senha;
+            document.getElementById('alunoCpf').value = aluno.cpf || '';
+            document.getElementById('alunoNascimento').value = aluno.nascimento || '';
+            document.getElementById('alunoEndereco').value = aluno.endereco || '';
             document.getElementById('alunoSala').value = aluno.sala || '';
+            document.getElementById('alunoMae').value = aluno.mae || '';
+            document.getElementById('alunoPai').value = aluno.pai || '';
+            document.getElementById('alunoTelefone').value = aluno.telefone || '';
             document.getElementById('tituloFormAluno').innerText = 'Editar Aluno';
             document.getElementById('btnSalvarAluno').innerText = 'Salvar Alterações';
             document.getElementById('btnCancelarAluno').style.display = 'inline-block';
@@ -320,14 +546,24 @@
             document.getElementById('profCpf').value = prof.cpf;
             document.getElementById('profSenha').value = prof.senha;
             document.getElementById('profPermissao').value = prof.permissao;
-            document.getElementById('profMateria').value = prof.materia;
+            atualizarTipoPermissao();
 
-            const checkboxes = document.querySelectorAll('input[name="profSalas"]');
-            checkboxes.forEach(cb => {
-                cb.checked = prof.salas && prof.salas.includes(cb.value);
-            });
+            materiasSelecionadas = [];
+            atribuicoesPorMateria = {};
 
-            document.getElementById('tituloFormProf').innerText = 'Editar Professor / Gestão';
+            if (prof.atribuicoes && prof.atribuicoes.length > 0) {
+                prof.atribuicoes.forEach(at => {
+                    materiasSelecionadas.push(at.materia);
+                    atribuicoesPorMateria[at.materia] = at.salas || [];
+                });
+            } else if (prof.materia) {
+                materiasSelecionadas.push(prof.materia);
+                atribuicoesPorMateria[prof.materia] = prof.salas || [];
+            }
+
+            atualizarQuadrosAtribuicao();
+
+            document.getElementById('tituloFormProf').innerText = 'Editar Equipe Gestora';
             document.getElementById('btnSalvarProf').innerText = 'Salvar Alterações';
             document.getElementById('btnCancelarProf').style.display = 'inline-block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -336,9 +572,11 @@
         function cancelarEdicaoProf() {
             document.getElementById('cadastrarProfessorForm').reset();
             document.getElementById('editProfIndex').value = '';
-            document.querySelectorAll('input[name="profSalas"]').forEach(cb => cb.checked = false);
-            document.getElementById('tituloFormProf').innerText = 'Cadastrar Novo Professor / Gestão';
-            document.getElementById('btnSalvarProf').innerText = 'Cadastrar Professor';
+            materiasSelecionadas = [];
+            atribuicoesPorMateria = {};
+            atualizarQuadrosAtribuicao();
+            document.getElementById('tituloFormProf').innerText = 'Cadastrar Equipe Gestora';
+            atualizarTipoPermissao();
             document.getElementById('btnCancelarProf').style.display = 'none';
         }
 
@@ -350,53 +588,62 @@
                 email: document.getElementById('novoEmail').value,
                 matricula: document.getElementById('novaMatricula').value,
                 senha: document.getElementById('novaSenha').value,
-                sala: document.getElementById('alunoSala').value
+                cpf: document.getElementById('alunoCpf').value,
+                nascimento: document.getElementById('alunoNascimento').value,
+                endereco: document.getElementById('alunoEndereco').value,
+                sala: document.getElementById('alunoSala').value,
+                mae: document.getElementById('alunoMae').value,
+                pai: document.getElementById('alunoPai').value,
+                telefone: document.getElementById('alunoTelefone').value,
+                fotoPerfil: editIndex !== "" ? JSON.parse(localStorage.getItem('alunosDB'))[editIndex].fotoPerfil : null
             };
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
 
-            if (editIndex !== "") {
-                alunos[editIndex] = novoAluno;
-                alert('Dados do aluno atualizados com sucesso!');
-            } else {
-                alunos.push(novoAluno);
-                alert('Aluno cadastrado com sucesso!');
-            }
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            if (editIndex !== "") alunos[editIndex] = novoAluno;
+            else alunos.push(novoAluno);
 
             localStorage.setItem('alunosDB', JSON.stringify(alunos));
             cancelarEdicaoAluno();
             carregarTabelaAlunos();
+            alert('Aluno salvo com sucesso!');
         });
 
         document.getElementById('cadastrarProfessorForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editIndex = document.getElementById('editProfIndex').value;
-            
-            const salasSelecionadas = [];
-            document.querySelectorAll('input[name="profSalas"]:checked').forEach(cb => {
-                salasSelecionadas.push(cb.value);
-            });
+            const permissao = document.getElementById('profPermissao').value;
+
+            if (permissao === 'professores' && materiasSelecionadas.length === 0) {
+                alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
+                return;
+            }
+
+            let atribuicoesFinal = [];
+            if (permissao === 'professores') {
+                materiasSelecionadas.forEach(mat => {
+                    atribuicoesFinal.push({
+                        materia: mat,
+                        salas: atribuicoesPorMateria[mat] || []
+                    });
+                });
+            }
 
             const novoProf = {
                 nome: document.getElementById('profNome').value.trim(),
                 cpf: document.getElementById('profCpf').value.trim(),
                 senha: document.getElementById('profSenha').value.trim(),
-                permissao: document.getElementById('profPermissao').value,
-                materia: document.getElementById('profMateria').value.trim(),
-                salas: salasSelecionadas
+                permissao: permissao,
+                atribuicoes: atribuicoesFinal
             };
-            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
 
-            if (editIndex !== "") {
-                professores[editIndex] = novoProf;
-                alert('Dados do professor atualizados com sucesso!');
-            } else {
-                professores.push(novoProf);
-                alert('Professor cadastrado com sucesso!');
-            }
+            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            if (editIndex !== "") professores[editIndex] = novoProf;
+            else professores.push(novoProf);
 
             localStorage.setItem('professoresDB', JSON.stringify(professores));
             cancelarEdicaoProf();
             carregarTabelaProfessores();
+            alert('Membro da equipe salvo com sucesso!');
         });
 
         function logout() {
