@@ -580,25 +580,35 @@
             document.getElementById('btnCancelarProf').style.display = 'none';
         }
 
+        // CADASTRO DE ALUNO COM VALIDAÇÃO DE CPF DUPLICADO
         document.getElementById('cadastrarAlunoForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editIndex = document.getElementById('editAlunoIndex').value;
+            const cpfInput = document.getElementById('alunoCpf').value.trim();
+            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+
+            // Valida se o CPF já existe em outro aluno cadastrado
+            const cpfDuplicado = alunos.some((a, i) => a.cpf === cpfInput && i.toString() !== editIndex.toString());
+            if (cpfDuplicado) {
+                alert('Erro: Já existe um aluno cadastrado com este CPF!');
+                return;
+            }
+
             const novoAluno = {
                 nome: document.getElementById('novoNome').value,
                 email: document.getElementById('novoEmail').value,
                 matricula: document.getElementById('novaMatricula').value,
                 senha: document.getElementById('novaSenha').value,
-                cpf: document.getElementById('alunoCpf').value,
+                cpf: cpfInput,
                 nascimento: document.getElementById('alunoNascimento').value,
                 endereco: document.getElementById('alunoEndereco').value,
                 sala: document.getElementById('alunoSala').value,
                 mae: document.getElementById('alunoMae').value,
                 pai: document.getElementById('alunoPai').value,
                 telefone: document.getElementById('alunoTelefone').value,
-                fotoPerfil: editIndex !== "" ? JSON.parse(localStorage.getItem('alunosDB'))[editIndex].fotoPerfil : null
+                fotoPerfil: editIndex !== "" ? alunos[editIndex].fotoPerfil : null
             };
 
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
             if (editIndex !== "") alunos[editIndex] = novoAluno;
             else alunos.push(novoAluno);
 
@@ -608,10 +618,20 @@
             alert('Aluno salvo com sucesso!');
         });
 
+        // CADASTRO DE EQUIPE COM VALIDAÇÃO DE CPF DUPLICADO
         document.getElementById('cadastrarProfessorForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editIndex = document.getElementById('editProfIndex').value;
             const permissao = document.getElementById('profPermissao').value;
+            const cpfInput = document.getElementById('profCpf').value.trim();
+            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+
+            // Valida se o CPF já existe em outro membro da equipe cadastrado
+            const cpfDuplicado = professores.some((p, i) => p.cpf === cpfInput && i.toString() !== editIndex.toString());
+            if (cpfDuplicado) {
+                alert('Erro: Já existe um membro da equipe cadastrado com este CPF!');
+                return;
+            }
 
             if (permissao === 'professores' && materiasSelecionadas.length === 0) {
                 alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
@@ -630,13 +650,12 @@
 
             const novoProf = {
                 nome: document.getElementById('profNome').value.trim(),
-                cpf: document.getElementById('profCpf').value.trim(),
+                cpf: cpfInput,
                 senha: document.getElementById('profSenha').value.trim(),
                 permissao: permissao,
                 atribuicoes: atribuicoesFinal
             };
 
-            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
             if (editIndex !== "") professores[editIndex] = novoProf;
             else professores.push(novoProf);
 
