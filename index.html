@@ -3,51 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Digital - Inicio</title>
+    <meta name="description" content="Organize suas aulas, tarefas e rotina escolar com praticidade e foco.">
+    <title>Schedule Digital - Início</title>
     <link rel="stylesheet" href="design.css">
+    <style>
+        .nav-links { display: flex; align-items: center; gap: 12px; }
+        .btn-tema { background: transparent; border: 1px solid var(--border-main); color: var(--text-main); cursor: pointer; }
+    </style>
 </head>
 <body>
+    <script>
+        // Aplica o tema salvo antes de a página aparecer (evita o "piscar") e trata o clique no botão de tema
+        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
+        document.addEventListener('click', e => {
+            if (!e.target.closest('[data-tema]')) return;
+            const claro = document.body.classList.toggle('light-mode');
+            try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {}
+        });
+    </script>
 
     <header class="navbar">
         <div class="brand">Schedule Digital</div>
-        <nav class="nav-links" style="display: flex; align-items: center; gap: 12px;">
+        <nav class="nav-links" aria-label="Navegação principal">
             <a href="login.html" class="btn-auth btn-login">Entrar</a>
             <a href="criadores.html" class="nav-btn">Criadores</a>
-            <!-- Botão de Tema reposicionado na Navbar -->
-            <button id="toggleTheme" onclick="alternarTema()" class="nav-btn" style="background: transparent; border: 1px solid var(--border-main); color: var(--text-main); cursor: pointer;">
-                ☀️ / 🌙
-            </button>
+            <button type="button" data-tema class="nav-btn btn-tema" aria-label="Alternar tema claro/escuro">☀️ / 🌙</button>
         </nav>
     </header>
 
     <main class="main-container">
         <h1 class="welcome-title">Seu cronograma completo em um só lugar</h1>
         <p class="description">Organize suas aulas, tarefas e rotina escolar com praticidade e foco.</p>
-        
         <a href="login.html" class="btn-central">Acessar Minha Agenda</a>
     </main>
-    
+
     <footer class="footer">
         <p>© 2026 <span class="schedule-brand">Schedule Digital</span>. Todos os direitos reservados.</p>
     </footer>
-
-    <!-- Script unificado para alternar e persistir o tema em todas as páginas -->
-    <script>
-        // Aplica o tema salvo imediatamente assim que a página carrega
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
-
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            
-            // Salva a preferência do usuário no navegador
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-            } else {
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-    </script>
 </body>
 </html>
