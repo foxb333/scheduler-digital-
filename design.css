@@ -1,7 +1,10 @@
 /* ==========================================================================
-   VARIÁVEIS DE TEMA (CLARO E ESCURO)
+   TEMA (variáveis de cor, claro e escuro)
    ========================================================================== */
 :root {
+    --accent: #60a5fa;
+    --accent-2: #3b82f6;
+    --accent-3: #2563eb;
     --bg-body: linear-gradient(135deg, #050816, #111827, #1e3a8a);
     --text-main: #ffffff;
     --text-muted: #9ca3af;
@@ -28,13 +31,9 @@ body.light-mode {
 }
 
 /* ==========================================================================
-   1. ESTRUTURA BASE E RESET
+   BASE
    ========================================================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -50,8 +49,17 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Cartões de vidro (equipe, calendário e login compartilham o mesmo visual) */
+.team-card, .calendario-card.grande, .login-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-card);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
 /* ==========================================================================
-   2. NAVBAR
+   NAVBAR
    ========================================================================== */
 .navbar {
     display: flex;
@@ -67,84 +75,45 @@ body {
     transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* Lado Esquerdo: Marca */
-.brand-group {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
+.brand-group, .auth-group { display: flex; align-items: center; }
+.brand-group { gap: 20px; }
+.auth-group { gap: 12px; }
 
 .brand {
     font-size: 22px;
     font-weight: 800;
-    color: #60a5fa;
+    color: var(--accent);
     text-decoration: none;
     letter-spacing: 0.5px;
     text-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
 }
 
-/* Lado Direito: Organização dos Botões */
-.auth-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* Ordem dos botões no Flexbox */
-.btn-login {
-    order: 1;
-    background: transparent;
-    color: #60a5fa;
-    border: 1px solid #3b82f6;
-}
-
-.btn-register {
-    order: 2;
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
-}
-
-/* Força o botão Criadores a ir para o final (posição 3) */
+/* A propriedade "order" define a posição dos botões no flexbox */
+.btn-login { order: 1; background: transparent; color: var(--accent); border: 1px solid var(--accent-2); }
+.btn-register { order: 2; background: var(--accent-3); color: #ffffff; border: none; }
 .nav-btn {
     order: 3;
     background: rgba(37, 99, 235, 0.15);
-    color: #3b82f6;
+    color: var(--accent-2);
     border: 1px solid rgba(59, 130, 246, 0.3);
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
     text-decoration: none;
-    transition: all 0.3s ease;
 }
 
-.nav-btn:hover {
-    background: #2563eb;
-    color: #ffffff;
-}
-
-.btn-auth {
+.nav-btn, .btn-auth {
     padding: 8px 18px;
     border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-login:hover {
-    background: rgba(59, 130, 246, 0.2);
-}
-
-.btn-register:hover {
-    background: #3b82f6;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
-}
+.nav-btn:hover { background: var(--accent-3); color: #ffffff; }
+.btn-login:hover { background: rgba(59, 130, 246, 0.2); }
+.btn-register:hover { background: var(--accent-2); box-shadow: 0 0 12px rgba(59, 130, 246, 0.6); }
 
 /* ==========================================================================
-   3. SEÇÃO PRINCIPAL (CONTAINER COMUM)
+   CONTEÚDO PRINCIPAL
    ========================================================================== */
 .main-container {
     flex: 1;
@@ -177,7 +146,7 @@ body {
 
 .btn-central {
     display: inline-block;
-    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    background: linear-gradient(90deg, var(--accent-3), var(--accent-2));
     color: #ffffff;
     text-decoration: none;
     padding: 16px 36px;
@@ -187,38 +156,27 @@ body {
     font-size: 17px;
     font-weight: 700;
     box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-central:hover {
     transform: scale(1.05) translateY(-2px);
     box-shadow: 0 0 30px rgba(96, 165, 250, 0.8);
-    background: linear-gradient(90deg, #1d4ed8, #2563eb);
+    background: linear-gradient(90deg, #1d4ed8, var(--accent-3));
 }
 
 /* ==========================================================================
-   4. PÁGINA DE CRIADORES (GRID DOS CARDS)
+   PÁGINA DE CRIADORES
    ========================================================================== */
-.team-grid {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-    width: 100%;
-}
+.team-grid { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; width: 100%; }
 
 .team-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-card);
-    border-radius: 20px;
     padding: 25px 20px;
     width: 280px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .team-card:hover {
@@ -233,26 +191,18 @@ body {
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: 15px;
-    border: 3px solid #3b82f6;
+    border: 3px solid var(--accent-2);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     background: var(--bg-hover);
 }
 
-.profile-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.profile-img { width: 100%; height: 100%; object-fit: cover; }
 
-.team-card h2 {
-    font-size: 20px;
-    color: var(--text-main);
-    margin-bottom: 6px;
-}
+.team-card h2 { font-size: 20px; color: var(--text-main); margin-bottom: 6px; }
 
 .role-badge {
     background: rgba(37, 99, 235, 0.1);
-    color: #3b82f6;
+    color: var(--accent-2);
     border: 1px solid rgba(59, 130, 246, 0.4);
     padding: 4px 12px;
     border-radius: 12px;
@@ -261,51 +211,18 @@ body {
     margin-bottom: 15px;
 }
 
-.team-card p {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
+.team-card p { font-size: 14px; color: var(--text-muted); line-height: 1.4; }
 
 /* ==========================================================================
-   5. AGENDA E CALENDÁRIO
+   AGENDA E CALENDÁRIO
    ========================================================================== */
-.agenda-wrapper {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-}
+.agenda-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
 
-.calendario-card.grande {
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-card);
-    border-radius: 20px;
-    padding: 30px;
-    width: 100%;
-    max-width: 520px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
+.calendario-card.grande { padding: 30px; width: 100%; max-width: 520px; }
 
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.calendar-header h3 {
-    font-size: 24px;
-    color: #60a5fa;
-    font-weight: 700;
-}
-
-.calendar-nav {
-    display: flex;
-    gap: 8px;
-}
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.calendar-header h3 { font-size: 24px; color: var(--accent); font-weight: 700; }
+.calendar-nav { display: flex; gap: 8px; }
 
 .nav-arrow {
     background: var(--bg-hover);
@@ -316,39 +233,23 @@ body {
     border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.nav-arrow:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: #3b82f6;
-}
+.nav-arrow:hover { background: rgba(59, 130, 246, 0.2); border-color: var(--accent-2); }
 
-.calendar-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 6px;
-}
-
-.calendar-table th {
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 600;
-    padding-bottom: 12px;
-}
+.calendar-table { width: 100%; border-collapse: separate; border-spacing: 6px; }
+.calendar-table th { color: var(--text-muted); font-size: 14px; font-weight: 600; padding-bottom: 12px; }
 
 .calendar-table td {
     height: 48px;
     text-align: center;
     font-size: 16px;
     border-radius: 10px;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.calendar-table td.vazio {
-    background: transparent;
-    cursor: default;
-}
+.calendar-table td.vazio { background: transparent; cursor: default; }
 
 .calendar-table td.dia {
     cursor: pointer;
@@ -364,7 +265,7 @@ body {
 }
 
 .calendar-table td.hoje {
-    background: #2563eb !important;
+    background: var(--accent-3) !important;
     color: #ffffff !important;
     font-weight: 800;
     box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
@@ -372,12 +273,12 @@ body {
 }
 
 .calendar-table td.ativo:not(.hoje) {
-    border: 2px solid #60a5fa !important;
+    border: 2px solid var(--accent) !important;
     background: rgba(96, 165, 250, 0.1) !important;
 }
 
 /* ==========================================================================
-   6. RODAPÉ
+   RODAPÉ
    ========================================================================== */
 .footer {
     padding: 20px;
@@ -387,49 +288,19 @@ body {
     color: var(--text-muted);
 }
 
-.schedule-brand {
-    color: #3b82f6;
-    font-weight: 600;
-}
+.schedule-brand { color: var(--accent-2); font-weight: 600; }
 
 /* ==========================================================================
-   7. TELA DE LOGIN MODERNIZADA
+   LOGIN
    ========================================================================== */
-.login-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
+.login-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-.login-card {
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-card);
-    border-radius: 20px;
-    padding: 40px 30px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
+.login-card { padding: 40px 30px; width: 100%; max-width: 400px; text-align: left; }
 
-.login-title {
-    color: var(--text-main);
-    font-size: 26px;
-    font-weight: 800;
-    margin-bottom: 6px;
-}
+.login-title { color: var(--text-main); font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+.login-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
 
-.login-subtitle {
-    color: var(--text-muted);
-    font-size: 14px;
-    margin-bottom: 25px;
-}
-
-.login-form .input-group {
-    margin-bottom: 20px;
-}
+.login-form .input-group { margin-bottom: 20px; }
 
 .login-form label {
     display: block;
@@ -448,45 +319,21 @@ body {
     color: var(--text-main);
     font-size: 14px;
     outline: none;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.login-form input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
-}
+.login-form input:focus { border-color: var(--accent-2); box-shadow: 0 0 12px rgba(59, 130, 246, 0.2); }
 
-.btn-submit {
-    max-width: 100%;
-    margin-top: 10px;
-    cursor: pointer;
-}
+.btn-submit { max-width: 100%; margin-top: 10px; cursor: pointer; }
 
-.login-footer {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.back-link {
-    color: #3b82f6;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
+.login-footer { margin-top: 20px; text-align: center; }
+.back-link { color: var(--accent-2); text-decoration: none; font-size: 13px; }
+.back-link:hover, .btn-logout:hover { text-decoration: underline; }
 
 /* ==========================================================================
-   8. DASHBOARD / PAINEL COM SIDEBAR NA ESQUERDA
+   PAINEL (DASHBOARD) COM SIDEBAR
    ========================================================================== */
-.dashboard-body {
-    display: flex;
-    flex-direction: row;
-    min-height: 100vh;
-    justify-content: flex-start;
-    align-items: stretch;
-}
+.dashboard-body { flex-direction: row; justify-content: flex-start; align-items: stretch; }
 
 .sidebar {
     width: 250px;
@@ -500,82 +347,35 @@ body {
     text-align: left;
 }
 
-.sidebar-brand {
-    color: #60a5fa;
-    font-size: 22px;
-    font-weight: 800;
+.sidebar-brand { color: var(--accent); font-size: 22px; font-weight: 800; }
+.menu-empty { color: var(--text-muted); font-size: 13px; font-style: italic; margin-top: 30px; }
+
+.dashboard-content { flex: 1; padding: 40px; text-align: left; }
+.dashboard-header h1 { font-size: 32px; color: var(--text-main); margin-bottom: 8px; }
+.dashboard-header p { color: var(--text-muted); font-size: 15px; }
+
+.btn-logout { color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 600; }
+
+/* ==========================================================================
+   ACESSIBILIDADE
+   ========================================================================== */
+a:focus-visible, button:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
-.menu-empty {
-    color: var(--text-muted);
-    font-size: 13px;
-    font-style: italic;
-    margin-top: 30px;
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .team-card:hover, .btn-central:hover { transform: none; }
 }
 
-.dashboard-content {
-    flex: 1;
-    padding: 40px;
-    text-align: left;
-}
-
-.dashboard-header h1 {
-    font-size: 32px;
-    color: var(--text-main);
-    text-align: left;
-    margin: 0 0 8px 0;
-    text-shadow: none;
-}
-
-.dashboard-header p {
-    color: var(--text-muted);
-    font-size: 15px;
-    text-align: left;
-    margin: 0;
-}
-
-.btn-logout {
-    color: #ef4444;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.btn-logout:hover {
-    text-decoration: underline;
-}
-
-/* --- AJUSTES DE RESPONSIVIDADE PARA MOBILE --- */
+/* ==========================================================================
+   MOBILE
+   ========================================================================== */
 @media screen and (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        height: auto;
-        padding: 15px;
-        gap: 10px;
-    }
-
-    .nav-links {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .welcome-title {
-        font-size: 1.8rem;
-        padding: 0 15px;
-        text-align: center;
-    }
-
-    .description {
-        padding: 0 15px;
-        text-align: center;
-    }
-
-    .btn-central {
-        width: 90%;
-        max-width: 300px;
-        text-align: center;
-    }
+    .navbar { flex-direction: column; height: auto; padding: 15px; gap: 10px; }
+    .nav-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; width: 100%; }
+    .welcome-title { font-size: 1.8rem; padding: 0 15px; text-align: center; }
+    .description { padding: 0 15px; text-align: center; }
+    .btn-central { width: 90%; max-width: 300px; text-align: center; }
 }

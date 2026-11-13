@@ -7,24 +7,40 @@
     <link rel="stylesheet" href="design.css">
     <style>
         .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 26px; cursor: pointer; padding: 5px 10px; }
-        .sidebar-btn { display: block; padding: 10px 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-weight: 500; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
+        .sidebar-collapse { display: flex; flex-direction: column; }
+        .sidebar-btn { display: block; width: 100%; padding: 10px 15px; color: #94a3b8; background: none; border: 0; text-align: left; font: inherit; font-weight: 500; border-radius: 8px; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
         .sidebar-btn.active, .sidebar-btn:hover { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
+        .btn-tema { background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer; }
         .btn-hoje { background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(96, 165, 250, 0.4); color: #60a5fa; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .texto-pc { display: inline; }
         .texto-mobile { display: none; }
         .materias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-top: 20px; }
-        .materia-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 20px; }
+        .materia-card, .trofeu-card, .trofeu-gigante-card, .perfil-container { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; }
+        .materia-card { padding: 20px; }
+        .materia-nome { color: #60a5fa; font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .materia-prof { font-size: 14px; color: var(--text-main); }
         .card-aviso-aluno { background: var(--bg-card); border-left: 4px solid #60a5fa; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        
-        .perfil-container { display: flex; align-items: center; gap: 20px; background: var(--bg-card); border: 1px solid var(--border-card); padding: 20px; border-radius: 12px; margin-bottom: 25px; }
+        .card-aviso-aluno h4 { color: #60a5fa; margin-bottom: 5px; }
+        .aviso-data { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px; }
+        .aviso-texto { margin: 0; color: var(--text-main); font-size: 14px; }
+        .perfil-container { display: flex; align-items: center; gap: 20px; padding: 20px; margin-bottom: 25px; }
+        .perfil-nome { color: #60a5fa; margin-bottom: 5px; }
+        .perfil-turma { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .perfil-dica { font-size: 11px; color: #a855f7; display: block; margin-top: 5px; }
         .avatar-box { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #fff; cursor: pointer; position: relative; overflow: hidden; border: 2px solid #60a5fa; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* Troféu Gigante Clicável */
-        .trofeu-gigante-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .trofeu-gigante-card { padding: 30px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
         .trofeu-gigante-card:hover { transform: translateY(-4px); border-color: #60a5fa; }
+        .trofeu-gigante-card .icone { font-size: 64px; margin-bottom: 10px; }
+        .trofeu-gigante-card h3 { color: #60a5fa; margin: 0 0 5px; }
         .trofeus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        .trofeu-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 20px; text-align: center; }
+        .trofeu-card { padding: 20px; text-align: center; }
+        .trofeu-card .icone { font-size: 40px; }
+        .trofeu-card h4 { color: var(--text-main); margin: 10px 0 5px; }
+        .trofeu-card.destaque { border-color: #60a5fa; }
+        .trofeu-card.destaque h4 { color: #60a5fa; }
+        .titulo-aba { margin-bottom: 5px; color: #60a5fa; }
+        .nota { font-size: 13px; color: var(--text-muted); }
+        .vazio { color: var(--text-muted); }
 
         @media screen and (max-width: 768px) {
             .texto-pc { display: none; }
@@ -40,31 +56,27 @@
         }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" style="visibility: hidden;">
 
     <aside class="sidebar">
         <div>
             <div class="sidebar-header">
                 <h2 class="sidebar-brand">Schedule</h2>
-                <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">☰</button>
+                <button type="button" class="menu-toggle" data-acao="menu" aria-label="Abrir menu" aria-expanded="true" aria-controls="sidebarContent">☰</button>
             </div>
-
-            <div class="sidebar-collapse open" id="sidebarContent" style="display: flex; flex-direction: column;">
+            <div class="sidebar-collapse open" id="sidebarContent">
                 <nav class="sidebar-menu" style="margin-top: 20px;">
-                    <span id="btnNavHome" onclick="alternarTelaAluno('home')" class="sidebar-btn active">Página Principal</span>
-                    <span id="btnNavAgenda" onclick="alternarTelaAluno('agenda')" class="sidebar-btn">Agenda</span>
-                    <span id="btnNavMaterias" onclick="alternarTelaAluno('materias')" class="sidebar-btn">Matérias</span>
-                    <span id="btnNavMural" onclick="alternarTelaAluno('mural')" class="sidebar-btn">Mural de Avisos</span>
-                    <span id="btnNavTrofeus" onclick="alternarTelaAluno('trofeus')" class="sidebar-btn">Meus Troféus</span>
+                    <button type="button" class="sidebar-btn active" data-tela="home">Página Principal</button>
+                    <button type="button" class="sidebar-btn" data-tela="agenda">Agenda</button>
+                    <button type="button" class="sidebar-btn" data-tela="materias">Matérias</button>
+                    <button type="button" class="sidebar-btn" data-tela="mural">Mural de Avisos</button>
+                    <button type="button" class="sidebar-btn" data-tela="trofeus">Meus Troféus</button>
                 </nav>
             </div>
         </div>
-
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
-                ☀️ / 🌙 Tema
-            </button>
-            <a href="index.html" class="btn-logout">Sair</a>
+            <button type="button" data-acao="tema" class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
+            <a href="index.html" data-acao="sair" class="btn-logout">Sair</a>
         </div>
     </aside>
 
@@ -74,249 +86,193 @@
             <p id="subtituloTelaPrincipal">Bem-vindo ao seu painel acadêmico.</p>
         </header>
 
-        <div id="abaHome">
+        <div class="aba" id="abaHome">
             <div class="perfil-container">
-                <div class="avatar-box" id="avatarBox" title="Clique para alterar a foto" onclick="document.getElementById('inputFotoUpload').click()"></div>
-                <input type="file" id="inputFotoUpload" accept="image/*" style="display: none;" onchange="enviarFotoParaAnalise(event)">
+                <div class="avatar-box" id="avatarBox" role="button" tabindex="0" data-acao="foto" title="Clique para alterar a foto" aria-label="Alterar foto de perfil"></div>
+                <input type="file" id="inputFotoUpload" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
                 <div>
-                    <h2 id="nomeAlunoHome" style="color: #60a5fa; margin-bottom: 5px;">Carregando...</h2>
-                    <p id="turmaAlunoHome" style="margin: 0; font-size: 14px; color: var(--text-muted);">Turma: Carregando...</p>
-                    <span style="font-size: 11px; color: #a855f7; display: block; margin-top: 5px;">Clique na foto para solicitar alteração ao Administrador.</span>
+                    <h2 class="perfil-nome" id="nomeAlunoHome">Carregando...</h2>
+                    <p class="perfil-turma" id="turmaAlunoHome">Turma: Carregando...</p>
+                    <span class="perfil-dica">Clique na foto para solicitar alteração ao Administrador.</span>
                 </div>
             </div>
-
-            <h3 style="color: #60a5fa; margin-bottom: 10px;">Central de Conquistas</h3>
-            <!-- Troféu Gigante Clicável -->
-            <div class="trofeu-gigante-card" onclick="alternarTelaAluno('trofeus')">
-                <div style="font-size: 64px; margin-bottom: 10px;">🏆</div>
-                <h3 style="color: #60a5fa; margin: 0 0 5px 0;">Sala de Troféus Acadêmicos</h3>
-                <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Clique aqui para visualizar seus níveis Bronze, Prata e Diamante!</p>
+            <h3 class="titulo-aba" style="margin-bottom: 10px;">Central de Conquistas</h3>
+            <div class="trofeu-gigante-card" role="button" tabindex="0" data-tela="trofeus">
+                <div class="icone">🏆</div>
+                <h3>Sala de Troféus Acadêmicos</h3>
+                <p class="nota" style="font-size: 14px; margin: 0;">Clique aqui para visualizar seus níveis Bronze, Prata e Diamante!</p>
             </div>
         </div>
 
-        <div id="abaAgenda" class="agenda-wrapper" style="display: none;">
+        <div class="aba agenda-wrapper" id="abaAgenda" style="display: none;">
             <div class="calendario-card grande">
                 <div class="calendar-header">
                     <h3 id="monthYear"></h3>
                     <div class="calendar-nav">
-                        <button class="btn-hoje" id="btnHoje" title="Voltar para o mês e dia atual">
-                            <span class="texto-pc">Voltar</span>
-                            <span class="texto-mobile">Volt.</span>
+                        <button type="button" class="btn-hoje" data-acao="hoje" title="Voltar para o mês e dia atual">
+                            <span class="texto-pc">Voltar</span><span class="texto-mobile">Volt.</span>
                         </button>
-                        <button class="nav-arrow" id="prevMonth" aria-label="Mês Anterior">&lt;</button>
-                        <button class="nav-arrow" id="nextMonth" aria-label="Próximo Mês">&gt;</button>
+                        <button type="button" class="nav-arrow" id="prevMonth" aria-label="Mês anterior">&lt;</button>
+                        <button type="button" class="nav-arrow" id="nextMonth" aria-label="Próximo mês">&gt;</button>
                     </div>
                 </div>
-
                 <table class="calendar-table">
-                    <thead>
-                        <tr>
-                            <th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr></thead>
                     <tbody id="calendarBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="abaMaterias" style="display: none;">
-            <h3 style="margin-bottom: 5px; color: #60a5fa;">Bem-vindo às Matérias</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Disciplinas e professores associados à sua turma.</p>
+        <div class="aba" id="abaMaterias" style="display: none;">
+            <h3 class="titulo-aba">Bem-vindo às Matérias</h3>
+            <p class="nota" style="margin-bottom: 15px;">Disciplinas e professores associados à sua turma.</p>
             <div id="listaMateriasAluno" class="materias-grid"></div>
         </div>
 
-        <div id="abaMural" style="display: none;">
-            <h3 style="margin-bottom: 5px; color: #60a5fa;">Bem-vindo ao Mural de Avisos</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Comunicados oficiais emitidos pela direção.</p>
+        <div class="aba" id="abaMural" style="display: none;">
+            <h3 class="titulo-aba">Bem-vindo ao Mural de Avisos</h3>
+            <p class="nota" style="margin-bottom: 15px;">Comunicados oficiais emitidos pela direção.</p>
             <div id="containerMuralAluno"></div>
         </div>
 
-        <div id="abaTrofeus" style="display: none;">
-            <h3 style="margin-bottom: 5px; color: #60a5fa;">Painel Geral de Troféus</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Acompanhe sua pontuação e conquistas bimestrais.</p>
-            <div class="trofeus-grid">
-                <div class="trofeu-card">
-                    <div style="font-size: 40px;">🥉</div>
-                    <h4 style="color: var(--text-main); margin: 10px 0 5px 0;">Nível Bronze</h4>
-                    <p style="font-size: 13px; color: var(--text-muted);">1º Bimestre - Conquistado</p>
-                </div>
-                <div class="trofeu-card">
-                    <div style="font-size: 40px;">🥈</div>
-                    <h4 style="color: var(--text-main); margin: 10px 0 5px 0;">Nível Prata</h4>
-                    <p style="font-size: 13px; color: var(--text-muted);">2º Bimestre - Conquistado</p>
-                </div>
-                <div class="trofeu-card" style="border-color: #60a5fa;">
-                    <div style="font-size: 40px;">💎</div>
-                    <h4 style="color: #60a5fa; margin: 10px 0 5px 0;">Nível Diamante</h4>
-                    <p style="font-size: 13px; color: var(--text-muted);">3º Bimestre - Em andamento</p>
-                </div>
-            </div>
+        <div class="aba" id="abaTrofeus" style="display: none;">
+            <h3 class="titulo-aba">Painel Geral de Troféus</h3>
+            <p class="nota" style="margin-bottom: 15px;">Acompanhe sua pontuação e conquistas bimestrais.</p>
+            <div class="trofeus-grid" id="trofeusGrid"></div>
         </div>
     </main>
 
     <script src="calendar.js"></script>
-    <script>
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    <script type="module">
+        // ===== Utilitários =====
+        const $ = id => document.getElementById(id);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const ler = k => { try { const l = JSON.parse(localStorage.getItem(k)); return Array.isArray(l) ? l : []; } catch { return []; } };
 
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        // ===== Sessão e tema =====
+        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
+        if (!['aluno', 'admin'].includes(usuario?.cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        document.body.style.visibility = '';
+        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
+
+        // Localiza o aluno por id, acesso ou matrícula; o nome só vale se for único (evita confundir dois "João")
+        const casa = (a, v) => v && (a.email === v || a.matricula === v);
+        const alunos = ler('alunosDB');
+        const porNome = alunos.filter(a => a.nome === usuario.nome);
+        const aluno = alunos.find(a => (usuario.id && a.id === usuario.id) || casa(a, usuario.email) || casa(a, usuario.identificador))
+            ?? (porNome.length === 1 ? porNome[0] : null);
+
+        // ===== Dados fixos =====
+        const ABAS = {
+            home: ['Página Principal', 'Bem-vindo ao seu painel acadêmico.'],
+            agenda: ['Agenda Acadêmica', 'Seu cronograma completo.'],
+            materias: ['Matérias Escolares', 'Corpo docente e disciplinas.'],
+            mural: ['Mural de Avisos', 'Comunicados importantes.'],
+            trofeus: ['Conquistas e Troféus', 'Visualize seus prêmios.']
+        };
+        const TROFEUS = [['🥉', 'Nível Bronze', '1º Bimestre - Conquistado'], ['🥈', 'Nível Prata', '2º Bimestre - Conquistado'], ['💎', 'Nível Diamante', '3º Bimestre - Em andamento', true]];
+        const CORES = ['#2563eb', '#16a34a', '#9333ea', '#db2777', '#ca8a04', '#0284c7'];
+
+        // ===== Calendário: sempre posiciona em hoje (mês e dia) =====
+        // Funciona com o calendar.js novo (irParaHoje) e com o antigo (currentMonth/currentYear), mesmo se o navegador usar cópia em cache.
+        function irParaHoje() {
+            if (window.irParaHoje) return window.irParaHoje();
+            const h = new Date();
+            if (typeof currentMonth !== 'undefined') { currentMonth = h.getMonth(); currentYear = h.getFullYear(); }
+            else if (typeof mes !== 'undefined') { mes = h.getMonth(); ano = h.getFullYear(); }
+            window.renderCalendar?.();
+            $('calendarBody').querySelector('.hoje')?.classList.add('ativo');
         }
 
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebarContent = document.getElementById('sidebarContent');
-        menuToggle.addEventListener('click', () => { sidebarContent.classList.toggle('open'); });
+        // ===== Telas =====
+        function mostrarAba(tela) {
+            document.querySelectorAll('.aba').forEach(a => a.style.display = a.id === 'aba' + tela[0].toUpperCase() + tela.slice(1) ? 'block' : 'none');
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.toggle('active', b.dataset.tela === tela));
+            [$('tituloTelaPrincipal').textContent, $('subtituloTelaPrincipal').textContent] = ABAS[tela];
+            if (tela === 'agenda') irParaHoje();
+            if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
+        }
 
-        function alternarTelaAluno(tela) {
-            document.getElementById('abaHome').style.display = tela === 'home' ? 'block' : 'none';
-            document.getElementById('abaAgenda').style.display = tela === 'agenda' ? 'block' : 'none';
-            document.getElementById('abaMaterias').style.display = tela === 'materias' ? 'block' : 'none';
-            document.getElementById('abaMural').style.display = tela === 'mural' ? 'block' : 'none';
-            document.getElementById('abaTrofeus').style.display = tela === 'trofeus' ? 'block' : 'none';
-
-            document.getElementById('btnNavHome').classList.toggle('active', tela === 'home');
-            document.getElementById('btnNavAgenda').classList.toggle('active', tela === 'agenda');
-            document.getElementById('btnNavMaterias').classList.toggle('active', tela === 'materias');
-            document.getElementById('btnNavMural').classList.toggle('active', tela === 'mural');
-            document.getElementById('btnNavTrofeus').classList.toggle('active', tela === 'trofeus');
-
-            const titulos = { home: 'Página Principal', agenda: 'Agenda Acadêmica', materias: 'Matérias Escolares', mural: 'Mural de Avisos', trofeus: 'Conquistas e Troféus' };
-            const subtitulos = { home: 'Bem-vindo ao seu painel acadêmico.', agenda: 'Seu cronograma completo.', materias: 'Corpo docente e disciplinas.', mural: 'Comunicados importantes.', trofeus: 'Visualize seus prêmios.' };
-            document.getElementById('tituloTelaPrincipal').innerText = titulos[tela];
-            document.getElementById('subtituloTelaPrincipal').innerText = subtitulos[tela];
-
-            if (tela === 'agenda') {
-                carregarAgendaAtual();
+        function renderPerfil() {
+            $('nomeAlunoHome').textContent = aluno?.nome ?? 'Perfil de aluno não encontrado';
+            $('turmaAlunoHome').textContent = `Turma: ${aluno?.sala || 'Não atribuída'}`;
+            if (!aluno) return;
+            const box = $('avatarBox');
+            if (aluno.fotoPerfil) {
+                const img = new Image();
+                img.alt = 'Foto de perfil';
+                img.src = aluno.fotoPerfil;
+                return box.replaceChildren(img);
             }
+            const p = aluno.nome.trim().split(/\s+/);
+            box.style.backgroundColor = CORES[aluno.nome.length % CORES.length];
+            box.textContent = (p.length > 1 ? p[0][0] + p.at(-1)[0] : p[0][0] ?? '?').toUpperCase();
         }
 
-        const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if (!usuarioLogado || (usuarioLogado.cargo !== 'aluno' && usuarioLogado.cargo !== 'admin')) {
-            window.location.href = 'login.html';
+        function renderMaterias() {
+            const sala = aluno?.sala;
+            const cards = ler('professoresDB').flatMap(p => (p.atribuicoes || [])
+                .filter(a => a.salas?.includes(sala))
+                .map(a => `<div class="materia-card"><div class="materia-nome">${esc(a.materia)}</div>
+                    <div class="materia-prof"><strong>Professor(a):</strong> ${esc(p.nome || 'Não informado')}</div></div>`));
+            $('listaMateriasAluno').innerHTML = cards.join('')
+                || `<p class="vazio">Nenhuma matéria atribuída para a sua turma (${esc(sala || 'não atribuída')}) no momento.</p>`;
         }
 
-        const alunosDB = JSON.parse(localStorage.getItem('alunosDB')) || [];
-        let alunoAtualIndex = alunosDB.findIndex(a => 
-            a.email === usuarioLogado?.email || 
-            a.matricula === usuarioLogado?.email || 
-            a.nome === usuarioLogado?.nome ||
-            a.email === usuarioLogado?.identificador
-        );
+        // só mostra avisos que ainda não expiraram
+        const renderMural = () => $('containerMuralAluno').innerHTML = ler('muralAvisosDB')
+            .filter(av => new Date(av.expiracao).getTime() > Date.now())
+            .map(av => `
+            <div class="card-aviso-aluno"><h4>${esc(av.titulo)}</h4><span class="aviso-data">${esc(av.data)}</span>
+            <p class="aviso-texto">${esc(av.conteudo)}</p></div>`).join('') || '<p class="vazio">Nenhum aviso novo no mural.</p>';
 
-        const alunoAtual = alunosDB[alunoAtualIndex];
+        const renderTrofeus = () => $('trofeusGrid').innerHTML = TROFEUS.map(([icone, nome, status, destaque]) => `
+            <div class="trofeu-card${destaque ? ' destaque' : ''}"><div class="icone">${icone}</div><h4>${nome}</h4><p class="nota">${status}</p></div>`).join('');
 
-        if (alunoAtual) {
-            document.getElementById('nomeAlunoHome').innerText = alunoAtual.nome;
-            document.getElementById('turmaAlunoHome').innerText = `Turma: ${alunoAtual.sala || 'Não atribuída'}`;
-            renderizarAvatar();
+        // ===== Pedido de troca de foto =====
+        $('inputFotoUpload').addEventListener('change', e => {
+            const arquivo = e.target.files[0];
+            e.target.value = ''; // permite escolher o mesmo arquivo de novo
+            if (!arquivo || !aluno) return;
+            if (!/^image\/(png|jpe?g|gif|webp)$/.test(arquivo.type)) return alert('Use uma imagem PNG, JPG, GIF ou WEBP.');
+            if (arquivo.size > 1e6) return alert('A imagem deve ter no máximo 1 MB.');
 
-            if (alunoAtual.sala) {
-                const professoresDB = JSON.parse(localStorage.getItem('professoresDB')) || [];
-                const containerMaterias = document.getElementById('listaMateriasAluno');
-                containerMaterias.innerHTML = '';
-
-                let disciplinasEncontradas = 0;
-
-                professoresDB.forEach(prof => {
-                    if (prof.atribuicoes && prof.atribuicoes.length > 0) {
-                        prof.atribuicoes.forEach(atrib => {
-                            if (atrib.salas && atrib.salas.includes(alunoAtual.sala)) {
-                                disciplinasEncontradas++;
-                                containerMaterias.innerHTML += `
-                                    <div class="materia-card">
-                                        <div style="color: #60a5fa; font-size: 18px; font-weight: 600; margin-bottom: 8px;">${atrib.materia}</div>
-                                        <div style="font-size: 14px; color: var(--text-main);"><strong>Professor(a):</strong> ${prof.nome || 'Não informado'}</div>
-                                    </div>
-                                `;
-                            }
-                        });
-                    }
-                });
-
-                if (disciplinasEncontradas === 0) {
-                    containerMaterias.innerHTML = `<p style="color: var(--text-muted);">Nenhuma matéria atribuída para a sua turma (${alunoAtual.sala}) no momento.</p>`;
-                }
-            }
-        }
-
-        function renderizarAvatar() {
-            const box = document.getElementById('avatarBox');
-            if (alunoAtual.fotoPerfil) {
-                box.innerHTML = `<img src="${alunoAtual.fotoPerfil}" alt="Foto de Perfil">`;
-            } else {
-                const partes = alunoAtual.nome.split(' ');
-                const iniciais = partes.length > 1 ? partes[0][0] + partes[partes.length - 1][0] : partes[0][0];
-                const cores = ['#2563eb', '#16a34a', '#9333ea', '#db2777', '#ca8a04', '#0284c7'];
-                box.style.backgroundColor = cores[alunoAtual.nome.length % cores.length];
-                box.innerText = iniciais.toUpperCase();
-            }
-        }
-
-        function enviarFotoParaAnalise(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const novaFotoBase64 = e.target.result;
-                let pedidos = JSON.parse(localStorage.getItem('pedidosFotoDB')) || [];
-                pedidos.push({
-                    alunoEmail: alunoAtual.email || alunoAtual.matricula,
-                    nomeAluno: alunoAtual.nome,
-                    sala: alunoAtual.sala || 'Sem turma',
-                    novaFoto: novaFotoBase64
-                });
-                localStorage.setItem('pedidosFotoDB', JSON.stringify(pedidos));
-                alert('Solicitação de alteração de foto enviada para análise do Administrador!');
+            const leitor = new FileReader();
+            leitor.onload = () => {
+                try {
+                    const pedidos = ler('pedidosFotoDB');
+                    pedidos.push({
+                        id: novoId(), alunoId: aluno.id, alunoEmail: aluno.email || aluno.matricula,
+                        nomeAluno: aluno.nome, sala: aluno.sala || 'Sem turma', novaFoto: leitor.result
+                    });
+                    localStorage.setItem('pedidosFotoDB', JSON.stringify(pedidos));
+                    alert('Solicitação de alteração de foto enviada para análise do Administrador!');
+                } catch { alert('Não foi possível enviar a solicitação: o armazenamento está cheio.'); }
             };
-            reader.readAsDataURL(file);
-        }
-
-        function carregarMuralAluno() {
-            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-            const container = document.getElementById('containerMuralAluno');
-            container.innerHTML = '';
-
-            if (avisos.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aviso novo no mural.</p>';
-                return;
-            }
-
-            avisos.forEach(av => {
-                container.innerHTML += `
-                    <div class="card-aviso-aluno">
-                        <h4 style="color: #60a5fa; margin-bottom: 5px;">${av.titulo}</h4>
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px;">${av.data}</span>
-                        <p style="margin: 0; color: var(--text-main); font-size: 14px;">${av.conteudo}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function carregarAgendaAtual() {
-            const dataHoje = new Date();
-            const mes = dataHoje.getMonth();
-            const ano = dataHoje.getFullYear();
-
-            if (typeof mesAtual !== 'undefined' && typeof anoAtual !== 'undefined' && typeof carregarCalendario === 'function') {
-                mesAtual = mes;
-                anoAtual = ano;
-                carregarCalendario(mesAtual, anoAtual);
-            } else if (typeof currentMonth !== 'undefined' && typeof currentYear !== 'undefined' && typeof renderCalendar === 'function') {
-                currentMonth = mes;
-                currentYear = ano;
-                renderCalendar();
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            carregarMuralAluno();
-            carregarAgendaAtual();
+            leitor.readAsDataURL(arquivo);
         });
 
-        document.getElementById('btnHoje').addEventListener('click', () => {
-            carregarAgendaAtual();
+        // ===== Eventos (sem onclick inline) =====
+        const acoes = {
+            menu: () => { const aberto = $('sidebarContent').classList.toggle('open'); document.querySelector('.menu-toggle').setAttribute('aria-expanded', aberto); },
+            tema: () => { const claro = document.body.classList.toggle('light-mode'); try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {} },
+            sair: () => localStorage.removeItem('usuarioLogado'), // o link segue para index.html
+            hoje: irParaHoje,
+            foto: () => $('inputFotoUpload').click()
+        };
+        document.addEventListener('click', e => {
+            const el = e.target.closest('[data-tela], [data-acao]');
+            if (!el) return;
+            if (el.dataset.tela) mostrarAba(el.dataset.tela);
+            else acoes[el.dataset.acao]?.();
         });
+        document.addEventListener('keydown', e => { // teclado: Enter/Espaço nos elementos clicáveis que não são <button>
+            if (['Enter', ' '].includes(e.key) && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
+        });
+
+        // ===== Início =====
+        renderPerfil(); renderMaterias(); renderMural(); renderTrofeus(); irParaHoje();
     </script>
 </body>
 </html>

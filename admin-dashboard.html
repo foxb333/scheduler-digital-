@@ -11,13 +11,11 @@
             .sidebar { width: 100% !important; height: auto !important; position: relative !important; }
             .dashboard-content { margin-left: 0 !important; padding: 15px !important; width: 100% !important; box-sizing: border-box !important; }
         }
-        .nav-link { color: #94a3b8; text-decoration: none; display: block; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; }
+        .nav-link { color: #94a3b8; display: block; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; background: none; border: 0; font: inherit; text-align: left; }
         .nav-link.active { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
         .btn-acao { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; color: #fff; }
-        .btn-editar { background: #2563eb; }
-        .btn-editar:hover { background: #1d4ed8; }
-        .btn-excluir { background: #ef4444; }
-        .btn-excluir:hover { background: #dc2626; }
+        .btn-editar { background: #2563eb; } .btn-editar:hover { background: #1d4ed8; }
+        .btn-excluir { background: #ef4444; } .btn-excluir:hover { background: #dc2626; }
         .btn-aprovar { background: #16a34a; }
         .btn-rejeitar { background: #dc2626; }
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 10px; background: var(--bg-hover); border: 1px solid var(--border-main); border-radius: 8px; }
@@ -26,652 +24,405 @@
         body.light-mode select, body.light-mode option { background-color: #ffffff !important; color: #0f172a !important; }
         .atribuicao-box { background: var(--bg-hover); border: 1px solid var(--border-main); padding: 12px; border-radius: 8px; margin-top: 10px; }
         .desativado { opacity: 0.4; pointer-events: none; }
+        .linha { display: flex; gap: 15px; flex-wrap: wrap; }
+        .linha + .linha { margin-top: 15px; }
+        .ig { flex: 1; min-width: 200px; }
+        .campo-select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main); }
+        .card-form { max-width: 650px; width: 100%; padding: 25px; box-sizing: border-box; }
+        .titulo-form { margin-bottom: 15px; color: #60a5fa; }
+        .subtitulo-form { color: #60a5fa; margin: 20px 0 10px; font-size: 14px; }
+        .rotulo-quadro { display: block; font-weight: 600; color: #60a5fa; margin-bottom: 5px; }
+        .botoes-form { display: flex; gap: 10px; margin-top: 20px; }
+        .scroll-x { overflow-x: auto; width: 100%; }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px; }
+        .tabela thead tr { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main); }
+        .tabela th, .tabela td { padding: 12px 15px; }
+        .tabela tbody tr { border-bottom: 1px solid var(--border-main); }
+        .tabela td { color: var(--text-main); }
+        .tabela td.acoes { display: flex; gap: 8px; justify-content: center; }
+        .tabela td.vazio { padding: 15px; color: var(--text-muted); }
+        .tag-materia { background: rgba(37,99,235,0.3); color: #60a5fa; padding: 4px 10px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .tag-materia button { background: none; border: none; color: #ef4444; font-weight: bold; cursor: pointer; }
+        .aviso { font-size: 13px; color: var(--text-muted); margin: 0; }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" style="visibility: hidden;">
 
-    <!-- BARRA LATERAL ADMIN -->
     <aside class="sidebar">
         <div>
             <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #ef4444;">[ADMIN]</span></h2>
             <nav class="sidebar-menu" style="margin-top: 25px;">
-                <span class="nav-link active" id="btnAbaAlunos" onclick="alternarAba('alunos')">Gestão de Alunos</span>
-                <span class="nav-link" id="btnAbaProfessores" onclick="alternarAba('professores')">Gestão da Equipe Gestora</span>
-                <span class="nav-link" id="btnAbaFotos" onclick="alternarAba('fotos')">Análise de Fotos</span>
+                <button class="nav-link active" data-a="aba" data-v="alunos">Gestão de Alunos</button>
+                <button class="nav-link" data-a="aba" data-v="professores">Gestão da Equipe Gestora</button>
+                <button class="nav-link" data-a="aba" data-v="fotos">Análise de Fotos</button>
             </nav>
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
-                ☀️ / 🌙 Tema
-            </button>
-            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
+            <button data-a="tema" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">☀️ / 🌙 Tema</button>
+            <button data-a="sair" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
         </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
     <main class="dashboard-content">
         <header class="dashboard-header">
-            <h1 id="tituloPainelPrincipal">Painel de Controle Administrativo</h1>
+            <h1 id="tituloPainel">Painel de Controle Administrativo</h1>
             <p id="subtituloHeader">Cadastre e gerencie as contas dos estudantes.</p>
         </header>
 
-        <!-- SEÇÃO: GESTÃO DE ALUNOS -->
-        <div id="secaoAlunos">
-            <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
-                <div class="login-card" style="max-width: 650px; width: 100%; padding: 25px; box-sizing: border-box;">
-                    <h3 id="tituloFormAluno" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Novo Aluno</h3>
-                    <form id="cadastrarAlunoForm" class="login-form">
-                        <input type="hidden" id="editAlunoIndex" value="">
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Nome Completo</label>
-                                <input type="text" id="novoNome" placeholder="Ex: Ana Souza" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Acesso</label>
-                                <input type="text" id="novoEmail" placeholder="00001105939352sp" pattern=".*\d+sp$" required>
-                            </div>
+        <!-- ALUNOS -->
+        <div class="secao" id="s-alunos">
+            <section style="display: flex; justify-content: center; width: 100%;">
+                <div class="login-card card-form">
+                    <h3 id="titulo-a" class="titulo-form">Cadastrar Novo Aluno</h3>
+                    <form id="formAluno" class="login-form">
+                        <input type="hidden" id="editAlunoId">
+                        <div class="linha">
+                            <div class="input-group ig"><label for="a_nome">Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Ana Souza" required></div>
+                            <div class="input-group ig"><label for="a_email">Acesso</label><input type="text" id="a_email" placeholder="00001105939352sp" pattern=".*\d+sp$" required></div>
                         </div>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Matrícula</label>
-                                <input type="text" id="novaMatricula" placeholder="00001105939352sp@aluno.educacao.sp.gov.br" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Senha Provisória</label>
-                                <input type="password" id="novaSenha" placeholder="••••••••" required>
-                            </div>
-                        </div>
-                        
-                        <h4 style="color: #60a5fa; margin-top: 20px; margin-bottom: 10px; font-size: 14px;">Informações Pessoais e Familiares</h4>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div class="input-group" style="flex: 1; min-width: 150px;">
-                                <label>CPF</label>
-                                <input type="text" id="alunoCpf" placeholder="Ex: 12345678901" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 150px;">
-                                <label>Data de Nascimento</label>
-                                <input type="date" id="alunoNascimento" required>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 2; min-width: 250px;">
-                                <label>Endereço (Rua, Número, Apto / Bloco)</label>
-                                <input type="text" id="alunoEndereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 150px;">
-                                <label>Turma / Sala</label>
-                                <select id="alunoSala" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
-                                    <option value="">Selecione...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Nome da Mãe</label>
-                                <input type="text" id="alunoMae" placeholder="Nome completo da mãe">
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Nome do Pai / Responsável</label>
-                                <input type="text" id="alunoPai" placeholder="Nome completo do pai ou responsável">
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Telefone de Contato</label>
-                                <input type="text" id="alunoTelefone" placeholder="(11) 98888-7777" required>
-                            </div>
+                        <div class="linha">
+                            <div class="input-group ig"><label for="a_matricula">Matrícula</label><input type="text" id="a_matricula" placeholder="00001105939352sp@aluno.educacao.sp.gov.br" required></div>
+                            <div class="input-group ig"><label for="a_senha">Senha Provisória</label><input type="password" id="a_senha" placeholder="••••••••" minlength="6" maxlength="25" autocomplete="new-password" required></div>
                         </div>
 
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" id="btnSalvarAluno" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Aluno</button>
-                            <button type="button" id="btnCancelarAluno" onclick="cancelarEdicaoAluno()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        <h4 class="subtitulo-form">Informações Pessoais e Familiares</h4>
+                        <div class="linha">
+                            <div class="input-group ig" style="min-width: 150px;"><label for="a_cpf">CPF</label><input type="text" id="a_cpf" placeholder="Ex: 12345678901" maxlength="11" data-num required></div>
+                            <div class="input-group ig" style="min-width: 150px;"><label for="a_nascimento">Data de Nascimento</label><input type="date" id="a_nascimento" required></div>
+                        </div>
+                        <div class="linha">
+                            <div class="input-group" style="flex: 2; min-width: 250px;"><label for="a_endereco">Endereço (Rua, Número, Apto / Bloco)</label><input type="text" id="a_endereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" required></div>
+                            <div class="input-group ig" style="min-width: 150px;"><label for="a_sala">Turma / Sala</label><select id="a_sala" class="campo-select" required><option value="">Selecione...</option></select></div>
+                        </div>
+                        <div class="linha">
+                            <div class="input-group ig"><label for="a_mae">Nome da Mãe</label><input type="text" id="a_mae" placeholder="Nome completo da mãe"></div>
+                            <div class="input-group ig"><label for="a_pai">Nome do Pai / Responsável</label><input type="text" id="a_pai" placeholder="Nome completo do pai ou responsável"></div>
+                        </div>
+                        <div class="linha">
+                            <div class="input-group ig"><label for="a_telefone">Telefone de Contato</label><input type="text" id="a_telefone" placeholder="(11) 98888-7777" required></div>
+                        </div>
+                        <div class="botoes-form">
+                            <button type="submit" id="btnSalvar-a" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Aluno</button>
+                            <button type="button" id="btnCancelar-a" data-a="cancelar-a" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
                         </div>
                     </form>
                 </div>
             </section>
-
             <section style="margin-top: 40px;">
                 <h3 style="margin-bottom: 15px;">Alunos Registrados</h3>
-                <div style="overflow-x: auto; width: 100%;">
-                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
-                        <thead>
-                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
-                                <th style="padding: 12px 15px;">Nome</th>
-                                <th style="padding: 12px 15px;">CPF</th>
-                                <th style="padding: 12px 15px;">Turma</th>
-                                <th style="padding: 12px 15px; text-align: center;">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaAlunos"></tbody>
-                    </table>
-                </div>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Nome</th><th>CPF</th><th>Turma</th><th style="text-align: center;">Ações</th></tr></thead>
+                    <tbody id="tabelaAlunos"></tbody>
+                </table></div>
             </section>
         </div>
 
-        <!-- SEÇÃO: GESTÃO DA EQUIPE GESTORA -->
-        <div id="secaoProfessores" style="display: none;">
-            <section class="admin-section" style="display: flex; justify-content: center; width: 100%;">
-                <div class="login-card" style="max-width: 650px; width: 100%; padding: 25px; box-sizing: border-box;">
-                    <h3 id="tituloFormProf" style="margin-bottom: 15px; color: #60a5fa;">Cadastrar Equipe Gestora</h3>
-                    <form id="cadastrarProfessorForm" class="login-form">
-                        <input type="hidden" id="editProfIndex" value="">
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Nome Completo</label>
-                                <input type="text" id="profNome" placeholder="Ex: Carlos Alberto" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>CPF</label>
-                                <input type="text" id="profCpf" placeholder="Ex: 42141918663" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')" required>
-                            </div>
+        <!-- EQUIPE GESTORA -->
+        <div class="secao" id="s-professores" style="display: none;">
+            <section style="display: flex; justify-content: center; width: 100%;">
+                <div class="login-card card-form">
+                    <h3 id="titulo-p" class="titulo-form">Cadastrar Equipe Gestora</h3>
+                    <form id="formProf" class="login-form">
+                        <input type="hidden" id="editProfId">
+                        <div class="linha">
+                            <div class="input-group ig"><label for="p_nome">Nome Completo</label><input type="text" id="p_nome" placeholder="Ex: Carlos Alberto" required></div>
+                            <div class="input-group ig"><label for="p_cpf">CPF</label><input type="text" id="p_cpf" placeholder="Ex: 42141918663" maxlength="11" data-num required></div>
                         </div>
-
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Senha de Acesso</label>
-                                <input type="password" id="profSenha" placeholder="••••••••" maxlength="25" required>
-                            </div>
-                            <div class="input-group" style="flex: 1; min-width: 200px;">
-                                <label>Tipo de Permissão</label>
-                                <select id="profPermissao" onchange="atualizarTipoPermissao()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required>
-                                    <option value="professores">Acesso dos Professores</option>
-                                    <option value="gestao">Acesso da Gestão</option>
-                                    <option value="diretores">Acesso dos Diretores</option>
-                                </select>
-                            </div>
+                        <div class="linha">
+                            <div class="input-group ig"><label for="p_senha">Senha de Acesso</label><input type="password" id="p_senha" placeholder="••••••••" minlength="6" maxlength="25" autocomplete="new-password" required></div>
+                            <div class="input-group ig"><label for="p_permissao">Tipo de Permissão</label><select id="p_permissao" class="campo-select" required></select></div>
                         </div>
-
-                        <!-- QUADRO 1 E 2 DE MATÉRIAS (Ficam inativos se for Gestão ou Diretores) -->
-                        <div id="containerQuadrosMatérias">
+                        <div id="quadros">
                             <div class="input-group" style="margin-top: 15px;">
-                                <label style="display: block; font-weight: 600; color: #60a5fa; margin-bottom: 5px;">Quadro 1: Selecionar Matérias do Professor</label>
+                                <label class="rotulo-quadro" for="selectMateria">Quadro 1: Selecionar Matérias do Professor</label>
                                 <div class="atribuicao-box">
                                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                                        <select id="selectMatériaPreDefinida" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-main);">
-                                            <option value="">Escolher Matéria...</option>
-                                            <option value="Matemática">Matemática</option>
-                                            <option value="Português">Português</option>
-                                            <option value="História">História</option>
-                                            <option value="Geografia">Geografia</option>
-                                            <option value="Ciências">Ciências</option>
-                                            <option value="Biologia">Biologia</option>
-                                            <option value="Física">Física</option>
-                                            <option value="Química">Química</option>
-                                            <option value="Inglês">Inglês</option>
-                                            <option value="Educação Física">Educação Física</option>
-                                            <option value="Sistemas">Desenvolvimento de Sistemas</option>
-                                        </select>
-                                        <button type="button" onclick="adicionarMateriaProfessor()" style="background: #2563eb; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Adicionar</button>
+                                        <select id="selectMateria" style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-main);"><option value="">Escolher Matéria...</option></select>
+                                        <button type="button" data-a="add-mat" style="background: #2563eb; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Adicionar</button>
                                     </div>
-                                    <div id="listaMateriasSelecionadas" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                                    <div id="listaMaterias" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                                 </div>
                             </div>
-
                             <div class="input-group" style="margin-top: 15px;">
-                                <label style="display: block; font-weight: 600; color: #60a5fa; margin-bottom: 5px;">Quadro 2: Atribuir Matérias às Salas</label>
-                                <div class="atribuicao-box" id="quadroAtribuicaoSalas">
-                                    <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>
-                                </div>
+                                <label class="rotulo-quadro">Quadro 2: Atribuir Matérias às Salas</label>
+                                <div class="atribuicao-box" id="quadroSalas"></div>
                             </div>
                         </div>
-
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" id="btnSalvarProf" class="btn-central" style="max-width: 240px; width: 100%;">Cadastrar Professores</button>
-                            <button type="button" id="btnCancelarProf" onclick="cancelarEdicaoProf()" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        <div class="botoes-form">
+                            <button type="submit" id="btnSalvar-p" class="btn-central" style="max-width: 240px; width: 100%;">Cadastrar Professores</button>
+                            <button type="button" id="btnCancelar-p" data-a="cancelar-p" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
                         </div>
                     </form>
                 </div>
             </section>
-
             <section style="margin-top: 40px;">
-                <h3 style="margin-bottom: 15px;">Equipe Registrada (<span id="contadorTotalEquipe">0</span>)</h3>
-                <div style="overflow-x: auto; width: 100%;">
-                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
-                        <thead>
-                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
-                                <th style="padding: 12px 15px;">Nome</th>
-                                <th style="padding: 12px 15px;">CPF</th>
-                                <th style="padding: 12px 15px;">Permissão</th>
-                                <th style="padding: 12px 15px;">Atribuições</th>
-                                <th style="padding: 12px 15px; text-align: center;">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaProfessores"></tbody>
-                    </table>
-                </div>
+                <h3 style="margin-bottom: 15px;">Equipe Registrada (<span id="contadorEquipe">0</span>)</h3>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Nome</th><th>CPF</th><th>Permissão</th><th>Atribuições</th><th style="text-align: center;">Ações</th></tr></thead>
+                    <tbody id="tabelaProf"></tbody>
+                </table></div>
             </section>
         </div>
 
-        <!-- SEÇÃO: ANÁLISE DE FOTOS DE PERFIL -->
-        <div id="secaoFotos" style="display: none;">
+        <!-- FOTOS -->
+        <div class="secao" id="s-fotos" style="display: none;">
             <section style="margin-top: 20px;">
-                <h3 style="margin-bottom: 15px; color: #60a5fa;">Pedidos de Alteração de Foto de Perfil</h3>
-                <div style="overflow-x: auto; width: 100%;">
-                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
-                        <thead>
-                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
-                                <th style="padding: 12px 15px;">Aluno</th>
-                                <th style="padding: 12px 15px;">Turma / RA</th>
-                                <th style="padding: 12px 15px;">Foto Solicitada</th>
-                                <th style="padding: 12px 15px; text-align: center;">Aprovação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaAnaliseFotos">
-                            <tr><td colspan="4" style="padding: 15px; color: var(--text-muted);">Nenhum pedido de foto pendente.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h3 class="titulo-form">Pedidos de Alteração de Foto de Perfil</h3>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Aluno</th><th>Turma / RA</th><th>Foto Solicitada</th><th style="text-align: center;">Aprovação</th></tr></thead>
+                    <tbody id="tabelaFotos"></tbody>
+                </table></div>
             </section>
         </div>
     </main>
 
-    <script>
+    <script type="module">
+        // ===== Utilitários =====
+        const $ = id => document.getElementById(id);
+        const gravar = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const opcao = (v, t = v) => `<option value="${esc(v)}">${esc(t)}</option>`;
+
+        // lê uma lista com segurança e garante que todo registro tenha id único
+        const ler = k => {
+            let l; try { l = JSON.parse(localStorage.getItem(k)); } catch {}
+            l = Array.isArray(l) ? l : [];
+            if (l.some(x => !x.id)) { l = l.map(x => x.id ? x : { ...x, id: novoId() }); gravar(k, l); }
+            return l;
+        };
+
+        const duplicado = (lista, campo, valor, id) => lista.some(x => x.id !== id && String(x[campo] || '').toLowerCase() === valor.toLowerCase());
+        const ehImagem = s => typeof s === 'string' && s.length < 2e6 && /^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(s);
+        const cpfValido = c => /^\d{11}$/.test(c) && !/^(\d)\1{10}$/.test(c) && [9, 10].every(n => {
+            let s = 0; for (let i = 0; i < n; i++) s += c[i] * (n + 1 - i);
+            return (s * 10 % 11) % 10 === +c[n];
+        });
+        const botoes = (x, id) => `
+            <button class="btn-acao btn-editar" data-a="ed-${x}" data-v="${esc(id)}">Editar</button>
+            <button class="btn-acao btn-excluir" data-a="ex-${x}" data-v="${esc(id)}">🗑️</button>`;
+
+        // ===== Sessão e tema =====
+        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
+        if (usuario?.cargo !== 'admin') { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        document.body.style.visibility = '';
         if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        }
+        // ===== Dados fixos =====
+        const PERM = { professores: ['Acesso dos Professores', 'Cadastrar Professores'], gestao: ['Acesso da Gestão', 'Cadastrar Gestão'], diretores: ['Acesso dos Diretores', 'Cadastrar Diretores'] };
+        const TIT = { a: ['Cadastrar Novo Aluno', 'Editar Aluno'], p: ['Cadastrar Equipe Gestora', 'Editar Equipe Gestora'] };
+        const ABAS = {
+            alunos: ['Painel de Controle Administrativo', 'Cadastre e gerencie as contas dos estudantes.'],
+            professores: ['Gestão da Equipe Gestora', 'Cadastre e gerencie contas de professores, gestores e diretores.'],
+            fotos: ['Análise de Fotos de Perfil', 'Aprove ou recuse as solicitações de alteração de foto.']
+        };
+        const CAMPOS = ['nome', 'email', 'matricula', 'senha', 'cpf', 'nascimento', 'endereco', 'sala', 'mae', 'pai', 'telefone']; // "email" = campo Acesso
+        const ROTULO = { cpf: 'CPF', email: 'Acesso', matricula: 'Matrícula' };
+        const turmas = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
+            Array.from({ length: fim - ini + 1 }, (_, i) => ['A', 'B', 'C'].map(t => `${ini + i}º Ano ${t} (${n})`)).flat());
+        const materias = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Biologia', 'Física', 'Química', 'Inglês', 'Educação Física'];
 
-        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if (!usuario || usuario.cargo !== 'admin') window.location.href = 'login.html';
+        let atrib = {}; // matéria -> lista de salas
 
-        const listaTurmas = [];
-        for (let ano = 5; ano <= 9; ano++) {
-            ['A', 'B', 'C'].forEach(t => listaTurmas.push(`${ano}º Ano ${t} (Fundamental)`));
-        }
-        for (let ano = 1; ano <= 3; ano++) {
-            ['A', 'B', 'C'].forEach(t => listaTurmas.push(`${ano}º Ano ${t} (Ensino Médio)`));
-        }
-
-        function inicializarTurmas() {
-            const selectAluno = document.getElementById('alunoSala');
-            listaTurmas.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.textContent = t;
-                selectAluno.appendChild(opt);
-            });
-        }
-        inicializarTurmas();
-
-        let materiasSelecionadas = [];
-        let atribuicoesPorMateria = {};
-
-        function adicionarMateriaProfessor() {
-            const mat = document.getElementById('selectMatériaPreDefinida').value;
-            if (!mat) { alert('Selecione uma matéria.'); return; }
-            if (materiasSelecionadas.includes(mat)) { alert('Esta matéria já foi adicionada.'); return; }
-
-            materiasSelecionadas.push(mat);
-            if (!atribuicoesPorMateria[mat]) atribuicoesPorMateria[mat] = [];
-            atualizarQuadrosAtribuicao();
-        }
-
-        function removerMateriaProfessor(mat) {
-            materiasSelecionadas = materiasSelecionadas.filter(m => m !== mat);
-            delete atribuicoesPorMateria[mat];
-            atualizarQuadrosAtribuicao();
-        }
-
-        function atualizarQuadrosAtribuicao() {
-            const containerMat = document.getElementById('listaMateriasSelecionadas');
-            containerMat.innerHTML = '';
-            if (materiasSelecionadas.length === 0) {
-                containerMat.innerHTML = '<span style="font-size:13px; color:var(--text-muted);">Nenhuma matéria selecionada.</span>';
-            } else {
-                materiasSelecionadas.forEach(m => {
-                    containerMat.innerHTML += `<span style="background: rgba(37,99,235,0.3); color:#60a5fa; padding:4px 10px; border-radius:6px; font-size:13px; display:flex; align-items:center; gap:8px;">${m} <button type="button" onclick="removerMateriaProfessor('${m}')" style="background:none; border:none; color:#ef4444; font-weight:bold; cursor:pointer;">×</button></span>`;
-                });
-            }
-
-            const containerQuadro2 = document.getElementById('quadroAtribuicaoSalas');
-            containerQuadro2.innerHTML = '';
-            if (materiasSelecionadas.length === 0) {
-                containerQuadro2.innerHTML = '<p style="font-size: 13px; color: var(--text-muted); margin: 0;">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>';
-                return;
-            }
-
-            materiasSelecionadas.forEach(mat => {
-                let htmlSalas = `<div style="margin-bottom: 12px; border-bottom: 1px solid var(--border-main); padding-bottom: 10px;">
-                    <div style="font-weight:600; color:#60a5fa; margin-bottom:6px;">Atribuir salas para a matéria: <u>${mat}</u></div>
-                    <div class="checkbox-grid">`;
-                
-                listaTurmas.forEach(t => {
-                    const isChecked = atribuicoesPorMateria[mat] && atribuicoesPorMateria[mat].includes(t) ? 'checked' : '';
-                    htmlSalas += `<label class="checkbox-item"><input type="checkbox" value="${t}" ${isChecked} onchange="atualizarSalasMateria('${mat}', this)"> ${t}</label>`;
-                });
-                htmlSalas += `</div></div>`;
-                containerQuadro2.innerHTML += htmlSalas;
-            });
-        }
-
-        function atualizarSalasMateria(mat, checkbox) {
-            if (!atribuicoesPorMateria[mat]) atribuicoesPorMateria[mat] = [];
-            if (checkbox.checked) {
-                if (!atribuicoesPorMateria[mat].includes(checkbox.value)) atribuicoesPorMateria[mat].push(checkbox.value);
-            } else {
-                atribuicoesPorMateria[mat] = atribuicoesPorMateria[mat].filter(s => s !== checkbox.value);
-            }
-        }
-
-        function atualizarTipoPermissao() {
-            const perm = document.getElementById('profPermissao').value;
-            const btn = document.getElementById('btnSalvarProf');
-            const containerQuadros = document.getElementById('containerQuadrosMatérias');
-
-            if (perm === 'professores') {
-                btn.innerText = 'Cadastrar Professores';
-                containerQuadros.classList.remove('desativado');
-            } else if (perm === 'gestao') {
-                btn.innerText = 'Cadastrar Gestão';
-                containerQuadros.classList.add('desativado');
-                materiasSelecionadas = [];
-                atribuicoesPorMateria = {};
-                atualizarQuadrosAtribuicao();
-            } else if (perm === 'diretores') {
-                btn.innerText = 'Cadastrar Diretores';
-                containerQuadros.classList.add('desativado');
-                materiasSelecionadas = [];
-                atribuicoesPorMateria = {};
-                atualizarQuadrosAtribuicao();
-            }
-        }
-
+        // ===== Interface =====
         function alternarAba(aba) {
-            document.getElementById('secaoAlunos').style.display = aba === 'alunos' ? 'block' : 'none';
-            document.getElementById('secaoProfessores').style.display = aba === 'professores' ? 'block' : 'none';
-            document.getElementById('secaoFotos').style.display = aba === 'fotos' ? 'block' : 'none';
-
-            document.getElementById('btnAbaAlunos').classList.toggle('active', aba === 'alunos');
-            document.getElementById('btnAbaProfessores').classList.toggle('active', aba === 'professores');
-            document.getElementById('btnAbaFotos').classList.toggle('active', aba === 'fotos');
-
-            if (aba === 'alunos') {
-                document.getElementById('tituloPainelPrincipal').innerText = 'Painel de Controle Administrativo';
-                document.getElementById('subtituloHeader').innerText = 'Cadastre e gerencie as contas dos estudantes.';
-            } else if (aba === 'professores') {
-                document.getElementById('tituloPainelPrincipal').innerText = 'Gestão da Equipe Gestora';
-                document.getElementById('subtituloHeader').innerText = 'Cadastre e gerencie contas de professores, gestores e diretores.';
-            } else {
-                document.getElementById('tituloPainelPrincipal').innerText = 'Análise de Fotos de Perfil';
-                document.getElementById('subtituloHeader').innerText = 'Aprove ou recuse as solicitações de alteração de foto.';
-                carregarTabelaAnaliseFotos();
-            }
+            document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + aba ? 'block' : 'none');
+            document.querySelectorAll('[data-a=aba]').forEach(b => b.classList.toggle('active', b.dataset.v === aba));
+            [$('tituloPainel').innerText, $('subtituloHeader').innerText] = ABAS[aba];
+            if (aba === 'fotos') renderFotos();
         }
 
-        function carregarTabelaAlunos() {
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const tbody = document.getElementById('tabelaAlunos');
-            tbody.innerHTML = '';
-            alunos.forEach((a, index) => {
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid var(--border-main);">
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.nome}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.cpf || '-'}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.sala || 'Não atribuída'}</td>
-                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn-acao btn-editar" onclick="prepararEdicaoAluno(${index})">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="excluirAluno(${index})">🗑️</button>
-                        </td>
-                    </tr>`;
-            });
+        function modo(x, edit) {
+            $('titulo-' + x).innerText = TIT[x][+edit];
+            $('btnCancelar-' + x).style.display = edit ? 'inline-block' : 'none';
+            $(x + '_senha').required = !edit;
+            $(x + '_senha').placeholder = edit ? 'Em branco = manter a atual' : '••••••••';
+            $('btnSalvar-' + x).innerText = edit ? 'Salvar Alterações' : x === 'a' ? 'Cadastrar Aluno' : PERM[$('p_permissao').value][1];
         }
 
-        function excluirAluno(index) {
-            if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                let alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-                alunos.splice(index, 1);
-                localStorage.setItem('alunosDB', JSON.stringify(alunos));
-                carregarTabelaAlunos();
-            }
+        function excluir(chave, id) {
+            if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+            const alvo = ler(chave).find(x => x.id === id);
+            if (!alvo) return;
+            gravar(chave, ler(chave).filter(x => x.id !== id));
+            if (chave === 'alunosDB') {
+                gravar('pedidosFotoDB', ler('pedidosFotoDB').filter(p => ![alvo.email, alvo.matricula].includes(p.alunoEmail)));
+                renderAlunos();
+            } else renderProf();
         }
 
-        function carregarTabelaProfessores() {
-            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
-            document.getElementById('contadorTotalEquipe').innerText = professores.length;
-            const tbody = document.getElementById('tabelaProfessores');
-            tbody.innerHTML = '';
-            professores.forEach((p, index) => {
-                let atribsStr = '';
-                if (p.atribuicoes && p.atribuicoes.length > 0) {
-                    atribsStr = p.atribuicoes.map(at => `<strong>${at.materia}:</strong> ${at.salas.join(', ')}`).join('<br>');
-                } else if (p.materia) {
-                    atribsStr = `<strong>${p.materia}:</strong> ${p.salas ? p.salas.join(', ') : 'Nenhuma'}`;
-                } else {
-                    atribsStr = 'Nenhuma matéria (Cargo Administrativo/Direção)';
-                }
+        // ===== Alunos =====
+        const renderAlunos = () => $('tabelaAlunos').innerHTML = ler('alunosDB').map(a => `
+            <tr><td>${esc(a.nome)}</td><td>${esc(a.cpf || '-')}</td><td>${esc(a.sala || 'Não atribuída')}</td><td class="acoes">${botoes('a', a.id)}</td></tr>`).join('');
 
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid var(--border-main);">
-                        <td style="padding: 12px 15px; color: var(--text-main);">${p.nome}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${p.cpf}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${p.permissao}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main); font-size: 12px;">${atribsStr}</td>
-                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn-acao btn-editar" onclick="prepararEdicaoProf(${index})">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="excluirProfessor(${index})">🗑️</button>
-                        </td>
-                    </tr>`;
-            });
+        function editarAluno(id) {
+            const a = ler('alunosDB').find(x => x.id === id);
+            CAMPOS.forEach(k => $('a_' + k).value = a[k] || '');
+            $('a_senha').value = ''; // nunca exibe a senha atual
+            $('editAlunoId').value = id;
+            modo('a', true);
+            scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function excluirProfessor(index) {
-            if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                let professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
-                professores.splice(index, 1);
-                localStorage.setItem('professoresDB', JSON.stringify(professores));
-                carregarTabelaProfessores();
-            }
-        }
+        function cancelarAluno() { $('formAluno').reset(); $('editAlunoId').value = ''; modo('a', false); }
 
-        function carregarTabelaAnaliseFotos() {
-            const pedidos = JSON.parse(localStorage.getItem('pedidosFotoDB')) || [];
-            const tbody = document.getElementById('tabelaAnaliseFotos');
-            tbody.innerHTML = '';
-
-            if (pedidos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="padding: 15px; color: var(--text-muted);">Nenhum pedido de foto pendente.</td></tr>';
-                return;
-            }
-
-            pedidos.forEach((ped, index) => {
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid var(--border-main);">
-                        <td style="padding: 12px 15px; color: var(--text-main);">${ped.nomeAluno}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${ped.sala}</td>
-                        <td style="padding: 12px 15px;"><img src="${ped.novaFoto}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"></td>
-                        <td style="padding: 12px 15px; text-align: center; display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn-acao btn-aprovar" onclick="avaliarFoto(${index}, true)">Aprovar</button>
-                            <button class="btn-acao btn-rejeitar" onclick="avaliarFoto(${index}, false)">Recusar</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        function avaliarFoto(index, aprovado) {
-            let pedidos = JSON.parse(localStorage.getItem('pedidosFotoDB')) || [];
-            let alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const pedido = pedidos[index];
-
-            if (aprovado) {
-                const alunoIdx = alunos.findIndex(a => a.email === pedido.alunoEmail || a.matricula === pedido.alunoEmail);
-                if (alunoIdx !== -1) {
-                    alunos[alunoIdx].fotoPerfil = pedido.novaFoto;
-                    localStorage.setItem('alunosDB', JSON.stringify(alunos));
-                }
-            }
-
-            pedidos.splice(index, 1);
-            localStorage.setItem('pedidosFotoDB', JSON.stringify(pedidos));
-            carregarTabelaAnaliseFotos();
-            alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
-        }
-
-        function prepararEdicaoAluno(index) {
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const aluno = alunos[index];
-            document.getElementById('editAlunoIndex').value = index;
-            document.getElementById('novoNome').value = aluno.nome;
-            document.getElementById('novoEmail').value = aluno.email;
-            document.getElementById('novaMatricula').value = aluno.matricula;
-            document.getElementById('novaSenha').value = aluno.senha;
-            document.getElementById('alunoCpf').value = aluno.cpf || '';
-            document.getElementById('alunoNascimento').value = aluno.nascimento || '';
-            document.getElementById('alunoEndereco').value = aluno.endereco || '';
-            document.getElementById('alunoSala').value = aluno.sala || '';
-            document.getElementById('alunoMae').value = aluno.mae || '';
-            document.getElementById('alunoPai').value = aluno.pai || '';
-            document.getElementById('alunoTelefone').value = aluno.telefone || '';
-            document.getElementById('tituloFormAluno').innerText = 'Editar Aluno';
-            document.getElementById('btnSalvarAluno').innerText = 'Salvar Alterações';
-            document.getElementById('btnCancelarAluno').style.display = 'inline-block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelarEdicaoAluno() {
-            document.getElementById('cadastrarAlunoForm').reset();
-            document.getElementById('editAlunoIndex').value = '';
-            document.getElementById('tituloFormAluno').innerText = 'Cadastrar Novo Aluno';
-            document.getElementById('btnSalvarAluno').innerText = 'Cadastrar Aluno';
-            document.getElementById('btnCancelarAluno').style.display = 'none';
-        }
-
-        function prepararEdicaoProf(index) {
-            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
-            const prof = professores[index];
-            document.getElementById('editProfIndex').value = index;
-            document.getElementById('profNome').value = prof.nome;
-            document.getElementById('profCpf').value = prof.cpf;
-            document.getElementById('profSenha').value = prof.senha;
-            document.getElementById('profPermissao').value = prof.permissao;
-            atualizarTipoPermissao();
-
-            materiasSelecionadas = [];
-            atribuicoesPorMateria = {};
-
-            if (prof.atribuicoes && prof.atribuicoes.length > 0) {
-                prof.atribuicoes.forEach(at => {
-                    materiasSelecionadas.push(at.materia);
-                    atribuicoesPorMateria[at.materia] = at.salas || [];
-                });
-            } else if (prof.materia) {
-                materiasSelecionadas.push(prof.materia);
-                atribuicoesPorMateria[prof.materia] = prof.salas || [];
-            }
-
-            atualizarQuadrosAtribuicao();
-
-            document.getElementById('tituloFormProf').innerText = 'Editar Equipe Gestora';
-            document.getElementById('btnSalvarProf').innerText = 'Salvar Alterações';
-            document.getElementById('btnCancelarProf').style.display = 'inline-block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelarEdicaoProf() {
-            document.getElementById('cadastrarProfessorForm').reset();
-            document.getElementById('editProfIndex').value = '';
-            materiasSelecionadas = [];
-            atribuicoesPorMateria = {};
-            atualizarQuadrosAtribuicao();
-            document.getElementById('tituloFormProf').innerText = 'Cadastrar Equipe Gestora';
-            atualizarTipoPermissao();
-            document.getElementById('btnCancelarProf').style.display = 'none';
-        }
-
-        // CADASTRO DE ALUNO COM VALIDAÇÃO DE CPF DUPLICADO
-        document.getElementById('cadastrarAlunoForm').addEventListener('submit', function(e) {
+        $('formAluno').addEventListener('submit', e => {
             e.preventDefault();
-            const editIndex = document.getElementById('editAlunoIndex').value;
-            const cpfInput = document.getElementById('alunoCpf').value.trim();
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
+            const id = $('editAlunoId').value, alunos = ler('alunosDB');
+            const v = Object.fromEntries(CAMPOS.map(k => [k, $('a_' + k).value.trim()]));
+            const atual = alunos.find(a => a.id === id);
 
-            // Valida se o CPF já existe em outro aluno cadastrado
-            const cpfDuplicado = alunos.some((a, i) => a.cpf === cpfInput && i.toString() !== editIndex.toString());
-            if (cpfDuplicado) {
-                alert('Erro: Já existe um aluno cadastrado com este CPF!');
-                return;
-            }
+            if (!cpfValido(v.cpf)) return alert('Erro: CPF inválido!');
+            const dup = Object.keys(ROTULO).find(k => duplicado(alunos, k, v[k], id));
+            if (dup) return alert(`Erro: Já existe um aluno cadastrado com este ${ROTULO[dup]}!`);
+            if (!atual && !v.senha) return alert('Erro: informe a senha.');
 
-            const novoAluno = {
-                nome: document.getElementById('novoNome').value,
-                email: document.getElementById('novoEmail').value,
-                matricula: document.getElementById('novaMatricula').value,
-                senha: document.getElementById('novaSenha').value,
-                cpf: cpfInput,
-                nascimento: document.getElementById('alunoNascimento').value,
-                endereco: document.getElementById('alunoEndereco').value,
-                sala: document.getElementById('alunoSala').value,
-                mae: document.getElementById('alunoMae').value,
-                pai: document.getElementById('alunoPai').value,
-                telefone: document.getElementById('alunoTelefone').value,
-                fotoPerfil: editIndex !== "" ? alunos[editIndex].fotoPerfil : null
-            };
+            const aluno = atual || { id: novoId(), fotoPerfil: null };
+            Object.assign(aluno, v, { senha: v.senha || aluno.senha });
+            if (!atual) alunos.push(aluno);
 
-            if (editIndex !== "") alunos[editIndex] = novoAluno;
-            else alunos.push(novoAluno);
-
-            localStorage.setItem('alunosDB', JSON.stringify(alunos));
-            cancelarEdicaoAluno();
-            carregarTabelaAlunos();
+            gravar('alunosDB', alunos);
+            cancelarAluno();
+            renderAlunos();
             alert('Aluno salvo com sucesso!');
         });
 
-        // CADASTRO DE EQUIPE COM VALIDAÇÃO DE CPF DUPLICADO
-        document.getElementById('cadastrarProfessorForm').addEventListener('submit', function(e) {
+        // ===== Equipe gestora =====
+        const renderProf = () => {
+            const lista = ler('professoresDB');
+            $('contadorEquipe').innerText = lista.length;
+            $('tabelaProf').innerHTML = lista.map(p => `
+                <tr><td>${esc(p.nome)}</td><td>${esc(p.cpf)}</td><td>${esc(p.permissao)}</td>
+                <td style="font-size: 12px;">${p.atribuicoes.map(a => `<strong>${esc(a.materia)}:</strong> ${esc(a.salas.join(', '))}`).join('<br>') || 'Nenhuma matéria (Cargo Administrativo/Direção)'}</td>
+                <td class="acoes">${botoes('p', p.id)}</td></tr>`).join('');
+        };
+
+        function renderQuadros() {
+            const mats = Object.keys(atrib);
+            $('listaMaterias').innerHTML = mats.map(m => `<span class="tag-materia">${esc(m)} <button type="button" data-a="rm-mat" data-v="${esc(m)}">×</button></span>`).join('')
+                || '<span class="aviso">Nenhuma matéria selecionada.</span>';
+            $('quadroSalas').innerHTML = mats.map(m => `
+                <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border-main); padding-bottom: 10px;">
+                    <div style="font-weight: 600; color: #60a5fa; margin-bottom: 6px;">Atribuir salas para a matéria: <u>${esc(m)}</u></div>
+                    <div class="checkbox-grid">${turmas.map(t => `<label class="checkbox-item"><input type="checkbox" data-mat="${esc(m)}" value="${t}" ${atrib[m].includes(t) ? 'checked' : ''}> ${t}</label>`).join('')}</div>
+                </div>`).join('') || '<p class="aviso">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>';
+        }
+
+        function tipoPerm() {
+            const prof = $('p_permissao').value === 'professores';
+            $('quadros').classList.toggle('desativado', !prof);
+            if (!prof) { atrib = {}; renderQuadros(); }
+            modo('p', !!$('editProfId').value);
+        }
+
+        function editarProf(id) {
+            const p = ler('professoresDB').find(x => x.id === id);
+            $('editProfId').value = id;
+            $('p_nome').value = p.nome; $('p_cpf').value = p.cpf; $('p_senha').value = ''; $('p_permissao').value = p.permissao;
+            tipoPerm();
+            atrib = Object.fromEntries(p.atribuicoes.map(a => [a.materia, [...a.salas]]));
+            renderQuadros();
+            scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarProf() {
+            $('formProf').reset(); $('editProfId').value = ''; atrib = {};
+            renderQuadros(); tipoPerm();
+        }
+
+        $('formProf').addEventListener('submit', e => {
             e.preventDefault();
-            const editIndex = document.getElementById('editProfIndex').value;
-            const permissao = document.getElementById('profPermissao').value;
-            const cpfInput = document.getElementById('profCpf').value.trim();
-            const professores = JSON.parse(localStorage.getItem('professoresDB')) || [];
+            const id = $('editProfId').value, permissao = $('p_permissao').value, cpf = $('p_cpf').value.trim();
+            const senha = $('p_senha').value.trim(), profs = ler('professoresDB'), mats = Object.keys(atrib);
+            const atual = profs.find(p => p.id === id);
 
-            // Valida se o CPF já existe em outro membro da equipe cadastrado
-            const cpfDuplicado = professores.some((p, i) => p.cpf === cpfInput && i.toString() !== editIndex.toString());
-            if (cpfDuplicado) {
-                alert('Erro: Já existe um membro da equipe cadastrado com este CPF!');
-                return;
-            }
-
-            if (permissao === 'professores' && materiasSelecionadas.length === 0) {
-                alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
-                return;
-            }
-
-            let atribuicoesFinal = [];
+            if (!cpfValido(cpf)) return alert('Erro: CPF inválido!');
+            if (duplicado(profs, 'cpf', cpf, id)) return alert('Erro: Já existe um membro da equipe cadastrado com este CPF!');
+            if (!atual && !senha) return alert('Erro: informe a senha.');
             if (permissao === 'professores') {
-                materiasSelecionadas.forEach(mat => {
-                    atribuicoesFinal.push({
-                        materia: mat,
-                        salas: atribuicoesPorMateria[mat] || []
-                    });
-                });
+                if (!mats.length) return alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
+                if (mats.some(m => !atrib[m].length)) return alert('Erro: Atribua pelo menos uma sala a cada matéria.');
             }
 
-            const novoProf = {
-                nome: document.getElementById('profNome').value.trim(),
-                cpf: cpfInput,
-                senha: document.getElementById('profSenha').value.trim(),
-                permissao: permissao,
-                atribuicoes: atribuicoesFinal
-            };
+            const prof = atual || { id: novoId() };
+            Object.assign(prof, {
+                nome: $('p_nome').value.trim(), cpf, permissao, senha: senha || prof.senha,
+                atribuicoes: permissao === 'professores' ? mats.map(m => ({ materia: m, salas: atrib[m] })) : []
+            });
+            if (!atual) profs.push(prof);
 
-            if (editIndex !== "") professores[editIndex] = novoProf;
-            else professores.push(novoProf);
-
-            localStorage.setItem('professoresDB', JSON.stringify(professores));
-            cancelarEdicaoProf();
-            carregarTabelaProfessores();
+            gravar('professoresDB', profs);
+            cancelarProf();
+            renderProf();
             alert('Membro da equipe salvo com sucesso!');
         });
 
-        function logout() {
-            localStorage.removeItem('usuarioLogado');
-            window.location.href = 'login.html';
+        $('quadroSalas').addEventListener('change', e => {
+            const m = e.target.dataset.mat;
+            if (!m) return;
+            const salas = new Set(atrib[m]);
+            e.target.checked ? salas.add(e.target.value) : salas.delete(e.target.value);
+            atrib[m] = [...salas];
+        });
+
+        // ===== Fotos =====
+        const renderFotos = () => {
+            const pedidos = ler('pedidosFotoDB');
+            $('tabelaFotos').innerHTML = pedidos.map(p => `
+                <tr><td>${esc(p.nomeAluno)}</td><td>${esc(p.sala)}</td>
+                <td>${ehImagem(p.novaFoto) ? `<img src="${esc(p.novaFoto)}" alt="Foto solicitada" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : 'Imagem inválida'}</td>
+                <td class="acoes">
+                    <button class="btn-acao btn-aprovar" data-a="foto-ok" data-v="${esc(p.id)}">Aprovar</button>
+                    <button class="btn-acao btn-rejeitar" data-a="foto-no" data-v="${esc(p.id)}">Recusar</button>
+                </td></tr>`).join('') || '<tr><td colspan="4" class="vazio">Nenhum pedido de foto pendente.</td></tr>';
+        };
+
+        function avaliarFoto(id, aprovado) {
+            const pedidos = ler('pedidosFotoDB'), p = pedidos.find(x => x.id === id);
+            if (!p) return;
+            if (aprovado) {
+                if (!ehImagem(p.novaFoto)) return alert('Erro: a imagem enviada é inválida.');
+                const alunos = ler('alunosDB');
+                const aluno = alunos.find(a => a.email === p.alunoEmail || a.matricula === p.alunoEmail);
+                if (aluno) { aluno.fotoPerfil = p.novaFoto; gravar('alunosDB', alunos); }
+            }
+            gravar('pedidosFotoDB', pedidos.filter(x => x.id !== id));
+            renderFotos();
+            alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
         }
 
-        carregarTabelaAlunos();
-        carregarTabelaProfessores();
+        // ===== Eventos (um único ouvinte de clique, sem onclick inline) =====
+        const acoes = {
+            aba: alternarAba,
+            tema: () => { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); },
+            sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
+            'ed-a': editarAluno, 'ex-a': id => excluir('alunosDB', id), 'cancelar-a': cancelarAluno,
+            'ed-p': editarProf, 'ex-p': id => excluir('professoresDB', id), 'cancelar-p': cancelarProf,
+            'add-mat': () => {
+                const m = $('selectMateria').value;
+                if (!m) return alert('Selecione uma matéria.');
+                if (atrib[m]) return alert('Esta matéria já foi adicionada.');
+                atrib[m] = []; renderQuadros();
+            },
+            'rm-mat': m => { delete atrib[m]; renderQuadros(); },
+            'foto-ok': id => avaliarFoto(id, true), 'foto-no': id => avaliarFoto(id, false)
+        };
+        document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (b) acoes[b.dataset.a]?.(b.dataset.v); });
+        document.addEventListener('input', e => { if (e.target.matches('[data-num]')) e.target.value = e.target.value.replace(/\D/g, ''); });
+        $('p_permissao').addEventListener('change', tipoPerm);
+
+        // ===== Início =====
+        $('a_sala').insertAdjacentHTML('beforeend', turmas.map(t => opcao(t)).join(''));
+        $('selectMateria').insertAdjacentHTML('beforeend', materias.map(m => opcao(m)).join('') + opcao('Sistemas', 'Desenvolvimento de Sistemas'));
+        $('p_permissao').innerHTML = Object.entries(PERM).map(([k, [t]]) => opcao(k, t)).join('');
+        $('a_nascimento').max = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+
+        // converte professores do formato antigo (materia + salas) para o novo (atribuicoes), uma única vez
+        gravar('professoresDB', ler('professoresDB').map(p => ({
+            ...p, atribuicoes: p.atribuicoes?.length ? p.atribuicoes : p.materia ? [{ materia: p.materia, salas: p.salas || [] }] : []
+        })));
+
+        renderQuadros(); tipoPerm(); renderAlunos(); renderProf();
     </script>
 </body>
 </html>

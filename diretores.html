@@ -6,16 +6,36 @@
     <title>Schedule Digital - Painel da Direção</title>
     <link rel="stylesheet" href="design.css">
     <style>
-        .nav-btn-direcao { display: block; padding: 10px 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-weight: 500; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
+        .nav-btn-direcao { display: block; width: 100%; padding: 10px 15px; color: #94a3b8; background: none; border: 0; text-align: left; font: inherit; font-weight: 500; border-radius: 8px; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
         .nav-btn-direcao.active, .nav-btn-direcao:hover { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
+        .sidebar-footer { display: flex; flex-direction: column; gap: 10px; }
+        .btn-tema { background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer; }
+        .btn-sair { background: none; border: none; cursor: pointer; text-align: left; }
         .card-aviso { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; padding: 15px; margin-bottom: 15px; position: relative; }
+        .card-aviso h4 { color: #60a5fa; margin-bottom: 5px; }
         .acoes-aviso { float: right; display: flex; gap: 8px; }
-        .btn-excluir { background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        .btn-editar-aviso { background: #2563eb; color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
-        
-        /* Correção definitiva para o Select no Modo Escuro e Claro */
+        .aviso-meta { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .aviso-exp { font-size: 11px; color: #a855f7; display: block; margin-bottom: 10px; }
+        .aviso-texto { margin: 0; color: var(--text-main); font-size: 14px; }
+        .btn-excluir, .btn-editar-aviso { color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .btn-excluir { background: #ef4444; }
+        .btn-editar-aviso { background: #2563eb; }
+
         select, option { background-color: var(--bg-card, #0f172a) !important; color: var(--text-main, #f8fafc) !important; }
         body.light-mode select, body.light-mode option { background-color: #ffffff !important; color: #0f172a !important; }
+
+        .card-form { max-width: 600px; padding: 20px; margin-bottom: 25px; }
+        .titulo-card { color: #60a5fa; margin-bottom: 15px; }
+        .campo { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main); }
+        .mb15 { margin-bottom: 15px; }
+        .scroll-x { overflow-x: auto; width: 100%; }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px; }
+        .tabela thead tr { background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main); }
+        .tabela th, .tabela td { padding: 12px 15px; }
+        .tabela tbody tr { border-bottom: 1px solid var(--border-main); }
+        .tabela td { color: var(--text-main); }
+        .tabela td.vazio { padding: 15px; color: var(--text-muted); }
+        .vazio { color: var(--text-muted); }
 
         @media screen and (max-width: 768px) {
             body.dashboard-body { flex-direction: column !important; display: flex !important; }
@@ -24,7 +44,7 @@
         }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" style="visibility: hidden;">
 
     <aside class="sidebar">
         <div>
@@ -32,15 +52,13 @@
                 <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #a855f7;">[DIREÇÃO]</span></h2>
             </div>
             <nav class="sidebar-menu" style="margin-top: 25px;">
-                <span id="btnAbaTurmas" onclick="alternarAbaDiretor('turmas')" class="nav-btn-direcao active">Gestão de Turmas</span>
-                <span id="btnAbaMural" onclick="alternarAbaDiretor('mural')" class="nav-btn-direcao">Mural de Avisos</span>
+                <button type="button" class="nav-btn-direcao active" data-aba="turmas">Gestão de Turmas</button>
+                <button type="button" class="nav-btn-direcao" data-aba="mural">Mural de Avisos</button>
             </nav>
         </div>
-        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
-                ☀️ / 🌙 Tema
-            </button>
-            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
+        <div class="sidebar-footer">
+            <button type="button" data-acao="tema" class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
+            <button type="button" data-acao="sair" class="btn-logout btn-sair">Sair da Conta</button>
         </div>
     </aside>
 
@@ -50,60 +68,37 @@
             <p>Acompanhe turmas, alunos e publique comunicados gerais.</p>
         </header>
 
-        <div id="secaoTurmas">
-            <div class="login-card" style="max-width: 600px; padding: 20px; margin-bottom: 25px;">
-                <h3 style="color: #60a5fa; margin-bottom: 10px;">Selecionar Turma para Visualização</h3>
+        <div class="secao" id="s-turmas">
+            <div class="login-card card-form">
+                <h3 class="titulo-card" style="margin-bottom: 10px;">Selecionar Turma para Visualização</h3>
                 <div class="input-group">
-                    <label>Escolha a Turma:</label>
-                    <select id="selectTurmasDirecao" onchange="carregarAlunosDaTurma()" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);">
-                        <option value="">Selecione uma turma...</option>
-                    </select>
+                    <label for="selectTurmasDirecao">Escolha a Turma:</label>
+                    <select id="selectTurmasDirecao" class="campo"><option value="">Selecione uma turma...</option></select>
                 </div>
             </div>
-
             <section>
                 <h3 id="tituloTabelaTurma" style="margin-bottom: 15px;">Alunos da Turma</h3>
-                <div style="overflow-x: auto; width: 100%;">
-                    <table style="width: 100%; border-collapse: collapse; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 10px; text-align: left; min-width: 500px;">
-                        <thead>
-                            <tr style="background: rgba(37, 99, 235, 0.2); color: #60a5fa; border-bottom: 1px solid var(--border-main);">
-                                <th style="padding: 12px 15px;">Nome do Aluno</th>
-                                <th style="padding: 12px 15px;">Matrícula</th>
-                                <th style="padding: 12px 15px;">Acesso</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaAlunosDirecao">
-                            <tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Selecione uma turma para carregar os estudantes.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Nome do Aluno</th><th>Matrícula</th><th>Acesso</th></tr></thead>
+                    <tbody id="tabelaAlunosDirecao"></tbody>
+                </table></div>
             </section>
         </div>
 
-        <div id="secaoMural" style="display: none;">
-            <div class="login-card" style="max-width: 600px; padding: 20px; margin-bottom: 25px;">
-                <h3 id="tituloFormAviso" style="color: #60a5fa; margin-bottom: 15px;">Publicar Novo Aviso</h3>
+        <div class="secao" id="s-mural" style="display: none;">
+            <div class="login-card card-form">
+                <h3 id="tituloFormAviso" class="titulo-card">Publicar Novo Aviso</h3>
                 <form id="formAvisoDirecao" class="login-form">
-                    <input type="hidden" id="editAvisoIndex" value="">
-                    <div class="input-group" style="margin-bottom: 15px;">
-                        <label>Título do Aviso</label>
-                        <input type="text" id="avisoTitulo" placeholder="Ex: Não haverá aula nesta sexta-feira" required>
-                    </div>
-                    <div class="input-group" style="margin-bottom: 15px;">
-                        <label>Descrição do Comunicado</label>
-                        <textarea id="avisoConteudo" rows="4" placeholder="Detalhes do aviso..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-main);" required></textarea>
-                    </div>
-                    <div class="input-group" style="margin-bottom: 15px;">
-                        <label>Tempo de Exposição (Dias - Máximo 365)</label>
-                        <input type="number" id="avisoDias" min="1" max="365" value="7" required>
-                    </div>
+                    <input type="hidden" id="editAvisoId">
+                    <div class="input-group mb15"><label for="avisoTitulo">Título do Aviso</label><input type="text" id="avisoTitulo" placeholder="Ex: Não haverá aula nesta sexta-feira" required></div>
+                    <div class="input-group mb15"><label for="avisoConteudo">Descrição do Comunicado</label><textarea id="avisoConteudo" rows="4" placeholder="Detalhes do aviso..." class="campo" required></textarea></div>
+                    <div class="input-group mb15"><label for="avisoDias">Tempo de Exposição (Dias - Máximo 365)</label><input type="number" id="avisoDias" min="1" max="365" value="7" required></div>
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" id="btnSalvarAviso" class="btn-central" style="max-width: 200px;">Publicar Aviso</button>
-                        <button type="button" id="btnCancelarEdicaoAviso" onclick="cancelarEdicaoAviso()" class="btn-central" style="max-width: 120px; background: #64748b; display: none;">Cancelar</button>
+                        <button type="button" id="btnCancelarAviso" data-acao="cancelar" class="btn-central" style="max-width: 120px; background: #64748b; display: none;">Cancelar</button>
                     </div>
                 </form>
             </div>
-
             <section>
                 <h3 style="margin-bottom: 15px;">Avisos Publicados</h3>
                 <div id="containerAvisosDirecao"></div>
@@ -111,168 +106,148 @@
         </div>
     </main>
 
-    <script>
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    <script type="module">
+        // ===== Utilitários =====
+        const $ = id => document.getElementById(id);
+        const gravar = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        // lê uma lista com segurança e garante que todo registro tenha id único
+        const ler = k => {
+            let l; try { l = JSON.parse(localStorage.getItem(k)); } catch {}
+            l = Array.isArray(l) ? l : [];
+            if (l.some(x => !x.id)) { l = l.map(x => x.id ? x : { ...x, id: novoId() }); gravar(k, l); }
+            return l;
+        };
+
+        // ===== Sessão e tema =====
+        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
+        if (!usuario || !(usuario.permissao === 'diretores' || ['diretor', 'admin'].includes(usuario.cargo))) {
+            location.href = 'login.html';
+            throw new Error('Acesso negado');
+        }
+        document.body.style.visibility = '';
+        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
+        if (usuario.nome) $('boasVindasDiretor').textContent = `Painel de Controle - ${usuario.nome}`;
+
+        // ===== Turmas =====
+        const turmas = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
+            Array.from({ length: fim - ini + 1 }, (_, i) => ['A', 'B', 'C'].map(t => `${ini + i}º Ano ${t} (${n})`)).flat());
+        $('selectTurmasDirecao').insertAdjacentHTML('beforeend', turmas.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join(''));
+
+        function alternarAba(aba) {
+            document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + aba ? 'block' : 'none');
+            document.querySelectorAll('[data-aba]').forEach(b => b.classList.toggle('active', b.dataset.aba === aba));
         }
 
-        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if (!usuario || (usuario.permissao !== 'diretores' && usuario.cargo !== 'diretor' && usuario.cargo !== 'admin')) {
-            window.location.href = 'login.html';
-        } else if (usuario.nome) {
-            document.getElementById('boasVindasDiretor').innerText = `Painel de Controle - ${usuario.nome}`;
+        function renderAlunos() {
+            const sala = $('selectTurmasDirecao').value;
+            const linha = txt => `<tr><td colspan="3" class="vazio">${txt}</td></tr>`;
+            const corpo = $('tabelaAlunosDirecao');
+            if (!sala) return corpo.innerHTML = linha('Selecione uma turma para carregar os estudantes.');
+
+            $('tituloTabelaTurma').textContent = `Alunos Registrados no ${sala}`;
+            const alunos = ler('alunosDB').filter(a => a.sala === sala);
+            corpo.innerHTML = alunos.map(a => `<tr><td>${esc(a.nome)}</td><td>${esc(a.matricula)}</td><td>${esc(a.email)}</td></tr>`).join('')
+                || linha('Nenhum aluno cadastrado nesta turma ainda.');
         }
 
-        function alternarAbaDiretor(aba) {
-            document.getElementById('secaoTurmas').style.display = aba === 'turmas' ? 'block' : 'none';
-            document.getElementById('secaoMural').style.display = aba === 'mural' ? 'block' : 'none';
-            document.getElementById('btnAbaTurmas').classList.toggle('active', aba === 'turmas');
-            document.getElementById('btnAbaMural').classList.toggle('active', aba === 'mural');
+        // ===== Mural de avisos =====
+        // devolve só os avisos ainda válidos e remove os vencidos (grava apenas se algo mudou)
+        function avisosAtivos() {
+            const todos = ler('muralAvisosDB'), agora = Date.now();
+            const ativos = todos.filter(a => new Date(a.expiracao).getTime() > agora);
+            if (ativos.length !== todos.length) gravar('muralAvisosDB', ativos);
+            return ativos;
+        }
+        const diasRestantes = a => Math.max(1, Math.ceil((new Date(a.expiracao) - Date.now()) / 864e5));
+
+        const renderAvisos = () => $('containerAvisosDirecao').innerHTML = avisosAtivos().map(a => `
+            <div class="card-aviso">
+                <div class="acoes-aviso">
+                    <button type="button" class="btn-editar-aviso" data-acao="editar" data-v="${esc(a.id)}">Editar</button>
+                    <button type="button" class="btn-excluir" data-acao="excluir" data-v="${esc(a.id)}">Excluir</button>
+                </div>
+                <h4>${esc(a.titulo)}</h4>
+                <span class="aviso-meta">Publicado em: ${esc(a.data)}</span>
+                <span class="aviso-exp">⏱️ Expira em aproximadamente ${diasRestantes(a)} dia(s)</span>
+                <p class="aviso-texto">${esc(a.conteudo)}</p>
+            </div>`).join('') || '<p class="vazio">Nenhum aviso ativo no mural.</p>';
+
+        function modoForm(editando) {
+            $('tituloFormAviso').textContent = editando ? 'Editar Aviso' : 'Publicar Novo Aviso';
+            $('btnSalvarAviso').textContent = editando ? 'Salvar Alterações' : 'Publicar Aviso';
+            $('btnCancelarAviso').style.display = editando ? 'inline-block' : 'none';
         }
 
-        function popularTurmasSelect() {
-            const select = document.getElementById('selectTurmasDirecao');
-            select.innerHTML = '<option value="">Selecione uma turma...</option>';
-            for (let ano = 5; ano <= 9; ano++) {
-                ['A', 'B', 'C'].forEach(t => select.innerHTML += `<option value="${ano}º Ano ${t} (Fundamental)">${ano}º Ano ${t} (Fundamental)</option>`);
-            }
-            for (let ano = 1; ano <= 3; ano++) {
-                ['A', 'B', 'C'].forEach(t => select.innerHTML += `<option value="${ano}º Ano ${t} (Ensino Médio)">${ano}º Ano ${t} (Ensino Médio)</option>`);
-            }
+        function cancelarEdicao() {
+            $('formAvisoDirecao').reset();
+            $('editAvisoId').value = '';
+            modoForm(false);
         }
 
-        function carregarAlunosDaTurma() {
-            const turmaSel = document.getElementById('selectTurmasDirecao').value;
-            const tbody = document.getElementById('tabelaAlunosDirecao');
-            tbody.innerHTML = '';
-
-            if (!turmaSel) {
-                tbody.innerHTML = '<tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Selecione uma turma para carregar os estudantes.</td></tr>';
-                return;
-            }
-
-            document.getElementById('tituloTabelaTurma').innerText = `Alunos Registrados no ${turmaSel}`;
-            const alunos = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const alunosFiltrados = alunos.filter(a => a.sala === turmaSel);
-
-            if (alunosFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="padding: 15px; color: var(--text-muted);">Nenhum aluno cadastrado nesta turma ainda.</td></tr>';
-                return;
-            }
-
-            alunosFiltrados.forEach(a => {
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid var(--border-main);">
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.nome}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.matricula}</td>
-                        <td style="padding: 12px 15px; color: var(--text-main);">${a.email}</td>
-                    </tr>`;
-            });
+        function editarAviso(id) {
+            const a = avisosAtivos().find(x => x.id === id);
+            if (!a) return renderAvisos();
+            $('editAvisoId').value = id;
+            $('avisoTitulo').value = a.titulo;
+            $('avisoConteudo').value = a.conteudo;
+            $('avisoDias').value = Math.min(365, diasRestantes(a)); // mantém o prazo que falta, em vez de voltar para 7
+            modoForm(true);
+            scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function carregarAvisosDiretor() {
-            let avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-            const container = document.getElementById('containerAvisosDirecao');
-            container.innerHTML = '';
-
-            const agora = new Date().getTime();
-            avisos = avisos.filter(av => new Date(av.expiracao).getTime() > agora);
-            localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
-
-            if (avisos.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aviso ativo no mural.</p>';
-                return;
-            }
-
-            avisos.forEach((av, index) => {
-                const diffTime = Math.abs(new Date(av.expiracao) - new Date());
-                const diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                container.innerHTML += `
-                    <div class="card-aviso">
-                        <div class="acoes-aviso">
-                            <button class="btn-editar-aviso" onclick="prepararEdicaoAviso(${index})">Editar</button>
-                            <button class="btn-excluir" onclick="excluirAviso(${index})">Excluir</button>
-                        </div>
-                        <h4 style="color: #60a5fa; margin-bottom: 5px;">${av.titulo}</h4>
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Publicado em: ${av.data}</span>
-                        <span style="font-size: 11px; color: #a855f7; display: block; margin-bottom: 10px;">⏱️ Expira em aproximadamente ${diasRestantes} dia(s)</span>
-                        <p style="margin: 0; color: var(--text-main); font-size: 14px;">${av.conteudo}</p>
-                    </div>
-                `;
-            });
+        function excluirAviso(id) {
+            if (!confirm('Deseja realmente remover este aviso do mural?')) return;
+            gravar('muralAvisosDB', ler('muralAvisosDB').filter(a => a.id !== id));
+            if ($('editAvisoId').value === id) cancelarEdicao();
+            renderAvisos();
         }
 
-        document.getElementById('formAvisoDirecao').addEventListener('submit', function(e) {
+        $('formAvisoDirecao').addEventListener('submit', e => {
             e.preventDefault();
-            const editIndex = document.getElementById('editAvisoIndex').value;
-            let dias = parseInt(document.getElementById('avisoDias').value);
+            const id = $('editAvisoId').value, dias = Math.floor(+$('avisoDias').value);
+            if (dias > 365) return alert('O limite máximo de exposição é de 365 dias (1 ano).');
+            if (!(dias >= 1)) return alert('Informe um tempo de exposição de 1 a 365 dias.');
 
-            if (dias > 365) {
-                alert('O limite máximo de exposição é de 365 dias (1 ano).');
-                return;
-            }
+            const agora = new Date(), expiracao = new Date();
+            expiracao.setDate(expiracao.getDate() + dias);
 
-            const dataExpiracao = new Date();
-            dataExpiracao.setDate(dataExpiracao.getDate() + dias);
-
-            const avisoObj = {
-                titulo: document.getElementById('avisoTitulo').value.trim(),
-                conteudo: document.getElementById('avisoConteudo').value.trim(),
-                data: new Date().toLocaleDateString('pt-BR') + ' às ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
-                expiracao: dataExpiracao.toISOString()
+            const avisos = ler('muralAvisosDB'), i = avisos.findIndex(a => a.id === id);
+            const aviso = {
+                id: id || novoId(),
+                titulo: $('avisoTitulo').value.trim(),
+                conteudo: $('avisoConteudo').value.trim(),
+                // ao editar, mantém a data original de publicação
+                data: i >= 0 ? avisos[i].data : agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                expiracao: expiracao.toISOString()
             };
+            if (i >= 0) avisos[i] = aviso;
+            else avisos.unshift(aviso);
 
-            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-            if (editIndex !== "") avisos[editIndex] = avisoObj;
-            else avisos.unshift(avisoObj);
-
-            localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
-            cancelarEdicaoAviso();
-            carregarAvisosDiretor();
+            gravar('muralAvisosDB', avisos);
+            cancelarEdicao();
+            renderAvisos();
             alert('Aviso salvo com sucesso!');
         });
 
-        function prepararEdicaoAviso(index) {
-            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-            const av = avisos[index];
-            document.getElementById('editAvisoIndex').value = index;
-            document.getElementById('avisoTitulo').value = av.titulo;
-            document.getElementById('avisoConteudo').value = av.conteudo;
-            document.getElementById('avisoDias').value = 7;
-            document.getElementById('tituloFormAviso').innerText = 'Editar Aviso';
-            document.getElementById('btnSalvarAviso').innerText = 'Salvar Alterações';
-            document.getElementById('btnCancelarEdicaoAviso').style.display = 'inline-block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        // ===== Eventos (sem onclick inline) =====
+        const acoes = {
+            tema: () => { const claro = document.body.classList.toggle('light-mode'); try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {} },
+            sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
+            editar: editarAviso, excluir: excluirAviso, cancelar: cancelarEdicao
+        };
+        document.addEventListener('click', e => {
+            const el = e.target.closest('[data-aba], [data-acao]');
+            if (!el) return;
+            if (el.dataset.aba) alternarAba(el.dataset.aba);
+            else acoes[el.dataset.acao]?.(el.dataset.v);
+        });
+        $('selectTurmasDirecao').addEventListener('change', renderAlunos);
 
-        function cancelarEdicaoAviso() {
-            document.getElementById('formAvisoDirecao').reset();
-            document.getElementById('editAvisoIndex').value = '';
-            document.getElementById('tituloFormAviso').innerText = 'Publicar Novo Aviso';
-            document.getElementById('btnSalvarAviso').innerText = 'Publicar Aviso';
-            document.getElementById('btnCancelarEdicaoAviso').style.display = 'none';
-        }
-
-        function excluirAviso(index) {
-            if (confirm('Deseja realmente remover este aviso do mural?')) {
-                const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-                avisos.splice(index, 1);
-                localStorage.setItem('muralAvisosDB', JSON.stringify(avisos));
-                carregarAvisosDiretor();
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('usuarioLogado');
-            window.location.href = 'login.html';
-        }
-
-        popularTurmasSelect();
-        carregarAvisosDiretor();
+        // ===== Início =====
+        renderAlunos(); renderAvisos();
     </script>
 </body>
 </html>

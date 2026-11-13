@@ -3,59 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Conheça os desenvolvedores responsáveis pelo Schedule Digital.">
     <title>Criadores - Schedule Digital</title>
     <link rel="stylesheet" href="design.css">
+    <style>
+        .auth-group { display: flex; align-items: center; gap: 12px; }
+        .btn-tema { background: transparent; border: 1px solid var(--border-main); color: var(--text-main); cursor: pointer; }
+    </style>
 </head>
 <body>
+    <script>
+        // Aplica o tema salvo antes de a página aparecer (evita o "piscar") e trata o clique no botão de tema
+        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
+        document.addEventListener('click', e => {
+            if (!e.target.closest('[data-tema]')) return;
+            const claro = document.body.classList.toggle('light-mode');
+            try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {}
+        });
+    </script>
 
-    <!-- BARRA SUPERIOR (NAVBAR) -->
     <header class="navbar">
         <div class="brand-group">
             <a href="index.html" class="brand">Schedule Digital</a>
         </div>
-
-        <div class="auth-group" style="display: flex; align-items: center; gap: 12px;">
+        <nav class="auth-group" aria-label="Navegação principal">
             <a href="index.html" class="nav-btn">Voltar ao Início</a>
             <a href="login.html" class="btn-auth btn-login">Entrar</a>
-            
-            <!-- Botão de Tema adicionado na Navbar -->
-            <button id="toggleTheme" onclick="alternarTema()" class="nav-btn" style="background: transparent; border: 1px solid var(--border-main); color: var(--text-main); cursor: pointer;">
-                ☀️ / 🌙
-            </button>
-        </div>
+            <button type="button" data-tema class="nav-btn btn-tema" aria-label="Alternar tema claro/escuro">☀️ / 🌙</button>
+        </nav>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL - PORTFÓLIO DOS CRIADORES -->
     <main class="main-container">
         <h1 class="welcome-title">Nossa Equipe</h1>
         <p class="description">Conheça os desenvolvedores responsáveis por dar vida ao Schedule Digital.</p>
 
         <section class="team-grid">
-            <!-- PIETRO HENRIQUE -->
             <article class="team-card">
-                <div class="avatar-container">
-                    <img src="pietro.png" alt="Pietro Henrique" class="profile-img">
-                </div>
+                <div class="avatar-container"><img src="pietro.png" alt="Pietro Henrique" class="profile-img" loading="lazy"></div>
                 <h2>Pietro Henrique</h2>
                 <span class="role-badge">Arquitetura Web</span>
                 <p>Desenvolvedor responsável pela estrutura e marcação das páginas em HTML.</p>
             </article>
 
-            <!-- GABRIELA DIAS -->
             <article class="team-card">
-                <div class="avatar-container">
-                    <img src="gabriela.png" alt="Gabriela Dias" class="profile-img">
-                </div>
+                <div class="avatar-container"><img src="gabriela.png" alt="Gabriela Dias" class="profile-img" loading="lazy"></div>
                 <h2>Gabriela Dias</h2>
                 <span class="role-badge">UI/UX & Design</span>
                 <p>Desenvolvedora responsável pela identidade visual e estilização em CSS.</p>
             </article>
 
-            <!-- ANA CLARA -->
             <article class="team-card">
-                <div class="avatar-container">
-                    <img src="ana.png" alt="Ana Clara" class="profile-img">
-                </div>
+                <div class="avatar-container"><img src="ana.png" alt="Ana Clara" class="profile-img" loading="lazy"></div>
                 <h2>Ana Clara</h2>
                 <span class="role-badge">Engenharia de Software</span>
                 <p>Desenvolvedora responsável pela lógica e mecânicas dinâmicas em JavaScript.</p>
@@ -63,29 +61,8 @@
         </section>
     </main>
 
-    <!-- RODAPÉ -->
     <footer class="footer">
         <p>© 2026 <span class="schedule-brand">Schedule Digital</span>. Todos os direitos reservados.</p>
     </footer>
-
-    <!-- SCRIPT DE TEMA -->
-    <script>
-        // Aplica o tema salvo imediatamente ao carregar
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-        }
-
-        // Função para alternar entre claro e escuro
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            
-            if (document.body.classList.contains('light-mode')) {
-                localStorage.setItem('theme', 'light');
-            } else {
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-    </script>
-
 </body>
 </html>
