@@ -6,9 +6,17 @@
     <title>Schedule Digital - Painel do Professor</title>
     <link rel="stylesheet" href="design.css">
     <style>
-        .sidebar-btn-prof { display: block; padding: 10px 15px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-weight: 500; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
+        .sidebar-btn-prof { display: block; width: 100%; padding: 10px 15px; color: #94a3b8; background: none; border: 0; text-align: left; font: inherit; font-weight: 500; border-radius: 8px; margin-bottom: 5px; cursor: pointer; transition: 0.2s; }
         .sidebar-btn-prof.active, .sidebar-btn-prof:hover { background: rgba(37, 99, 235, 0.2); color: #60a5fa; font-weight: 600; }
+        .sidebar-footer { display: flex; flex-direction: column; gap: 10px; }
+        .btn-sair { background: none; border: none; cursor: pointer; text-align: left; }
         .card-aviso-prof { background: var(--bg-card); border-left: 4px solid #a855f7; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .card-aviso-prof h4 { color: #a855f7; margin-bottom: 5px; }
+        .aviso-data { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px; }
+        .aviso-texto { margin: 0; color: var(--text-main); font-size: 14px; }
+        .titulo-mural { margin-bottom: 5px; color: #a855f7; }
+        .nota { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; }
+        .vazio { color: var(--text-muted); }
 
         @media screen and (max-width: 768px) {
             body.dashboard-body { flex-direction: column !important; display: flex !important; }
@@ -17,40 +25,33 @@
         }
     </style>
 </head>
-<body class="dashboard-body">
+<body class="dashboard-body" style="visibility: hidden;">
+    <script src="botão_de_tema.js"></script>
 
-    <!-- ABA LATERAL PROFESSOR -->
     <aside class="sidebar">
         <div>
             <div class="sidebar-header">
                 <h2 class="sidebar-brand">Schedule <span style="font-size: 12px; color: #3b82f6;">[PROFESSOR]</span></h2>
             </div>
-            <div class="sidebar-collapse open" id="sidebarContent" style="display: flex; flex-direction: column;">
-                <nav class="sidebar-menu" style="margin-top: 20px;">
-                    <span id="btnProfPainel" onclick="alternarTelaProf('painel')" class="sidebar-btn-prof active">Painel Geral</span>
-                    <span id="btnProfMural" onclick="alternarTelaProf('mural')" class="sidebar-btn-prof">Mural de Avisos</span>
-                </nav>
-            </div>
+            <nav class="sidebar-menu" style="margin-top: 20px;">
+                <button type="button" class="sidebar-btn-prof active" data-tela="painel">Painel Geral</button>
+                <button type="button" class="sidebar-btn-prof" data-tela="mural">Mural de Avisos</button>
+            </nav>
         </div>
-
-        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button id="toggleTheme" onclick="alternarTema()" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">
-                ☀️ / 🌙 Tema
-            </button>
-            <button onclick="logout()" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
+        <div class="sidebar-footer">
+            <button type="button" data-tema class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
+            <button type="button" data-acao="sair" class="btn-logout btn-sair">Sair da Conta</button>
         </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
     <main class="dashboard-content">
         <header class="dashboard-header">
             <h1 id="boasVindasProf">Olá, Professor!</h1>
             <p id="materiaProfDisplay">Matéria: Carregando...</p>
         </header>
 
-        <!-- SEÇÃO 1: PAINEL GERAL -->
-        <div id="secaoProfPainel">
-            <section class="admin-section" style="margin-top: 20px;">
+        <div class="secao" id="s-painel">
+            <section style="margin-top: 20px;">
                 <div class="login-card" style="padding: 20px;">
                     <h3 style="color: #60a5fa; margin-bottom: 10px;">Acesso ao Sistema Docente</h3>
                     <p>Seu perfil foi identificado com sucesso. As ferramentas de gestão de turmas e lançamentos estarão disponíveis nesta área.</p>
@@ -58,67 +59,57 @@
             </section>
         </div>
 
-        <!-- SEÇÃO 2: MURAL DE AVISOS -->
-        <div id="secaoProfMural" style="display: none;">
-            <h3 style="margin-bottom: 5px; color: #a855f7;">Mural de Avisos da Direção</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Comunicados emitidos pela direção e coordenação pedagógica.</p>
-            <div id="containerMuralProf">
-                <!-- Preenchido via JS -->
-            </div>
+        <div class="secao" id="s-mural" style="display: none;">
+            <h3 class="titulo-mural">Mural de Avisos da Direção</h3>
+            <p class="nota">Comunicados emitidos pela direção e coordenação pedagógica.</p>
+            <div id="containerMuralProf"></div>
         </div>
     </main>
 
-    <script>
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    <script type="module">
+        // ===== Utilitários =====
+        const $ = id => document.getElementById(id);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const lerJSON = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
+        const lerLista = k => { const l = lerJSON(k); return Array.isArray(l) ? l : []; };
 
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        // ===== Sessão =====
+        const usuario = lerJSON('usuarioLogado');
+        if (!['professor', 'admin'].includes(usuario?.cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        document.body.style.visibility = '';
+
+        // ===== Cabeçalho =====
+        // As matérias vêm do cadastro: o formato atual usa "atribuicoes"; o antigo guardava só "materia"
+        const cadastro = lerLista('professoresDB').find(p => (usuario.id && p.id === usuario.id) || (usuario.cpf && p.cpf === usuario.cpf));
+        const materias = [...new Set([...(cadastro?.atribuicoes ?? []).map(a => a.materia), cadastro?.materia ?? usuario.materia].filter(Boolean))];
+
+        if (usuario.nome) $('boasVindasProf').textContent = `Olá, ${usuario.nome}!`;
+        $('materiaProfDisplay').textContent = `${materias.length > 1 ? 'Matérias lecionadas' : 'Matéria lecionada'}: ${materias.join(', ') || 'Não especificada'}`;
+
+        // ===== Mural (só avisos que ainda não expiraram) =====
+        const renderMural = () => $('containerMuralProf').innerHTML = lerLista('muralAvisosDB')
+            .filter(a => new Date(a.expiracao).getTime() > Date.now())
+            .map(a => `
+                <div class="card-aviso-prof"><h4>${esc(a.titulo)}</h4><span class="aviso-data">${esc(a.data)}</span>
+                <p class="aviso-texto">${esc(a.conteudo)}</p></div>`).join('')
+            || '<p class="vazio">Nenhum aviso publicado no mural.</p>';
+
+        // ===== Telas =====
+        function mostrar(tela) {
+            document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + tela ? 'block' : 'none');
+            document.querySelectorAll('[data-tela]').forEach(b => b.classList.toggle('active', b.dataset.tela === tela));
+            if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
         }
 
-        function alternarTelaProf(tela) {
-            document.getElementById('secaoProfPainel').style.display = tela === 'painel' ? 'block' : 'none';
-            document.getElementById('secaoProfMural').style.display = tela === 'mural' ? 'block' : 'none';
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
+        document.addEventListener('click', e => {
+            const el = e.target.closest('[data-tela], [data-acao]');
+            if (!el) return;
+            if (el.dataset.tela) return mostrar(el.dataset.tela);
+            if (el.dataset.acao === 'sair') { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; }
+        });
 
-            document.getElementById('btnProfPainel').classList.toggle('active', tela === 'painel');
-            document.getElementById('btnProfMural').classList.toggle('active', tela === 'mural');
-        }
-
-        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
-        if (!usuario || (usuario.cargo !== 'professor' && usuario.cargo !== 'admin')) {
-            window.location.href = 'login.html';
-        } else {
-            if (usuario.nome) document.getElementById('boasVindasProf').innerText = `Olá, ${usuario.nome}!`;
-            document.getElementById('materiaProfDisplay').innerText = `Matéria lecionada: ${usuario.materia || 'Não especificada'}`;
-        }
-
-        function carregarMuralProf() {
-            const avisos = JSON.parse(localStorage.getItem('muralAvisosDB')) || [];
-            const container = document.getElementById('containerMuralProf');
-            container.innerHTML = '';
-
-            if (avisos.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aviso publicado no mural.</p>';
-                return;
-            }
-
-            avisos.forEach(av => {
-                container.innerHTML += `
-                    <div class="card-aviso-prof">
-                        <h4 style="color: #a855f7; margin-bottom: 5px;">${av.titulo}</h4>
-                        <span style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px;">${av.data}</span>
-                        <p style="margin: 0; color: var(--text-main); font-size: 14px;">${av.conteudo}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function logout() {
-            localStorage.removeItem('usuarioLogado');
-            window.location.href = 'login.html';
-        }
-
-        carregarMuralProf();
+        renderMural();
     </script>
 </body>
 </html>

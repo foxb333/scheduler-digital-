@@ -47,6 +47,7 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
+    <script src="botão_de_tema.js"></script>
 
     <aside class="sidebar">
         <div>
@@ -55,10 +56,11 @@
                 <button class="nav-link active" data-a="aba" data-v="alunos">Gestão de Alunos</button>
                 <button class="nav-link" data-a="aba" data-v="professores">Gestão da Equipe Gestora</button>
                 <button class="nav-link" data-a="aba" data-v="fotos">Análise de Fotos</button>
+                <button class="nav-link" data-a="aba" data-v="estrutura">Estrutura Escolar</button>
             </nav>
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button data-a="tema" class="btn-logout" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); text-align: center; cursor: pointer;">☀️ / 🌙 Tema</button>
+            <button type="button" data-tema class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
             <button data-a="sair" class="btn-logout" style="background: none; border: none; cursor: pointer; text-align: left;">Sair da Conta</button>
         </div>
     </aside>
@@ -92,7 +94,7 @@
                         </div>
                         <div class="linha">
                             <div class="input-group" style="flex: 2; min-width: 250px;"><label for="a_endereco">Endereço (Rua, Número, Apto / Bloco)</label><input type="text" id="a_endereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" required></div>
-                            <div class="input-group ig" style="min-width: 150px;"><label for="a_sala">Turma / Sala</label><select id="a_sala" class="campo-select" required><option value="">Selecione...</option></select></div>
+                            <div class="input-group ig" style="min-width: 150px;"><label for="a_sala">Turma / Sala</label><select id="a_sala" class="campo-select" required></select></div>
                         </div>
                         <div class="linha">
                             <div class="input-group ig"><label for="a_mae">Nome da Mãe</label><input type="text" id="a_mae" placeholder="Nome completo da mãe"></div>
@@ -174,6 +176,82 @@
                 </table></div>
             </section>
         </div>
+
+        <!-- ESTRUTURA ESCOLAR -->
+        <div class="secao" id="s-estrutura" style="display: none;">
+            <section style="display: flex; justify-content: center; width: 100%;">
+                <div class="login-card card-form">
+                    <h3 id="titulo-s" class="titulo-form">Cadastrar Sala</h3>
+                    <form id="formSala" class="login-form">
+                        <input type="hidden" id="editSalaId">
+                        <div class="linha">
+                            <div class="input-group ig"><label for="s_nome">Sala</label><input type="text" id="s_nome" placeholder="Ex: 1º Ano B" maxlength="14" required></div>
+                            <div class="input-group ig"><label for="s_nivel">Nível</label><select id="s_nivel" class="campo-select" required></select></div>
+                        </div>
+                        <p class="aviso" style="margin-top: 10px;">Use o formato "1º Ano B". O sistema acrescenta o nível automaticamente (ex.: 1º Ano B (Ensino Médio)).</p>
+                        <div class="botoes-form">
+                            <button type="submit" id="btnSalvar-s" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Sala</button>
+                            <button type="button" id="btnCancelar-s" data-a="cancelar-s" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            <section style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">Salas Cadastradas</h3>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Sala</th><th>Nível</th><th>Alunos</th><th style="text-align: center;">Ações</th></tr></thead>
+                    <tbody id="tabelaSalas"></tbody>
+                </table></div>
+            </section>
+
+            <section style="display: flex; justify-content: center; width: 100%; margin-top: 40px;">
+                <div class="login-card card-form">
+                    <h3 id="titulo-m" class="titulo-form">Cadastrar Matéria</h3>
+                    <form id="formMateria" class="login-form">
+                        <input type="hidden" id="editMateriaId">
+                        <div class="input-group"><label for="m_nome">Nome da Matéria</label><input type="text" id="m_nome" placeholder="Ex: Matemática" maxlength="60" required></div>
+                        <div class="botoes-form">
+                            <button type="submit" id="btnSalvar-m" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Matéria</button>
+                            <button type="button" id="btnCancelar-m" data-a="cancelar-m" class="btn-central" style="max-width: 120px; width: 100%; background: #64748b; display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+            <section style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">Matérias Cadastradas</h3>
+                <div class="scroll-x"><table class="tabela">
+                    <thead><tr><th>Matéria</th><th>Professores</th><th style="text-align: center;">Ações</th></tr></thead>
+                    <tbody id="tabelaMaterias"></tbody>
+                </table></div>
+            </section>
+
+            <section style="display: flex; justify-content: center; width: 100%; margin-top: 40px;">
+                <div class="login-card card-form" id="cardTransf">
+                    <h3 class="titulo-form">Transferência de Alunos</h3>
+                    <p class="aviso">O aluno só pode ir para uma sala do mesmo ano e do mesmo nível. Limite de 35 alunos por sala.</p>
+                    <div class="linha">
+                        <div class="input-group ig"><label for="t_origem">Sala de origem</label><select id="t_origem" class="campo-select"></select></div>
+                        <div class="input-group ig"><label>Modo</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+                                <label class="checkbox-item"><input type="radio" name="t_modo" value="auto" checked> Automático (o sistema distribui)</label>
+                                <label class="checkbox-item"><input type="radio" name="t_modo" value="manual"> Manual (escolher alunos pelo nome)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="t_auto" style="margin-top: 15px;">
+                        <button type="button" data-a="t-sugerir" class="btn-central" style="max-width: 220px; width: 100%;">Ver sugestão</button>
+                        <div id="t_previa" style="margin-top: 15px;"></div>
+                    </div>
+                    <div id="t_manual" style="margin-top: 15px; display: none;">
+                        <div id="t_lista" class="checkbox-grid" style="max-height: 220px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));"></div>
+                        <div class="linha" style="margin-top: 10px; align-items: end;">
+                            <div class="input-group ig"><label for="t_destino">Sala de destino</label><select id="t_destino" class="campo-select"></select></div>
+                            <button type="button" data-a="t-manual" class="btn-central" style="max-width: 240px; width: 100%;">Transferir selecionados</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <script type="module">
@@ -202,11 +280,10 @@
             <button class="btn-acao btn-editar" data-a="ed-${x}" data-v="${esc(id)}">Editar</button>
             <button class="btn-acao btn-excluir" data-a="ex-${x}" data-v="${esc(id)}">🗑️</button>`;
 
-        // ===== Sessão e tema =====
+        // ===== Sessão =====
         let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
         if (usuario?.cargo !== 'admin') { location.href = 'login.html'; throw new Error('Acesso negado'); }
         document.body.style.visibility = '';
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
 
         // ===== Dados fixos =====
         const PERM = { professores: ['Acesso dos Professores', 'Cadastrar Professores'], gestao: ['Acesso da Gestão', 'Cadastrar Gestão'], diretores: ['Acesso dos Diretores', 'Cadastrar Diretores'] };
@@ -214,15 +291,103 @@
         const ABAS = {
             alunos: ['Painel de Controle Administrativo', 'Cadastre e gerencie as contas dos estudantes.'],
             professores: ['Gestão da Equipe Gestora', 'Cadastre e gerencie contas de professores, gestores e diretores.'],
-            fotos: ['Análise de Fotos de Perfil', 'Aprove ou recuse as solicitações de alteração de foto.']
+            fotos: ['Análise de Fotos de Perfil', 'Aprove ou recuse as solicitações de alteração de foto.'],
+            estrutura: ['Estrutura Escolar', 'Cadastre as salas e as matérias que aparecem nos cadastros de alunos e professores.']
         };
         const CAMPOS = ['nome', 'email', 'matricula', 'senha', 'cpf', 'nascimento', 'endereco', 'sala', 'mae', 'pai', 'telefone']; // "email" = campo Acesso
         const ROTULO = { cpf: 'CPF', email: 'Acesso', matricula: 'Matrícula' };
-        const turmas = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
+        // Listas de partida: usadas só na primeira vez, para criar salasDB e materiasDB. Depois quem manda é o admin.
+        const turmasPadrao = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
             Array.from({ length: fim - ini + 1 }, (_, i) => ['A', 'B', 'C'].map(t => `${ini + i}º Ano ${t} (${n})`)).flat());
-        const materias = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Biologia', 'Física', 'Química', 'Inglês', 'Educação Física'];
+        const materiasPadrao = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Biologia', 'Física', 'Química', 'Inglês', 'Educação Física', 'Desenvolvimento de Sistemas'];
+        const LIMITE = 35, NIVEIS = ['Fundamental', 'Ensino Médio'];
+        const PADRAO_SALA = /^(\d{1,2}º Ano [A-Z]) \((Fundamental|Ensino Médio)\)$/;
 
         let atrib = {}; // matéria -> lista de salas
+        let plano = null; // sugestão da transferência automática, aguardando confirmação
+
+        // ===== Estrutura: salas e matérias =====
+        const nomeCompleto = s => `${s.nome} (${s.nivel})`;
+        const serieDe = s => `${s.nivel}|${s.nome.slice(0, -2)}`; // "Ensino Médio|1º Ano"
+        const porNome = (a, b) => a.nome.localeCompare(b.nome, 'pt-BR');
+        const ordenarSalas = l => [...l].sort((a, b) => NIVEIS.indexOf(a.nivel) - NIVEIS.indexOf(b.nivel) || parseInt(a.nome) - parseInt(b.nome) || a.nome.localeCompare(b.nome));
+        const salasOrdenadas = () => ordenarSalas(ler('salasDB'));
+        const contar = () => ler('alunosDB').reduce((m, a) => (m[a.sala] = (m[a.sala] || 0) + 1, m), {});
+        const alunosDaSala = nome => ler('alunosDB').filter(a => a.sala === nome);
+        const salasMesmaSerie = origem => {
+            const o = salasOrdenadas().find(s => nomeCompleto(s) === origem);
+            return o ? salasOrdenadas().filter(s => serieDe(s) === serieDe(o) && nomeCompleto(s) !== origem) : [];
+        };
+        const profsDaMateria = m => ler('professoresDB').filter(p => p.atribuicoes.some(a => a.materia === m));
+
+        // cria a próxima sala do ano (ex.: 3º Ano D) quando todas estão lotadas
+        function criarSalaAuto(chave) {
+            const [nivel, serie] = chave.split('|');
+            const usadas = ler('salasDB').filter(s => serieDe(s) === chave).map(s => s.nome.slice(-1));
+            const letra = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').find(l => !usadas.includes(l));
+            if (!letra) return null;
+            const nova = { id: novoId(), nome: `${serie} ${letra}`, nivel };
+            gravar('salasDB', [...ler('salasDB'), nova]);
+            return nova;
+        }
+
+        function montarSelectSala(atual = '') {
+            const cont = contar(), salas = salasOrdenadas();
+            const op = salas.map(s => {
+                const nome = nomeCompleto(s), n = cont[nome] || 0, cheia = n >= LIMITE && nome !== atual;
+                return `<option value="${esc(nome)}"${cheia ? ' disabled' : ''}>${esc(nome)} — ${n}/${LIMITE}${cheia ? ' (lotada)' : ''}</option>`;
+            }).join('');
+            const novas = [...new Set(salas.map(serieDe))]
+                .filter(k => salas.filter(s => serieDe(s) === k).every(s => (cont[nomeCompleto(s)] || 0) >= LIMITE))
+                .map(k => { const [nivel, serie] = k.split('|'); return opcao('__nova__|' + k, `➕ Criar nova sala do ${serie} (${nivel}) — todas lotadas`); }).join('');
+            $('a_sala').innerHTML = '<option value="">Selecione...</option>' + op + novas;
+            if (!atual) return;
+            if (![...$('a_sala').options].some(o => o.value === atual)) $('a_sala').insertAdjacentHTML('beforeend', opcao(atual, atual + ' (sala antiga)'));
+            $('a_sala').value = atual;
+        }
+
+        const montarSelectMateria = () => $('selectMateria').innerHTML = '<option value="">Escolher Matéria...</option>' + ler('materiasDB').map(m => opcao(m.nome)).join('');
+
+        const renderSalas = () => {
+            const cont = contar();
+            $('tabelaSalas').innerHTML = salasOrdenadas().map(s => `
+                <tr><td>${esc(s.nome)}</td><td>${esc(s.nivel)}</td><td>${cont[nomeCompleto(s)] || 0}/${LIMITE}</td><td class="acoes">${botoes('s', s.id)}</td></tr>`).join('')
+                || '<tr><td colspan="4" class="vazio">Nenhuma sala cadastrada.</td></tr>';
+        };
+
+        const renderMaterias = () => $('tabelaMaterias').innerHTML = ler('materiasDB').map(m => `
+            <tr><td>${esc(m.nome)}</td><td>${profsDaMateria(m.nome).length}</td><td class="acoes">${botoes('m', m.id)}</td></tr>`).join('')
+            || '<tr><td colspan="3" class="vazio">Nenhuma matéria cadastrada.</td></tr>';
+
+        function renderTransf() {
+            const cont = contar(), salas = salasOrdenadas(), atual = $('t_origem').value;
+            $('t_origem').innerHTML = '<option value="">Selecione a sala...</option>' + salas.map(s => opcao(nomeCompleto(s), `${nomeCompleto(s)} — ${cont[nomeCompleto(s)] || 0} aluno(s)`)).join('');
+            if (salas.some(s => nomeCompleto(s) === atual)) $('t_origem').value = atual;
+            plano = null;
+            $('t_previa').innerHTML = '';
+            const origem = $('t_origem').value;
+            $('t_lista').innerHTML = (origem ? alunosDaSala(origem).sort(porNome) : []).map(a => `<label class="checkbox-item"><input type="checkbox" value="${esc(a.id)}"> ${esc(a.nome)}</label>`).join('')
+                || '<span class="aviso">Escolha uma sala de origem que tenha alunos.</span>';
+            $('t_destino').innerHTML = '<option value="">Sala de destino...</option>' + (origem ? salasMesmaSerie(origem) : []).map(s => {
+                const vagas = LIMITE - (cont[nomeCompleto(s)] || 0);
+                return `<option value="${esc(nomeCompleto(s))}"${vagas <= 0 ? ' disabled' : ''}>${esc(nomeCompleto(s))} — ${Math.max(vagas, 0)} vaga(s)</option>`;
+            }).join('');
+        }
+
+        function atualizarEstrutura() {
+            renderSalas(); renderMaterias(); renderTransf();
+            montarSelectSala($('editAlunoId').value ? $('a_sala').value : '');
+            montarSelectMateria(); renderQuadros(); renderAlunos(); renderProf();
+        }
+
+        function mover(ids, destino) {
+            const conj = new Set(ids), alunos = ler('alunosDB');
+            alunos.forEach(a => { if (conj.has(a.id)) a.sala = destino; });
+            gravar('alunosDB', alunos);
+            const pedidos = ler('pedidosFotoDB');
+            pedidos.forEach(p => { if (conj.has(p.alunoId)) p.sala = destino; });
+            gravar('pedidosFotoDB', pedidos);
+        }
 
         // ===== Interface =====
         function alternarAba(aba) {
@@ -230,6 +395,7 @@
             document.querySelectorAll('[data-a=aba]').forEach(b => b.classList.toggle('active', b.dataset.v === aba));
             [$('tituloPainel').innerText, $('subtituloHeader').innerText] = ABAS[aba];
             if (aba === 'fotos') renderFotos();
+            if (aba === 'estrutura') atualizarEstrutura();
         }
 
         function modo(x, edit) {
@@ -257,6 +423,7 @@
 
         function editarAluno(id) {
             const a = ler('alunosDB').find(x => x.id === id);
+            montarSelectSala(a.sala);
             CAMPOS.forEach(k => $('a_' + k).value = a[k] || '');
             $('a_senha').value = ''; // nunca exibe a senha atual
             $('editAlunoId').value = id;
@@ -264,7 +431,7 @@
             scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function cancelarAluno() { $('formAluno').reset(); $('editAlunoId').value = ''; modo('a', false); }
+        function cancelarAluno() { $('formAluno').reset(); $('editAlunoId').value = ''; montarSelectSala(); modo('a', false); }
 
         $('formAluno').addEventListener('submit', e => {
             e.preventDefault();
@@ -277,6 +444,17 @@
             if (dup) return alert(`Erro: Já existe um aluno cadastrado com este ${ROTULO[dup]}!`);
             if (!atual && !v.senha) return alert('Erro: informe a senha.');
 
+            // sala: respeita o limite e cria a próxima sala do ano quando todas estão lotadas
+            let aviso = '';
+            if (v.sala.startsWith('__nova__|')) {
+                const nova = criarSalaAuto(v.sala.slice(9));
+                if (!nova) return alert('Erro: não é possível criar mais salas para este ano.');
+                v.sala = nomeCompleto(nova);
+                aviso = `\nComo todas as salas estavam lotadas, foi criada a sala ${v.sala}.`;
+            } else if (v.sala !== atual?.sala && (contar()[v.sala] || 0) >= LIMITE) {
+                return alert(`Erro: a sala ${v.sala} já está com ${LIMITE} alunos.`);
+            }
+
             const aluno = atual || { id: novoId(), fotoPerfil: null };
             Object.assign(aluno, v, { senha: v.senha || aluno.senha });
             if (!atual) alunos.push(aluno);
@@ -284,7 +462,7 @@
             gravar('alunosDB', alunos);
             cancelarAluno();
             renderAlunos();
-            alert('Aluno salvo com sucesso!');
+            alert('Aluno salvo com sucesso!' + aviso);
         });
 
         // ===== Equipe gestora =====
@@ -304,7 +482,7 @@
             $('quadroSalas').innerHTML = mats.map(m => `
                 <div style="margin-bottom: 12px; border-bottom: 1px solid var(--border-main); padding-bottom: 10px;">
                     <div style="font-weight: 600; color: #60a5fa; margin-bottom: 6px;">Atribuir salas para a matéria: <u>${esc(m)}</u></div>
-                    <div class="checkbox-grid">${turmas.map(t => `<label class="checkbox-item"><input type="checkbox" data-mat="${esc(m)}" value="${t}" ${atrib[m].includes(t) ? 'checked' : ''}> ${t}</label>`).join('')}</div>
+                    <div class="checkbox-grid">${salasOrdenadas().map(nomeCompleto).map(t => `<label class="checkbox-item"><input type="checkbox" data-mat="${esc(m)}" value="${esc(t)}" ${atrib[m].includes(t) ? 'checked' : ''}> ${esc(t)}</label>`).join('')}</div>
                 </div>`).join('') || '<p class="aviso">Adicione matérias no Quadro 1 para poder distribuí-las por sala aqui.</p>';
         }
 
@@ -383,7 +561,7 @@
             if (aprovado) {
                 if (!ehImagem(p.novaFoto)) return alert('Erro: a imagem enviada é inválida.');
                 const alunos = ler('alunosDB');
-                const aluno = alunos.find(a => a.email === p.alunoEmail || a.matricula === p.alunoEmail);
+                const aluno = alunos.find(a => (p.alunoId && a.id === p.alunoId) || a.email === p.alunoEmail || a.matricula === p.alunoEmail);
                 if (aluno) { aluno.fotoPerfil = p.novaFoto; gravar('alunosDB', alunos); }
             }
             gravar('pedidosFotoDB', pedidos.filter(x => x.id !== id));
@@ -391,10 +569,149 @@
             alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
         }
 
-        // ===== Eventos (um único ouvinte de clique, sem onclick inline) =====
+        // ===== Estrutura: salas =====
+        const modoEstrutura = (x, edit, rotulo) => {
+            $('titulo-' + x).innerText = (edit ? 'Editar ' : 'Cadastrar ') + rotulo;
+            $('btnSalvar-' + x).innerText = edit ? 'Salvar Alterações' : 'Cadastrar ' + rotulo;
+            $('btnCancelar-' + x).style.display = edit ? 'inline-block' : 'none';
+        };
+
+        function cancelarSala() { $('formSala').reset(); $('editSalaId').value = ''; modoEstrutura('s', false, 'Sala'); }
+
+        function editarSala(id) {
+            const s = ler('salasDB').find(x => x.id === id);
+            $('editSalaId').value = id; $('s_nome').value = s.nome; $('s_nivel').value = s.nivel;
+            modoEstrutura('s', true, 'Sala');
+            scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        $('formSala').addEventListener('submit', e => {
+            e.preventDefault();
+            const id = $('editSalaId').value, nivel = $('s_nivel').value, salas = ler('salasDB');
+            const m = $('s_nome').value.trim().match(/^(\d{1,2})\s*[º°o]?\s*(?:ano\s*)?([a-z])$/i);
+            if (!m) return alert('Erro: use o formato "1º Ano B" (número do ano e uma letra).');
+            const nova = { id: id || novoId(), nome: `${m[1]}º Ano ${m[2].toUpperCase()}`, nivel };
+            if (salas.some(s => s.id !== id && nomeCompleto(s) === nomeCompleto(nova))) return alert('Erro: esta sala já está cadastrada.');
+
+            const velha = salas.find(s => s.id === id);
+            if (velha && nomeCompleto(velha) !== nomeCompleto(nova)) {
+                const n = contar()[nomeCompleto(velha)] || 0;
+                if (n && serieDe(velha) !== serieDe(nova)) return alert(`Erro: a sala tem ${n} aluno(s). Para mudar o ano ou o nível, transfira os alunos antes.`);
+                // renomear acompanha: alunos, professores e pedidos de foto passam para o nome novo
+                const troca = lista => lista.map(s => s === nomeCompleto(velha) ? nomeCompleto(nova) : s);
+                const alunos = ler('alunosDB'); alunos.forEach(a => { a.sala = troca([a.sala])[0]; }); gravar('alunosDB', alunos);
+                const profs = ler('professoresDB'); profs.forEach(p => p.atribuicoes.forEach(a => { a.salas = troca(a.salas); })); gravar('professoresDB', profs);
+                const pedidos = ler('pedidosFotoDB'); pedidos.forEach(p => { p.sala = troca([p.sala])[0]; }); gravar('pedidosFotoDB', pedidos);
+            }
+            gravar('salasDB', velha ? salas.map(s => s.id === id ? nova : s) : [...salas, nova]);
+            cancelarSala();
+            atualizarEstrutura();
+        });
+
+        function excluirSala(id) {
+            const s = ler('salasDB').find(x => x.id === id), nome = nomeCompleto(s), n = contar()[nome] || 0;
+            if (n) {
+                alert(`Não dá para excluir: a sala ${nome} tem ${n} aluno(s).\nTransfira os alunos para outra sala antes de excluir.`);
+                $('t_origem').value = nome;
+                renderTransf();
+                return $('cardTransf').scrollIntoView({ behavior: 'smooth' });
+            }
+            const profs = ler('professoresDB').filter(p => p.atribuicoes.some(a => a.salas.includes(nome)));
+            if (!confirm(`Excluir a sala ${nome}?` + (profs.length ? `\nEla também será removida da atribuição de ${profs.length} professor(es).` : ''))) return;
+            if (profs.length) {
+                const todos = ler('professoresDB'); todos.forEach(p => p.atribuicoes.forEach(a => { a.salas = a.salas.filter(x => x !== nome); })); gravar('professoresDB', todos);
+            }
+            gravar('salasDB', ler('salasDB').filter(x => x.id !== id));
+            if ($('editSalaId').value === id) cancelarSala();
+            atualizarEstrutura();
+        }
+
+        // ===== Estrutura: matérias =====
+        function cancelarMateria() { $('formMateria').reset(); $('editMateriaId').value = ''; modoEstrutura('m', false, 'Matéria'); }
+
+        function editarMateria(id) {
+            const m = ler('materiasDB').find(x => x.id === id);
+            $('editMateriaId').value = id; $('m_nome').value = m.nome;
+            modoEstrutura('m', true, 'Matéria');
+            scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        $('formMateria').addEventListener('submit', e => {
+            e.preventDefault();
+            const id = $('editMateriaId').value, nome = $('m_nome').value.trim().replace(/\s+/g, ' '), lista = ler('materiasDB');
+            if (!nome) return alert('Erro: informe o nome da matéria.');
+            if (duplicado(lista, 'nome', nome, id)) return alert('Erro: esta matéria já está cadastrada.');
+
+            const velha = lista.find(m => m.id === id);
+            if (velha && velha.nome !== nome) { // renomear acompanha os professores
+                const profs = ler('professoresDB'); profs.forEach(p => p.atribuicoes.forEach(a => { if (a.materia === velha.nome) a.materia = nome; })); gravar('professoresDB', profs);
+            }
+            gravar('materiasDB', velha ? lista.map(m => m.id === id ? { ...m, nome } : m) : [...lista, { id: novoId(), nome }]);
+            cancelarMateria();
+            atualizarEstrutura();
+        });
+
+        function excluirMateria(id) {
+            const m = ler('materiasDB').find(x => x.id === id), usam = profsDaMateria(m.nome);
+            if (usam.length) return alert(`Não dá para excluir "${m.nome}": ela está em uso por ${usam.map(p => p.nome).join(', ')}.\nRemova a matéria desses professores (ou troque por outra) em Gestão da Equipe Gestora e depois exclua.`);
+            if (!confirm(`Excluir a matéria "${m.nome}"?`)) return;
+            gravar('materiasDB', ler('materiasDB').filter(x => x.id !== id));
+            if ($('editMateriaId').value === id) cancelarMateria();
+            atualizarEstrutura();
+        }
+
+        // ===== Estrutura: transferência de alunos =====
+        function sugerirTransferencia() {
+            const origem = $('t_origem').value;
+            if (!origem) return alert('Escolha a sala de origem.');
+            const alunos = alunosDaSala(origem).sort(porNome), cont = contar();
+            if (!alunos.length) return $('t_previa').innerHTML = '<p class="aviso">Esta sala não tem alunos.</p>';
+            const lotes = salasMesmaSerie(origem).map(s => ({ nome: nomeCompleto(s), n: cont[nomeCompleto(s)] || 0, ids: [] }));
+            if (!lotes.length) return $('t_previa').innerHTML = '<p class="aviso">Não há outra sala deste ano. Cadastre uma sala do mesmo ano para poder transferir.</p>';
+
+            let sobra = 0; // cada aluno vai para a sala do mesmo ano com menos alunos e ainda com vaga
+            alunos.forEach(a => {
+                const l = lotes.filter(x => x.n < LIMITE).sort((x, y) => x.n - y.n)[0];
+                l ? (l.ids.push(a.id), l.n++) : sobra++;
+            });
+            plano = lotes.filter(l => l.ids.length);
+            $('t_previa').innerHTML = (plano.length
+                ? `<p style="margin-bottom: 8px;">Sugestão para os ${alunos.length - sobra} aluno(s) que cabem:</p><ul style="margin: 0 0 12px 18px;">${plano.map(l => `<li><strong>${esc(l.nome)}</strong>: +${l.ids.length} (ficará com ${l.n}/${LIMITE})</li>`).join('')}</ul>`
+                : '')
+                + (sobra ? `<p class="aviso" style="color: #ef4444;">Faltam vagas para ${sobra} aluno(s): eles continuam em ${esc(origem)}. Cadastre outra sala deste ano ou libere vagas.</p>` : '')
+                + (plano.length ? '<button type="button" data-a="t-confirmar" class="btn-acao btn-aprovar" style="padding: 10px 18px;">Confirmar transferência</button>' : '');
+        }
+
+        function confirmarTransferencia() {
+            if (!plano?.length) return;
+            const total = plano.reduce((s, l) => s + l.ids.length, 0);
+            plano.forEach(l => mover(l.ids, l.nome));
+            atualizarEstrutura();
+            alert(`${total} aluno(s) transferido(s) com sucesso!`);
+        }
+
+        function transferirManual() {
+            const origem = $('t_origem').value, destino = $('t_destino').value;
+            const ids = [...$('t_lista').querySelectorAll('input:checked')].map(i => i.value);
+            if (!ids.length) return alert('Marque pelo menos um aluno.');
+            if (!destino) return alert('Escolha a sala de destino.');
+            if (!salasMesmaSerie(origem).some(s => nomeCompleto(s) === destino)) return alert('Erro: o aluno só pode ir para uma sala do mesmo ano e nível.');
+            const vagas = LIMITE - (contar()[destino] || 0);
+            if (ids.length > vagas) return alert(`Erro: a sala ${destino} só tem ${vagas} vaga(s) e você marcou ${ids.length} aluno(s).`);
+            mover(ids, destino);
+            atualizarEstrutura();
+            alert(`${ids.length} aluno(s) transferido(s) com sucesso!`);
+        }
+
+        function alternarModoTransf() {
+            const manual = document.querySelector('[name=t_modo]:checked').value === 'manual';
+            $('t_auto').style.display = manual ? 'none' : 'block';
+            $('t_manual').style.display = manual ? 'block' : 'none';
+        }
+
+        // ===== Eventos (um único ouvinte de clique, sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
         const acoes = {
             aba: alternarAba,
-            tema: () => { document.body.classList.toggle('light-mode'); localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); },
             sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
             'ed-a': editarAluno, 'ex-a': id => excluir('alunosDB', id), 'cancelar-a': cancelarAluno,
             'ed-p': editarProf, 'ex-p': id => excluir('professoresDB', id), 'cancelar-p': cancelarProf,
@@ -405,23 +722,51 @@
                 atrib[m] = []; renderQuadros();
             },
             'rm-mat': m => { delete atrib[m]; renderQuadros(); },
-            'foto-ok': id => avaliarFoto(id, true), 'foto-no': id => avaliarFoto(id, false)
+            'foto-ok': id => avaliarFoto(id, true), 'foto-no': id => avaliarFoto(id, false),
+            'ed-s': editarSala, 'ex-s': excluirSala, 'cancelar-s': cancelarSala,
+            'ed-m': editarMateria, 'ex-m': excluirMateria, 'cancelar-m': cancelarMateria,
+            't-sugerir': sugerirTransferencia, 't-confirmar': confirmarTransferencia, 't-manual': transferirManual
         };
         document.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (b) acoes[b.dataset.a]?.(b.dataset.v); });
         document.addEventListener('input', e => { if (e.target.matches('[data-num]')) e.target.value = e.target.value.replace(/\D/g, ''); });
         $('p_permissao').addEventListener('change', tipoPerm);
+        $('t_origem').addEventListener('change', renderTransf);
+        document.addEventListener('change', e => { if (e.target.name === 't_modo') alternarModoTransf(); });
 
         // ===== Início =====
-        $('a_sala').insertAdjacentHTML('beforeend', turmas.map(t => opcao(t)).join(''));
-        $('selectMateria').insertAdjacentHTML('beforeend', materias.map(m => opcao(m)).join('') + opcao('Sistemas', 'Desenvolvimento de Sistemas'));
         $('p_permissao').innerHTML = Object.entries(PERM).map(([k, [t]]) => opcao(k, t)).join('');
         $('a_nascimento').max = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
 
-        // converte professores do formato antigo (materia + salas) para o novo (atribuicoes), uma única vez
-        gravar('professoresDB', ler('professoresDB').map(p => ({
-            ...p, atribuicoes: p.atribuicoes?.length ? p.atribuicoes : p.materia ? [{ materia: p.materia, salas: p.salas || [] }] : []
-        })));
+        // migração automática dos dados antigos: roda a cada abertura e só grava se algo mudou
+        const migrar = (chave, ajustar) => {
+            const lista = ler(chave).map(ajustar);
+            if (JSON.stringify(lista) !== localStorage.getItem(chave)) gravar(chave, lista);
+        };
+        migrar('alunosDB', a => ({ fotoPerfil: null, ...a }));
+        migrar('professoresDB', ({ materia, salas, ...p }) => ({
+            ...p,
+            atribuicoes: (p.atribuicoes?.length ? p.atribuicoes : materia ? [{ materia, salas }] : [])
+                .map(a => ({ materia: a.materia, salas: a.salas || [] }))
+        }));
+        migrar('pedidosFotoDB', p => p);
 
+        // primeira vez: cria as listas de salas e matérias a partir do que já existe (nada se perde)
+        if (localStorage.getItem('salasDB') === null) {
+            const nomes = new Set(turmasPadrao);
+            [...ler('alunosDB').map(a => a.sala), ...ler('professoresDB').flatMap(p => p.atribuicoes.flatMap(a => a.salas))]
+                .filter(s => PADRAO_SALA.test(s)).forEach(s => nomes.add(s));
+            gravar('salasDB', [...nomes].map(s => { const [, nome, nivel] = s.match(PADRAO_SALA); return { id: novoId(), nome, nivel }; }));
+        }
+        if (localStorage.getItem('materiasDB') === null) {
+            const profs = ler('professoresDB'); // "Sistemas" era o valor antigo de "Desenvolvimento de Sistemas"
+            profs.forEach(p => p.atribuicoes.forEach(a => { if (a.materia === 'Sistemas') a.materia = 'Desenvolvimento de Sistemas'; }));
+            gravar('professoresDB', profs);
+            const nomes = new Set([...materiasPadrao, ...profs.flatMap(p => p.atribuicoes.map(a => a.materia))]);
+            gravar('materiasDB', [...nomes].map(nome => ({ id: novoId(), nome })));
+        }
+
+        $('s_nivel').innerHTML = NIVEIS.map(n => opcao(n)).join('');
+        montarSelectSala(); montarSelectMateria();
         renderQuadros(); tipoPerm(); renderAlunos(); renderProf();
     </script>
 </body>

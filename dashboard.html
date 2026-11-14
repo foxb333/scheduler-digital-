@@ -57,6 +57,7 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
+    <script src="botão_de_tema.js"></script>
 
     <aside class="sidebar">
         <div>
@@ -75,7 +76,7 @@
             </div>
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
-            <button type="button" data-acao="tema" class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
+            <button type="button" data-tema class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
             <a href="index.html" data-acao="sair" class="btn-logout">Sair</a>
         </div>
     </aside>
@@ -150,18 +151,20 @@
         const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         const ler = k => { try { const l = JSON.parse(localStorage.getItem(k)); return Array.isArray(l) ? l : []; } catch { return []; } };
 
-        // ===== Sessão e tema =====
+        // ===== Sessão =====
         let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
         if (!['aluno', 'admin'].includes(usuario?.cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
         document.body.style.visibility = '';
-        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
 
         // Localiza o aluno por id, acesso ou matrícula; o nome só vale se for único (evita confundir dois "João")
         const casa = (a, v) => v && (a.email === v || a.matricula === v);
-        const alunos = ler('alunosDB');
-        const porNome = alunos.filter(a => a.nome === usuario.nome);
-        const aluno = alunos.find(a => (usuario.id && a.id === usuario.id) || casa(a, usuario.email) || casa(a, usuario.identificador))
-            ?? (porNome.length === 1 ? porNome[0] : null);
+        let aluno = null;
+        function carregarAluno() { // relê o cadastro: sala, foto e nome refletem o que o admin alterou
+            const alunos = ler('alunosDB'), porNome = alunos.filter(a => a.nome === usuario.nome);
+            aluno = alunos.find(a => (usuario.id && a.id === usuario.id) || casa(a, usuario.email) || casa(a, usuario.identificador))
+                ?? (porNome.length === 1 ? porNome[0] : null);
+        }
+        carregarAluno();
 
         // ===== Dados fixos =====
         const ABAS = {
@@ -192,6 +195,7 @@
             [$('tituloTelaPrincipal').textContent, $('subtituloTelaPrincipal').textContent] = ABAS[tela];
             if (tela === 'agenda') irParaHoje();
             if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
+            if (tela === 'home' || tela === 'materias') atualizar();
         }
 
         function renderPerfil() {
@@ -253,10 +257,9 @@
             leitor.readAsDataURL(arquivo);
         });
 
-        // ===== Eventos (sem onclick inline) =====
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
         const acoes = {
             menu: () => { const aberto = $('sidebarContent').classList.toggle('open'); document.querySelector('.menu-toggle').setAttribute('aria-expanded', aberto); },
-            tema: () => { const claro = document.body.classList.toggle('light-mode'); try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {} },
             sair: () => localStorage.removeItem('usuarioLogado'), // o link segue para index.html
             hoje: irParaHoje,
             foto: () => $('inputFotoUpload').click()
@@ -270,6 +273,13 @@
         document.addEventListener('keydown', e => { // teclado: Enter/Espaço nos elementos clicáveis que não são <button>
             if (['Enter', ' '].includes(e.key) && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
         });
+
+        // ===== Atualização automática =====
+        // Quando o admin muda algo (sala do aluno, transferência, matérias, avisos), este painel se atualiza sozinho
+        function atualizar() { carregarAluno(); renderPerfil(); renderMaterias(); renderMural(); }
+        addEventListener('storage', e => { if (e.key !== 'theme') atualizar(); }); // outra aba/janela alterou os dados
+        addEventListener('focus', atualizar);                                      // ao voltar para esta aba
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
 
         // ===== Início =====
         renderPerfil(); renderMaterias(); renderMural(); renderTrofeus(); irParaHoje();

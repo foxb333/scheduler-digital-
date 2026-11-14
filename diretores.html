@@ -45,6 +45,7 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
+    <script src="botão_de_tema.js"></script>
 
     <aside class="sidebar">
         <div>
@@ -57,7 +58,7 @@
             </nav>
         </div>
         <div class="sidebar-footer">
-            <button type="button" data-acao="tema" class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
+            <button type="button" data-tema class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
             <button type="button" data-acao="sair" class="btn-logout btn-sair">Sair da Conta</button>
         </div>
     </aside>
@@ -121,14 +122,13 @@
             return l;
         };
 
-        // ===== Sessão e tema =====
+        // ===== Sessão =====
         let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
         if (!usuario || !(usuario.permissao === 'diretores' || ['diretor', 'admin'].includes(usuario.cargo))) {
             location.href = 'login.html';
             throw new Error('Acesso negado');
         }
         document.body.style.visibility = '';
-        try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
         if (usuario.nome) $('boasVindasDiretor').textContent = `Painel de Controle - ${usuario.nome}`;
 
         // ===== Turmas =====
@@ -232,9 +232,8 @@
             alert('Aviso salvo com sucesso!');
         });
 
-        // ===== Eventos (sem onclick inline) =====
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
         const acoes = {
-            tema: () => { const claro = document.body.classList.toggle('light-mode'); try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {} },
             sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
             editar: editarAviso, excluir: excluirAviso, cancelar: cancelarEdicao
         };

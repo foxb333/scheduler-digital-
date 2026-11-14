@@ -5,31 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Digital - Login</title>
     <link rel="stylesheet" href="design.css">
+    <style>
+        .topo-card { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .btn-tema-login { background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 13px; }
+        .erro-login { color: #ef4444; font-size: 13px; margin-bottom: 10px; }
+    </style>
 </head>
 <body class="login-body">
+    <script src="botão_de_tema.js"></script>
 
-    <div class="login-card" style="position: relative;">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-            <button id="toggleTheme" onclick="alternarTema()" style="background: var(--bg-hover); border: 1px solid var(--border-main); color: var(--text-main); padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 13px;">
-                ☀️ / 🌙 Tema
-            </button>
+    <div class="login-card">
+        <div class="topo-card">
+            <button type="button" data-tema class="btn-tema-login" aria-label="Alternar tema claro/escuro">☀️ / 🌙 Tema</button>
         </div>
 
         <h2 class="login-title">Acessar Conta</h2>
         <p class="login-subtitle">Entre com suas credenciais (Acesso, CPF ou E-mail)</p>
-        
+
         <form id="loginForm" class="login-form">
             <div class="input-group">
                 <label for="email">E-mail, Acesso ou CPF</label>
-                <input type="text" id="email" placeholder="Digite seu e-mail, acesso ou CPF" maxlength="50" required>
+                <input type="text" id="email" placeholder="Digite seu e-mail, acesso ou CPF" maxlength="50" autocomplete="username" autocapitalize="none" spellcheck="false" required>
             </div>
-
             <div class="input-group">
                 <label for="password">Senha</label>
-                <input type="password" id="password" placeholder="••••••••" maxlength="25" required>
+                <input type="password" id="password" placeholder="••••••••" maxlength="25" autocomplete="current-password" required>
             </div>
 
-            <p id="errorMessage" style="color: #ef4444; font-size: 13px; display: none; margin-bottom: 10px;">Credenciais incorretas!</p>
+            <p id="errorMessage" class="erro-login" role="alert" hidden></p>
 
             <button type="submit" class="btn-central btn-submit">Entrar no Sistema</button>
         </form>
@@ -39,65 +42,51 @@
         </div>
     </div>
 
-    <script>
-        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    <script type="module">
+        const $ = id => document.getElementById(id);
+        const ler = k => { try { const l = JSON.parse(localStorage.getItem(k)); return Array.isArray(l) ? l : []; } catch { return []; } };
+        const norm = s => String(s ?? '').trim().toLowerCase();
+        const soDigitos = s => String(s ?? '').replace(/\D/g, '');
 
-        function alternarTema() {
-            document.body.classList.toggle('light-mode');
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
-        }
+        const ADMIN = { acesso: 'adm.com', senha: 'adm1234' };
+        const DESTINOS = { admin: 'admin-dashboard.html', diretor: 'diretores.html', professor: 'professores.html', aluno: 'dashboard.html' };
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const campoIdentificador = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorMsg = document.getElementById('errorMessage');
+        // Devolve os dados da sessão se as credenciais baterem, ou null
+        function autenticar(idf, senha) {
+            const chave = norm(idf);
 
             // 1. Admin
-            if (campoIdentificador === 'adm.com' && password === 'adm1234') {
-                localStorage.setItem('usuarioLogado', JSON.stringify({ identificador: campoIdentificador, cargo: 'admin' }));
-                window.location.href = 'admin-dashboard.html';
-                return;
+            if (chave === ADMIN.acesso && senha === ADMIN.senha) return { identificador: idf, cargo: 'admin' };
+
+            // 2. Professores, Gestão e Diretores (por CPF; só compara se o texto parece um CPF)
+            const cpf = /^[\d.\-\s]+$/.test(idf) ? soDigitos(idf) : '';
+            const prof = cpf && ler('professoresDB').find(p => soDigitos(p.cpf) === cpf && p.senha === senha);
+            if (prof) return {
+                id: prof.id, cpf: prof.cpf, nome: prof.nome, permissao: prof.permissao, materia: prof.materia,
+                cargo: prof.permissao === 'diretores' ? 'diretor' : 'professor'
+            };
+
+            // 3. Alunos (por acesso ou matrícula, sem diferenciar maiúsculas)
+            const aluno = ler('alunosDB').find(a => (norm(a.email) === chave || norm(a.matricula) === chave) && a.senha === senha);
+            return aluno ? { id: aluno.id, email: aluno.email, nome: aluno.nome, cargo: 'aluno' } : null;
+        }
+
+        const erro = msg => { const p = $('errorMessage'); p.textContent = msg ?? ''; p.hidden = !msg; };
+
+        $('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const sessao = autenticar($('email').value.trim(), $('password').value.trim());
+            if (!sessao) {
+                erro('Credenciais incorretas!');
+                $('password').value = '';
+                return $('password').focus();
             }
-
-            // 2. Professores, Gestão e Diretores
-            const professoresCadastrados = JSON.parse(localStorage.getItem('professoresDB')) || [];
-            const profEncontrado = professoresCadastrados.find(p => 
-                (p.cpf === campoIdentificador || p.cpf.replace(/\D/g, '') === campoIdentificador.replace(/\D/g, '')) && p.senha === password
-            );
-
-            if (profEncontrado) {
-                localStorage.setItem('usuarioLogado', JSON.stringify({ 
-                    cpf: profEncontrado.cpf, 
-                    nome: profEncontrado.nome,
-                    permissao: profEncontrado.permissao, 
-                    materia: profEncontrado.materia,
-                    cargo: profEncontrado.permissao === 'diretores' ? 'diretor' : 'professor' 
-                }));
-
-                if (profEncontrado.permissao === 'diretores') {
-                    window.location.href = 'diretores.html';
-                } else {
-                    window.location.href = 'professores.html';
-                }
-                return;
-            }
-
-            // 3. Alunos
-            const alunosCadastrados = JSON.parse(localStorage.getItem('alunosDB')) || [];
-            const alunoEncontrado = alunosCadastrados.find(aluno => 
-                (aluno.email === campoIdentificador || aluno.matricula === campoIdentificador) && aluno.senha === password
-            );
-
-            if (alunoEncontrado) {
-                localStorage.setItem('usuarioLogado', JSON.stringify({ email: campoIdentificador, nome: alunoEncontrado.nome, cargo: 'aluno' }));
-                window.location.href = 'dashboard.html';
-                return;
-            }
-
-            errorMsg.style.display = 'block';
+            try { localStorage.setItem('usuarioLogado', JSON.stringify(sessao)); }
+            catch { return erro('Não foi possível iniciar a sessão: o armazenamento do navegador está bloqueado.'); }
+            location.href = DESTINOS[sessao.cargo];
         });
+
+        $('loginForm').addEventListener('input', () => erro(''));
     </script>
 </body>
 </html>

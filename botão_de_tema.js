@@ -1,7 +1,6 @@
-// Tema claro/escuro compartilhado: cria o botão, estiliza e faz a troca com transição.
-// Carregue como PRIMEIRO item do <body>:  <script src="tema.js"></script>
+// Tema claro/escuro compartilhado: cria o botão, estiliza e faz a troca com transição suave.
 (() => {
-    const CHAVE = 'theme', DURACAO = 450;
+    const CHAVE = 'theme', DURACAO = 600;
     const SELETOR_BOTAO = '[data-tema], [data-acao="tema"], [data-a="tema"]';
     const html = document.documentElement;
     const lerTema = () => { try { return localStorage.getItem(CHAVE); } catch { return null; } };
@@ -17,7 +16,8 @@
     </style>`);
 
     let timer;
-    window.alternarTema = () => {
+    // Função interna: não depende do nome global, então funciona mesmo que a página defina o próprio alternarTema()
+    const trocar = () => {
         const claro = !document.body.classList.contains('light-mode');
         const mudar = () => {
             aplicar(claro);
@@ -30,9 +30,9 @@
         clearTimeout(timer);
         timer = setTimeout(() => html.classList.remove('trocando-tema'), DURACAO + 50);
     };
+    window.alternarTema = trocar;
 
-    // Cria o botão se a página não tiver um. Vai para <... data-tema-slot>, ou então para o menu
-    // da navbar (.nav-links / .auth-group) ou para o rodapé da barra lateral (.sidebar-footer).
+    // Cria o botão se a página não tiver um (navbar ou rodapé da barra lateral)
     function montarBotao() {
         const existentes = document.querySelectorAll(SELETOR_BOTAO);
         if (existentes.length) {
@@ -51,11 +51,11 @@
         local.append(botao);
     }
 
-    // Clique em qualquer botão de tema (os painéis antigos também ganham a transição)
+    // Clique em qualquer botão de tema
     document.addEventListener('click', e => {
         if (!e.target.closest(SELETOR_BOTAO)) return;
         e.stopImmediatePropagation();
-        alternarTema();
+        trocar();
     }, true);
 
     // Se o tema mudar em outra aba aberta, esta acompanha
