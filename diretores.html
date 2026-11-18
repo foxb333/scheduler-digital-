@@ -45,7 +45,8 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
-    <script src="botão_de_tema.js"></script>
+    <script src="botão_tema.js"></script>
+
 
     <aside class="sidebar">
         <div>
@@ -108,37 +109,80 @@
     </main>
 
     <script type="module">
+        import { supabase } from './config.js';
+
         // ===== Utilitários =====
         const $ = id => document.getElementById(id);
-        const gravar = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-        // lê uma lista com segurança e garante que todo registro tenha id único
-        const ler = k => {
-            let l; try { l = JSON.parse(localStorage.getItem(k)); } catch {}
-            l = Array.isArray(l) ? l : [];
-            if (l.some(x => !x.id)) { l = l.map(x => x.id ? x : { ...x, id: novoId() }); gravar(k, l); }
-            return l;
+        const ok = r => { if (r.error) throw r.error; return r.data; };
+        const msgErro = e => {
+            const t = String(e?.message || e || 'erro desconhecido');
+            if (/row-level security|permission denied/.test(t)) return 'Sem permissão. Saia e entre de novo.';
+            if (/avisos_check/.test(t)) return 'O prazo do aviso não pode passar de 365 dias desde a publicação.';
+            if (/Failed to fetch|NetworkError|Load failed/.test(t)) return 'Sem conexão com o banco de dados. Verifique a internet.';
+            return t;
         };
+        const falhou = e => { console.error(e); alert('Erro: ' + msgErro(e)); };
 
         // ===== Sessão =====
-        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
-        if (!usuario || !(usuario.permissao === 'diretores' || ['diretor', 'admin'].includes(usuario.cargo))) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const cargo = session?.user?.app_metadata?.cargo;
+        if (!['diretor', 'admin'].includes(cargo)) {
             location.href = 'login.html';
             throw new Error('Acesso negado');
         }
+        supabase.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.href = 'login.html'; });
         document.body.style.visibility = '';
-        if (usuario.nome) $('boasVindasDiretor').textContent = `Painel de Controle - ${usuario.nome}`;
 
-        // ===== Turmas =====
-        const turmas = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
-            Array.from({ length: fim - ini + 1 }, (_, i) => ['A', 'B', 'C'].map(t => `${ini + i}º Ano ${t} (${n})`)).flat());
-        $('selectTurmasDirecao').insertAdjacentHTML('beforeend', turmas.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join(''));
+        // ===== Dados (vêm do banco; a cópia local é recarregada a cada atualização) =====
+        let DB = { salasDB: [], alunosDB: [], muralAvisosDB: [] };
+        const ler = k => DB[k];
+
+        async function carregar() {
+            const [salas, alunos, avisos] = await Promise.all([
+                supabase.from('salas').select('id, nome, nivel'),
+                supabase.from('alunos').select('id, nome, matricula, acesso, sala_id'),
+                supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em').order('publicado_em', { ascending: false })
+            ].map(p => p.then(ok)));
+
+            const nomeSala = Object.fromEntries(salas.map(s => [s.id, `${s.nome} (${s.nivel})`]));
+            const agora = Date.now();
+            const vencidos = avisos.filter(a => new Date(a.expira_em).getTime() <= agora);
+            if (vencidos.length) supabase.from('avisos').delete().in('id', vencidos.map(a => a.id)).then(() => {}); // remove os avisos vencidos do banco
+
+            DB = {
+                salasDB: salas,
+                alunosDB: alunos.map(a => ({ id: a.id, nome: a.nome, matricula: a.matricula, email: a.acesso, sala: nomeSala[a.sala_id] || '' })), // "email" = campo Acesso
+                muralAvisosDB: avisos.filter(a => !vencidos.includes(a)).map(a => ({
+                    id: a.id, titulo: a.titulo, conteudo: a.conteudo, publicado: a.publicado_em, expiracao: a.expira_em,
+                    data: dataHora(new Date(a.publicado_em))
+                }))
+            };
+        }
+        const dataHora = d => d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        // nome do diretor logado (vem do cadastro da equipe)
+        async function boasVindas() {
+            const { data } = await supabase.from('equipe').select('nome').eq('user_id', session.user.id).maybeSingle();
+            if (data?.nome) $('boasVindasDiretor').textContent = `Painel de Controle - ${data.nome}`;
+        }
+
+        // ===== Turmas (vêm da Estrutura Escolar do admin) =====
+        const NIVEIS = ['Fundamental', 'Ensino Médio'];
+        const listaTurmas = () => [...ler('salasDB')]
+            .sort((a, b) => NIVEIS.indexOf(a.nivel) - NIVEIS.indexOf(b.nivel) || parseInt(a.nome) - parseInt(b.nome) || a.nome.localeCompare(b.nome))
+            .map(s => `${s.nome} (${s.nivel})`);
+
+        function montarTurmas() {
+            const sel = $('selectTurmasDirecao'), atual = sel.value, turmas = listaTurmas();
+            sel.innerHTML = '<option value="">Selecione uma turma...</option>' + turmas.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+            if (turmas.includes(atual)) sel.value = atual; // mantém a escolha se a sala ainda existir
+        }
 
         function alternarAba(aba) {
             document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + aba ? 'block' : 'none');
             document.querySelectorAll('[data-aba]').forEach(b => b.classList.toggle('active', b.dataset.aba === aba));
+            atualizar();
         }
 
         function renderAlunos() {
@@ -154,13 +198,8 @@
         }
 
         // ===== Mural de avisos =====
-        // devolve só os avisos ainda válidos e remove os vencidos (grava apenas se algo mudou)
-        function avisosAtivos() {
-            const todos = ler('muralAvisosDB'), agora = Date.now();
-            const ativos = todos.filter(a => new Date(a.expiracao).getTime() > agora);
-            if (ativos.length !== todos.length) gravar('muralAvisosDB', ativos);
-            return ativos;
-        }
+        // só os avisos ainda válidos (os vencidos já foram removidos do banco em carregar)
+        const avisosAtivos = () => ler('muralAvisosDB').filter(a => new Date(a.expiracao).getTime() > Date.now());
         const diasRestantes = a => Math.max(1, Math.ceil((new Date(a.expiracao) - Date.now()) / 864e5));
 
         const renderAvisos = () => $('containerAvisosDirecao').innerHTML = avisosAtivos().map(a => `
@@ -198,43 +237,49 @@
             scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function excluirAviso(id) {
+        async function excluirAviso(id) {
             if (!confirm('Deseja realmente remover este aviso do mural?')) return;
-            gravar('muralAvisosDB', ler('muralAvisosDB').filter(a => a.id !== id));
-            if ($('editAvisoId').value === id) cancelarEdicao();
+            try {
+                ok(await supabase.from('avisos').delete().eq('id', id));
+                if ($('editAvisoId').value === id) cancelarEdicao();
+                await carregar();
+            } catch (e) { falhou(e); }
             renderAvisos();
         }
 
-        $('formAvisoDirecao').addEventListener('submit', e => {
+        $('formAvisoDirecao').addEventListener('submit', async e => {
             e.preventDefault();
             const id = $('editAvisoId').value, dias = Math.floor(+$('avisoDias').value);
             if (dias > 365) return alert('O limite máximo de exposição é de 365 dias (1 ano).');
             if (!(dias >= 1)) return alert('Informe um tempo de exposição de 1 a 365 dias.');
 
-            const agora = new Date(), expiracao = new Date();
-            expiracao.setDate(expiracao.getDate() + dias);
+            const btn = $('btnSalvarAviso'); btn.disabled = true;
+            try {
+                const agora = new Date(), expira = new Date(agora.getTime() + dias * 864e5);
+                const campos = { titulo: $('avisoTitulo').value.trim(), conteudo: $('avisoConteudo').value.trim() };
+                const velho = ler('muralAvisosDB').find(a => a.id === id);
 
-            const avisos = ler('muralAvisosDB'), i = avisos.findIndex(a => a.id === id);
-            const aviso = {
-                id: id || novoId(),
-                titulo: $('avisoTitulo').value.trim(),
-                conteudo: $('avisoConteudo').value.trim(),
-                // ao editar, mantém a data original de publicação
-                data: i >= 0 ? avisos[i].data : agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-                expiracao: expiracao.toISOString()
-            };
-            if (i >= 0) avisos[i] = aviso;
-            else avisos.unshift(aviso);
+                if (velho) { // ao editar, mantém a data original de publicação
+                    const limite = new Date(velho.publicado).getTime() + 365 * 864e5; // o banco não aceita mais de 365 dias desde a publicação
+                    if (expira.getTime() > limite) {
+                        const maximo = Math.max(1, Math.floor((limite - agora.getTime()) / 864e5));
+                        return alert(`O aviso não pode ficar mais de 365 dias no mural desde a publicação. Para este aviso, o máximo agora é ${maximo} dia(s).`);
+                    }
+                    ok(await supabase.from('avisos').update({ ...campos, expira_em: expira.toISOString() }).eq('id', id));
+                } else {
+                    ok(await supabase.from('avisos').insert({ ...campos, publicado_em: agora.toISOString(), expira_em: expira.toISOString() }));
+                }
 
-            gravar('muralAvisosDB', avisos);
-            cancelarEdicao();
-            renderAvisos();
-            alert('Aviso salvo com sucesso!');
+                await carregar();
+                cancelarEdicao();
+                renderAvisos();
+                alert('Aviso salvo com sucesso!');
+            } catch (err) { falhou(err); } finally { btn.disabled = false; }
         });
 
-        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_tema.js) =====
         const acoes = {
-            sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
+            sair: () => supabase.auth.signOut().finally(() => { location.href = 'login.html'; }),
             editar: editarAviso, excluir: excluirAviso, cancelar: cancelarEdicao
         };
         document.addEventListener('click', e => {
@@ -245,8 +290,20 @@
         });
         $('selectTurmasDirecao').addEventListener('change', renderAlunos);
 
+        // ===== Atualização automática =====
+        // Quando o admin muda algo (salas, transferência de alunos, avisos), este painel busca os dados novos no banco
+        async function atualizar() {
+            try { await carregar(); } catch (e) { return console.error(e); }
+            montarTurmas(); renderAlunos(); renderAvisos();
+        }
+        addEventListener('focus', atualizar);                                      // ao voltar para esta aba
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
+        setInterval(() => { if (!document.hidden) atualizar(); }, 30000);          // e a cada 30 segundos, enquanto a aba está aberta
+
         // ===== Início =====
-        renderAlunos(); renderAvisos();
+        try { await carregar(); } catch (e) { falhou(e); }
+        montarTurmas(); renderAlunos(); renderAvisos();
+        boasVindas().catch(console.error);
     </script>
 </body>
 </html>

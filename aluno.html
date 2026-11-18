@@ -57,7 +57,8 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
-    <script src="botão_de_tema.js"></script>
+    <script src="botão_tema.js"></script>
+
 
     <aside class="sidebar">
         <div>
@@ -77,7 +78,7 @@
         </div>
         <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 10px;">
             <button type="button" data-tema class="btn-logout btn-tema">☀️ / 🌙 Tema</button>
-            <a href="index.html" data-acao="sair" class="btn-logout">Sair</a>
+            <a href="login.html" data-acao="sair" class="btn-logout">Sair</a>
         </div>
     </aside>
 
@@ -143,28 +144,65 @@
         </div>
     </main>
 
-    <script src="calendar.js"></script>
+    <script src="calendario.js"></script>
     <script type="module">
+        import { supabase } from './config.js';
+
         // ===== Utilitários =====
         const $ = id => document.getElementById(id);
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-        const ler = k => { try { const l = JSON.parse(localStorage.getItem(k)); return Array.isArray(l) ? l : []; } catch { return []; } };
+        const ok = r => { if (r.error) throw r.error; return r.data; };
+        const msgErro = e => {
+            const t = String(e?.message || e || 'erro desconhecido');
+            if (/row-level security|permission denied/.test(t)) return 'Sem permissão. Saia e entre de novo.';
+            if (/Failed to fetch|NetworkError|Load failed/.test(t)) return 'Sem conexão com o banco de dados. Verifique a internet.';
+            return t;
+        };
+        const falhou = e => { console.error(e); alert('Erro: ' + msgErro(e)); };
 
         // ===== Sessão =====
-        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
-        if (!['aluno', 'admin'].includes(usuario?.cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        const { data: { session } } = await supabase.auth.getSession();
+        const cargo = session?.user?.app_metadata?.cargo;
+        if (!['aluno', 'admin'].includes(cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        supabase.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.href = 'login.html'; });
         document.body.style.visibility = '';
 
-        // Localiza o aluno por id, acesso ou matrícula; o nome só vale se for único (evita confundir dois "João")
-        const casa = (a, v) => v && (a.email === v || a.matricula === v);
-        let aluno = null;
-        function carregarAluno() { // relê o cadastro: sala, foto e nome refletem o que o admin alterou
-            const alunos = ler('alunosDB'), porNome = alunos.filter(a => a.nome === usuario.nome);
-            aluno = alunos.find(a => (usuario.id && a.id === usuario.id) || casa(a, usuario.email) || casa(a, usuario.identificador))
-                ?? (porNome.length === 1 ? porNome[0] : null);
+        // ===== Dados (vêm do banco; o aluno só enxerga os próprios dados) =====
+        let aluno = null;                 // { id, nome, sala, fotoPerfil }
+        let materiasDB = [], muralAvisosDB = [];
+        const fotoCache = {};             // caminho da foto -> link temporário
+
+        const dataHora = d => d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        // Relê o cadastro: sala, foto e nome refletem o que o admin alterou
+        async function carregarAluno() {
+            const a = ok(await supabase.from('alunos').select('id, nome, sala_id, foto_path').eq('user_id', session.user.id).maybeSingle());
+            if (!a) return aluno = null;
+            let sala = '';
+            if (a.sala_id) {
+                const s = ok(await supabase.from('salas').select('nome, nivel').eq('id', a.sala_id).maybeSingle());
+                if (s) sala = `${s.nome} (${s.nivel})`;
+            }
+            let fotoPerfil = null;
+            if (a.foto_path) {
+                if (!fotoCache[a.foto_path]) { // link temporário da foto privada (vale 1 hora)
+                    const { data } = await supabase.storage.from('fotos').createSignedUrl(a.foto_path, 3600);
+                    fotoCache[a.foto_path] = data?.signedUrl || null;
+                }
+                fotoPerfil = fotoCache[a.foto_path];
+            }
+            aluno = { id: a.id, nome: a.nome, sala, fotoPerfil };
         }
-        carregarAluno();
+
+        async function carregarMaterias() {
+            materiasDB = aluno ? ok(await supabase.rpc('minhas_materias')) : [];
+        }
+
+        async function carregarAvisos() {
+            const av = ok(await supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em')
+                .gt('expira_em', new Date().toISOString()).order('publicado_em', { ascending: false }));
+            muralAvisosDB = av.map(a => ({ id: a.id, titulo: a.titulo, conteudo: a.conteudo, expiracao: a.expira_em, data: dataHora(new Date(a.publicado_em)) }));
+        }
 
         // ===== Dados fixos =====
         const ABAS = {
@@ -178,7 +216,7 @@
         const CORES = ['#2563eb', '#16a34a', '#9333ea', '#db2777', '#ca8a04', '#0284c7'];
 
         // ===== Calendário: sempre posiciona em hoje (mês e dia) =====
-        // Funciona com o calendar.js novo (irParaHoje) e com o antigo (currentMonth/currentYear), mesmo se o navegador usar cópia em cache.
+        // Funciona com o calendario.js novo (irParaHoje) e com o antigo (currentMonth/currentYear), mesmo se o navegador usar cópia em cache.
         function irParaHoje() {
             if (window.irParaHoje) return window.irParaHoje();
             const h = new Date();
@@ -195,7 +233,7 @@
             [$('tituloTelaPrincipal').textContent, $('subtituloTelaPrincipal').textContent] = ABAS[tela];
             if (tela === 'agenda') irParaHoje();
             if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
-            if (tela === 'home' || tela === 'materias') atualizar();
+            if (tela === 'home' || tela === 'materias' || tela === 'mural') atualizar();
         }
 
         function renderPerfil() {
@@ -216,16 +254,14 @@
 
         function renderMaterias() {
             const sala = aluno?.sala;
-            const cards = ler('professoresDB').flatMap(p => (p.atribuicoes || [])
-                .filter(a => a.salas?.includes(sala))
-                .map(a => `<div class="materia-card"><div class="materia-nome">${esc(a.materia)}</div>
-                    <div class="materia-prof"><strong>Professor(a):</strong> ${esc(p.nome || 'Não informado')}</div></div>`));
+            const cards = materiasDB.map(m => `<div class="materia-card"><div class="materia-nome">${esc(m.materia)}</div>
+                    <div class="materia-prof"><strong>Professor(a):</strong> ${esc(m.professor || 'Não informado')}</div></div>`);
             $('listaMateriasAluno').innerHTML = cards.join('')
                 || `<p class="vazio">Nenhuma matéria atribuída para a sua turma (${esc(sala || 'não atribuída')}) no momento.</p>`;
         }
 
         // só mostra avisos que ainda não expiraram
-        const renderMural = () => $('containerMuralAluno').innerHTML = ler('muralAvisosDB')
+        const renderMural = () => $('containerMuralAluno').innerHTML = muralAvisosDB
             .filter(av => new Date(av.expiracao).getTime() > Date.now())
             .map(av => `
             <div class="card-aviso-aluno"><h4>${esc(av.titulo)}</h4><span class="aviso-data">${esc(av.data)}</span>
@@ -234,39 +270,35 @@
         const renderTrofeus = () => $('trofeusGrid').innerHTML = TROFEUS.map(([icone, nome, status, destaque]) => `
             <div class="trofeu-card${destaque ? ' destaque' : ''}"><div class="icone">${icone}</div><h4>${nome}</h4><p class="nota">${status}</p></div>`).join('');
 
-        // ===== Pedido de troca de foto =====
-        $('inputFotoUpload').addEventListener('change', e => {
+        // ===== Pedido de troca de foto (a foto vai para a área privada; o admin aprova) =====
+        $('inputFotoUpload').addEventListener('change', async e => {
             const arquivo = e.target.files[0];
             e.target.value = ''; // permite escolher o mesmo arquivo de novo
             if (!arquivo || !aluno) return;
-            if (!/^image\/(png|jpe?g|gif|webp)$/.test(arquivo.type)) return alert('Use uma imagem PNG, JPG, GIF ou WEBP.');
+            const tipo = (arquivo.type.match(/^image\/(png|jpe?g|gif|webp)$/) || [])[1];
+            if (!tipo) return alert('Use uma imagem PNG, JPG, GIF ou WEBP.');
             if (arquivo.size > 1e6) return alert('A imagem deve ter no máximo 1 MB.');
 
-            const leitor = new FileReader();
-            leitor.onload = () => {
-                try {
-                    const pedidos = ler('pedidosFotoDB');
-                    pedidos.push({
-                        id: novoId(), alunoId: aluno.id, alunoEmail: aluno.email || aluno.matricula,
-                        nomeAluno: aluno.nome, sala: aluno.sala || 'Sem turma', novaFoto: leitor.result
-                    });
-                    localStorage.setItem('pedidosFotoDB', JSON.stringify(pedidos));
-                    alert('Solicitação de alteração de foto enviada para análise do Administrador!');
-                } catch { alert('Não foi possível enviar a solicitação: o armazenamento está cheio.'); }
-            };
-            leitor.readAsDataURL(arquivo);
+            const caminho = `${session.user.id}/${Date.now()}.${tipo === 'jpeg' ? 'jpg' : tipo}`;
+            try {
+                ok(await supabase.storage.from('fotos').upload(caminho, arquivo, { contentType: arquivo.type, upsert: false }));
+                const r = await supabase.from('pedidos_foto').insert({ aluno_id: aluno.id, foto_path: caminho });
+                if (r.error) { await supabase.storage.from('fotos').remove([caminho]); throw r.error; } // não deixa foto solta
+                alert('Solicitação de alteração de foto enviada para análise do Administrador!');
+            } catch (err) { falhou(err); }
         });
 
-        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_tema.js) =====
         const acoes = {
             menu: () => { const aberto = $('sidebarContent').classList.toggle('open'); document.querySelector('.menu-toggle').setAttribute('aria-expanded', aberto); },
-            sair: () => localStorage.removeItem('usuarioLogado'), // o link segue para index.html
+            sair: () => supabase.auth.signOut().finally(() => { location.href = 'login.html'; }),
             hoje: irParaHoje,
             foto: () => $('inputFotoUpload').click()
         };
         document.addEventListener('click', e => {
             const el = e.target.closest('[data-tela], [data-acao]');
             if (!el) return;
+            if (el.dataset.acao === 'sair') e.preventDefault(); // o signOut leva ao login
             if (el.dataset.tela) mostrarAba(el.dataset.tela);
             else acoes[el.dataset.acao]?.();
         });
@@ -275,13 +307,17 @@
         });
 
         // ===== Atualização automática =====
-        // Quando o admin muda algo (sala do aluno, transferência, matérias, avisos), este painel se atualiza sozinho
-        function atualizar() { carregarAluno(); renderPerfil(); renderMaterias(); renderMural(); }
-        addEventListener('storage', e => { if (e.key !== 'theme') atualizar(); }); // outra aba/janela alterou os dados
+        // Quando o admin muda algo (sala do aluno, transferência, matérias, avisos), este painel busca os dados novos no banco
+        async function atualizar() {
+            try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos()]); } catch (e) { return console.error(e); }
+            renderPerfil(); renderMaterias(); renderMural();
+        }
         addEventListener('focus', atualizar);                                      // ao voltar para esta aba
         document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
+        setInterval(() => { if (!document.hidden) atualizar(); }, 30000);          // e a cada 30 segundos, enquanto a aba está aberta
 
         // ===== Início =====
+        try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos()]); } catch (e) { falhou(e); }
         renderPerfil(); renderMaterias(); renderMural(); renderTrofeus(); irParaHoje();
     </script>
 </body>

@@ -12,7 +12,19 @@
     </style>
 </head>
 <body>
-    <script src="botão_de_tema.js"></script>
+    <script src="botão_tema.js"></script>
+    <script>
+        // Reserva: se o botão_tema.js não carregar (arquivo ausente ou nome diferente), a troca continua funcionando, só que sem a transição
+        if (!window.__temaPronto) {
+            console.warn('botão_tema.js ausente ou desatualizado: usando a troca simples (sem transição).');
+            try { document.body.classList.toggle('light-mode', localStorage.getItem('theme') === 'light'); } catch {}
+            document.addEventListener('click', e => {
+                if (!e.target.closest('[data-tema]')) return;
+                const claro = document.body.classList.toggle('light-mode');
+                try { localStorage.setItem('theme', claro ? 'light' : 'dark'); } catch {}
+            });
+        }
+    </script>
 
     <header class="navbar">
         <div class="brand-group">

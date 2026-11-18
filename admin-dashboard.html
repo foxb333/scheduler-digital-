@@ -47,7 +47,7 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
-    <script src="botão_de_tema.js"></script>
+    <script src="botão_tema.js"></script>
 
     <aside class="sidebar">
         <div>
@@ -79,12 +79,12 @@
                     <form id="formAluno" class="login-form">
                         <input type="hidden" id="editAlunoId">
                         <div class="linha">
-                            <div class="input-group ig"><label for="a_nome">Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Ana Souza" required></div>
-                            <div class="input-group ig"><label for="a_email">Acesso</label><input type="text" id="a_email" placeholder="00001105939352sp" pattern=".*\d+sp$" required></div>
+                            <div class="input-group ig"><label for="a_nome">Nome Completo</label><input type="text" id="a_nome" placeholder="Ex: Ana Souza" maxlength="100" required></div>
+                            <div class="input-group ig"><label for="a_email">Acesso</label><input type="text" id="a_email" placeholder="00001105939352sp" pattern=".*\d+[sS][pP]$" maxlength="20" required></div>
                         </div>
                         <div class="linha">
-                            <div class="input-group ig"><label for="a_matricula">Matrícula</label><input type="text" id="a_matricula" placeholder="00001105939352sp@aluno.educacao.sp.gov.br" required></div>
-                            <div class="input-group ig"><label for="a_senha">Senha Provisória</label><input type="password" id="a_senha" placeholder="••••••••" minlength="6" maxlength="25" autocomplete="new-password" required></div>
+                            <div class="input-group ig"><label for="a_matricula">Matrícula</label><input type="text" id="a_matricula" placeholder="00001105939352sp@aluno.educacao.sp.gov.br" maxlength="50" required></div>
+                            <div class="input-group ig"><label for="a_senha">Senha Provisória</label><input type="password" id="a_senha" placeholder="••••••••" minlength="8" maxlength="25" autocomplete="new-password" required></div>
                         </div>
 
                         <h4 class="subtitulo-form">Informações Pessoais e Familiares</h4>
@@ -93,15 +93,15 @@
                             <div class="input-group ig" style="min-width: 150px;"><label for="a_nascimento">Data de Nascimento</label><input type="date" id="a_nascimento" required></div>
                         </div>
                         <div class="linha">
-                            <div class="input-group" style="flex: 2; min-width: 250px;"><label for="a_endereco">Endereço (Rua, Número, Apto / Bloco)</label><input type="text" id="a_endereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" required></div>
+                            <div class="input-group" style="flex: 2; min-width: 250px;"><label for="a_endereco">Endereço (Rua, Número, Apto / Bloco)</label><input type="text" id="a_endereco" placeholder="Ex: Rua das Flores, 123, Bloco B Apto 42" maxlength="90" required></div>
                             <div class="input-group ig" style="min-width: 150px;"><label for="a_sala">Turma / Sala</label><select id="a_sala" class="campo-select" required></select></div>
                         </div>
                         <div class="linha">
-                            <div class="input-group ig"><label for="a_mae">Nome da Mãe</label><input type="text" id="a_mae" placeholder="Nome completo da mãe"></div>
-                            <div class="input-group ig"><label for="a_pai">Nome do Pai / Responsável</label><input type="text" id="a_pai" placeholder="Nome completo do pai ou responsável"></div>
+                            <div class="input-group ig"><label for="a_mae">Nome da Mãe</label><input type="text" id="a_mae" placeholder="Nome completo da mãe" maxlength="100"></div>
+                            <div class="input-group ig"><label for="a_pai">Nome do Pai / Responsável</label><input type="text" id="a_pai" placeholder="Nome completo do pai ou responsável" maxlength="100"></div>
                         </div>
                         <div class="linha">
-                            <div class="input-group ig"><label for="a_telefone">Telefone de Contato</label><input type="text" id="a_telefone" placeholder="(11) 98888-7777" required></div>
+                            <div class="input-group ig"><label for="a_telefone">Telefone de Contato</label><input type="text" id="a_telefone" placeholder="Ex: 11988887777 (só números, com DDD)" inputmode="numeric" maxlength="11" minlength="10" pattern="\d{10,11}" title="Somente números, com DDD (10 ou 11 dígitos)" data-num required></div>
                         </div>
                         <div class="botoes-form">
                             <button type="submit" id="btnSalvar-a" class="btn-central" style="max-width: 200px; width: 100%;">Cadastrar Aluno</button>
@@ -127,11 +127,11 @@
                     <form id="formProf" class="login-form">
                         <input type="hidden" id="editProfId">
                         <div class="linha">
-                            <div class="input-group ig"><label for="p_nome">Nome Completo</label><input type="text" id="p_nome" placeholder="Ex: Carlos Alberto" required></div>
+                            <div class="input-group ig"><label for="p_nome">Nome Completo</label><input type="text" id="p_nome" placeholder="Ex: Carlos Alberto" maxlength="100" required></div>
                             <div class="input-group ig"><label for="p_cpf">CPF</label><input type="text" id="p_cpf" placeholder="Ex: 42141918663" maxlength="11" data-num required></div>
                         </div>
                         <div class="linha">
-                            <div class="input-group ig"><label for="p_senha">Senha de Acesso</label><input type="password" id="p_senha" placeholder="••••••••" minlength="6" maxlength="25" autocomplete="new-password" required></div>
+                            <div class="input-group ig"><label for="p_senha">Senha de Acesso</label><input type="password" id="p_senha" placeholder="••••••••" minlength="8" maxlength="25" autocomplete="new-password" required></div>
                             <div class="input-group ig"><label for="p_permissao">Tipo de Permissão</label><select id="p_permissao" class="campo-select" required></select></div>
                         </div>
                         <div id="quadros">
@@ -227,7 +227,7 @@
 
             <section style="display: flex; justify-content: center; width: 100%; margin-top: 40px;">
                 <div class="login-card card-form" id="cardTransf">
-                    <h3 class="titulo-form">Transferência de Alunos</h3>
+                    <h3 class="titulo-form">Remanejamento de Turma</h3>
                     <p class="aviso">O aluno só pode ir para uma sala do mesmo ano e do mesmo nível. Limite de 35 alunos por sala.</p>
                     <div class="linha">
                         <div class="input-group ig"><label for="t_origem">Sala de origem</label><select id="t_origem" class="campo-select"></select></div>
@@ -246,7 +246,7 @@
                         <div id="t_lista" class="checkbox-grid" style="max-height: 220px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));"></div>
                         <div class="linha" style="margin-top: 10px; align-items: end;">
                             <div class="input-group ig"><label for="t_destino">Sala de destino</label><select id="t_destino" class="campo-select"></select></div>
-                            <button type="button" data-a="t-manual" class="btn-central" style="max-width: 240px; width: 100%;">Transferir selecionados</button>
+                            <button type="button" data-a="t-manual" class="btn-central" style="max-width: 240px; width: 100%;">Remanejar selecionados</button>
                         </div>
                     </div>
                 </div>
@@ -255,23 +255,15 @@
     </main>
 
     <script type="module">
+        // @ts-nocheck  (avisa o VS Code para não mostrar alertas de tipo; não muda nada no funcionamento)
+        import { supabase, normalizarAcesso, loginInterno } from './config.js';
+
         // ===== Utilitários =====
         const $ = id => document.getElementById(id);
-        const gravar = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-        const novoId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         const opcao = (v, t = v) => `<option value="${esc(v)}">${esc(t)}</option>`;
 
-        // lê uma lista com segurança e garante que todo registro tenha id único
-        const ler = k => {
-            let l; try { l = JSON.parse(localStorage.getItem(k)); } catch {}
-            l = Array.isArray(l) ? l : [];
-            if (l.some(x => !x.id)) { l = l.map(x => x.id ? x : { ...x, id: novoId() }); gravar(k, l); }
-            return l;
-        };
-
         const duplicado = (lista, campo, valor, id) => lista.some(x => x.id !== id && String(x[campo] || '').toLowerCase() === valor.toLowerCase());
-        const ehImagem = s => typeof s === 'string' && s.length < 2e6 && /^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]+$/.test(s);
         const cpfValido = c => /^\d{11}$/.test(c) && !/^(\d)\1{10}$/.test(c) && [9, 10].every(n => {
             let s = 0; for (let i = 0; i < n; i++) s += c[i] * (n + 1 - i);
             return (s * 10 % 11) % 10 === +c[n];
@@ -280,13 +272,97 @@
             <button class="btn-acao btn-editar" data-a="ed-${x}" data-v="${esc(id)}">Editar</button>
             <button class="btn-acao btn-excluir" data-a="ex-${x}" data-v="${esc(id)}">🗑️</button>`;
 
+        // ===== Banco de dados (Supabase) =====
+        const ok = r => { if (r.error) throw r.error; return r.data; };
+
+        // traduz as mensagens do banco para português simples
+        const msgErro = e => {
+            const t = String(e?.message || e || 'erro desconhecido');
+            if (/alunos_acesso_uk/.test(t)) return 'Já existe um aluno com este Acesso.';
+            if (/alunos_matricula_uk/.test(t)) return 'Já existe um aluno com esta Matrícula.';
+            if (/_cpf_key/.test(t)) return 'Já existe um cadastro com este CPF.';
+            if (/materias_nome_uk/.test(t)) return 'Esta matéria já está cadastrada.';
+            if (/salas_nivel_serie_letra_key/.test(t)) return 'Esta sala já está cadastrada.';
+            if (/alunos_sala_id_fkey/.test(t)) return 'Esta sala ainda tem alunos. Remaneje-os antes.';
+            if (/atribuicoes_materia_id_fkey/.test(t)) return 'Esta matéria está em uso por professores.';
+            if (/alunos_limites|alunos_dados_limites|equipe_limites/.test(t)) return 'Algum campo passou do tamanho máximo ou o telefone não tem só números (10 ou 11 dígitos).';
+            if (/row-level security|permission denied/.test(t)) return 'Sem permissão. Saia e entre de novo como administrador.';
+            if (/Failed to fetch|NetworkError|Load failed/.test(t)) return 'Sem conexão com o banco de dados. Verifique a internet.';
+            return t;
+        };
+        const falhou = e => { console.error(e); alert('Erro: ' + msgErro(e)); };
+
+        // as contas de login são criadas/alteradas/apagadas pela Edge Function "clever-api" (usa a chave secreta no servidor)
+        async function conta(acao, dados) {
+            const { data, error } = await supabase.functions.invoke('clever-api', { body: { acao, ...dados } });
+            if (error) {
+                let msg = error.message;
+                try { const j = await error.context.json(); msg = j.erro || msg; } catch {}
+                throw new Error(msg);
+            }
+            if (data?.erro) throw new Error(data.erro);
+            return data;
+        }
+
+        // Cópia local dos dados, no mesmo formato que a tela sempre usou. Recarregada do banco a cada alteração.
+        let DB = { salasDB: [], materiasDB: [], alunosDB: [], professoresDB: [], pedidosFotoDB: [] };
+        const ler = k => DB[k];
+
+        async function carregar() {
+            const consulta = t => supabase.from(t).select('*');
+            const [salas, materias, alunos, dados, equipe, edados, atribs, pedidos] = (await Promise.all([
+                consulta('salas'), consulta('materias'), consulta('alunos'), consulta('alunos_dados_pessoais'),
+                consulta('equipe'), consulta('equipe_dados'), consulta('atribuicoes'), supabase.from('pedidos_foto').select('*').order('criado_em')
+            ])).map(ok);
+
+            const salaPorId = Object.fromEntries(salas.map(s => [s.id, { id: s.id, nome: s.nome, nivel: s.nivel }]));
+            const nomeSala = id => salaPorId[id] ? `${salaPorId[id].nome} (${salaPorId[id].nivel})` : '';
+            const materiaPorId = Object.fromEntries(materias.map(m => [m.id, m.nome]));
+            const dadosPorAluno = Object.fromEntries(dados.map(d => [d.aluno_id, d]));
+            const cpfPorEquipe = Object.fromEntries(edados.map(d => [d.equipe_id, d.cpf]));
+
+            const alunosDB = alunos.map(a => {
+                const d = dadosPorAluno[a.id] || {};
+                return {
+                    id: a.id, user_id: a.user_id, nome: a.nome, email: a.acesso, matricula: a.matricula, // "email" = campo Acesso
+                    sala: nomeSala(a.sala_id), sala_id: a.sala_id, foto_path: a.foto_path,
+                    cpf: d.cpf || '', nascimento: d.nascimento || '', endereco: d.endereco || '',
+                    mae: d.mae || '', pai: d.pai || '', telefone: d.telefone || ''
+                };
+            });
+            const alunoPorId = Object.fromEntries(alunosDB.map(a => [a.id, a]));
+
+            DB = {
+                salasDB: Object.values(salaPorId),
+                materiasDB: materias.map(m => ({ id: m.id, nome: m.nome })),
+                alunosDB,
+                professoresDB: equipe.map(p => {
+                    const porMateria = {};
+                    atribs.filter(t => t.professor_id === p.id).forEach(t => {
+                        const m = materiaPorId[t.materia_id], s = nomeSala(t.sala_id);
+                        if (m && s) (porMateria[m] ||= []).push(s);
+                    });
+                    return {
+                        id: p.id, user_id: p.user_id, nome: p.nome, cpf: cpfPorEquipe[p.id] || '', permissao: p.permissao,
+                        atribuicoes: Object.entries(porMateria).map(([materia, salas]) => ({ materia, salas }))
+                    };
+                }),
+                pedidosFotoDB: pedidos.map(p => ({
+                    id: p.id, alunoId: p.aluno_id, foto_path: p.foto_path,
+                    nomeAluno: alunoPorId[p.aluno_id]?.nome || '-', sala: alunoPorId[p.aluno_id]?.sala || ''
+                }))
+            };
+        }
+
         // ===== Sessão =====
-        let usuario; try { usuario = JSON.parse(localStorage.getItem('usuarioLogado')); } catch {}
-        if (usuario?.cargo !== 'admin') { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.app_metadata?.cargo !== 'admin') { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        supabase.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.href = 'login.html'; });
         document.body.style.visibility = '';
 
         // ===== Dados fixos =====
         const PERM = { professores: ['Acesso dos Professores', 'Cadastrar Professores'], gestao: ['Acesso da Gestão', 'Cadastrar Gestão'], diretores: ['Acesso dos Diretores', 'Cadastrar Diretores'] };
+        const CARGO = { professores: 'professor', gestao: 'gestao', diretores: 'diretor' }; // cargo gravado na conta de login
         const TIT = { a: ['Cadastrar Novo Aluno', 'Editar Aluno'], p: ['Cadastrar Equipe Gestora', 'Editar Equipe Gestora'] };
         const ABAS = {
             alunos: ['Painel de Controle Administrativo', 'Cadastre e gerencie as contas dos estudantes.'],
@@ -296,15 +372,19 @@
         };
         const CAMPOS = ['nome', 'email', 'matricula', 'senha', 'cpf', 'nascimento', 'endereco', 'sala', 'mae', 'pai', 'telefone']; // "email" = campo Acesso
         const ROTULO = { cpf: 'CPF', email: 'Acesso', matricula: 'Matrícula' };
-        // Listas de partida: usadas só na primeira vez, para criar salasDB e materiasDB. Depois quem manda é o admin.
-        const turmasPadrao = [[5, 9, 'Fundamental'], [1, 3, 'Ensino Médio']].flatMap(([ini, fim, n]) =>
-            Array.from({ length: fim - ini + 1 }, (_, i) => ['A', 'B', 'C'].map(t => `${ini + i}º Ano ${t} (${n})`)).flat());
-        const materiasPadrao = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Biologia', 'Física', 'Química', 'Inglês', 'Educação Física', 'Desenvolvimento de Sistemas'];
         const LIMITE = 35, NIVEIS = ['Fundamental', 'Ensino Médio'];
-        const PADRAO_SALA = /^(\d{1,2}º Ano [A-Z]) \((Fundamental|Ensino Médio)\)$/;
+        const SENHA_MIN = 8;
+        const LIMITES = { nome: 100, email: 20, matricula: 50, endereco: 90, mae: 100, pai: 100 }; // tamanhos máximos (o banco tem os mesmos)
+        const NOME_CAMPO = { nome: 'o nome', email: 'o acesso', matricula: 'a matrícula', endereco: 'o endereço', mae: 'o nome da mãe', pai: 'o nome do pai/responsável' };
 
         let atrib = {}; // matéria -> lista de salas
-        let plano = null; // sugestão da transferência automática, aguardando confirmação
+        let plano = null; // sugestão do remanejamento automático, aguardando confirmação
+
+        // evita clique duplo enquanto grava
+        async function salvando(botaoId, fn) {
+            const b = $(botaoId); b.disabled = true;
+            try { await fn(); } catch (e) { falhou(e); } finally { b.disabled = false; }
+        }
 
         // ===== Estrutura: salas e matérias =====
         const nomeCompleto = s => `${s.nome} (${s.nivel})`;
@@ -314,6 +394,7 @@
         const salasOrdenadas = () => ordenarSalas(ler('salasDB'));
         const contar = () => ler('alunosDB').reduce((m, a) => (m[a.sala] = (m[a.sala] || 0) + 1, m), {});
         const alunosDaSala = nome => ler('alunosDB').filter(a => a.sala === nome);
+        const salaPorNome = nome => ler('salasDB').find(s => nomeCompleto(s) === nome);
         const salasMesmaSerie = origem => {
             const o = salasOrdenadas().find(s => nomeCompleto(s) === origem);
             return o ? salasOrdenadas().filter(s => serieDe(s) === serieDe(o) && nomeCompleto(s) !== origem) : [];
@@ -321,14 +402,12 @@
         const profsDaMateria = m => ler('professoresDB').filter(p => p.atribuicoes.some(a => a.materia === m));
 
         // cria a próxima sala do ano (ex.: 3º Ano D) quando todas estão lotadas
-        function criarSalaAuto(chave) {
+        async function criarSalaAuto(chave) {
             const [nivel, serie] = chave.split('|');
-            const usadas = ler('salasDB').filter(s => serieDe(s) === chave).map(s => s.nome.slice(-1));
-            const letra = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').find(l => !usadas.includes(l));
-            if (!letra) return null;
-            const nova = { id: novoId(), nome: `${serie} ${letra}`, nivel };
-            gravar('salasDB', [...ler('salasDB'), nova]);
-            return nova;
+            const { data, error } = await supabase.rpc('criar_proxima_sala', { p_nivel: nivel, p_serie: serie });
+            if (error) { if (/letras/.test(error.message)) return null; throw error; }
+            await carregar();
+            return ler('salasDB').find(s => s.id === data) || null;
         }
 
         function montarSelectSala(atual = '') {
@@ -380,21 +459,37 @@
             montarSelectMateria(); renderQuadros(); renderAlunos(); renderProf();
         }
 
-        function mover(ids, destino) {
-            const conj = new Set(ids), alunos = ler('alunosDB');
-            alunos.forEach(a => { if (conj.has(a.id)) a.sala = destino; });
-            gravar('alunosDB', alunos);
-            const pedidos = ler('pedidosFotoDB');
-            pedidos.forEach(p => { if (conj.has(p.alunoId)) p.sala = destino; });
-            gravar('pedidosFotoDB', pedidos);
+        // muda a sala dos alunos (o banco confere o limite de 35 e a regra do mesmo ano/nível)
+        async function mover(ids, destino) {
+            const sala = salaPorNome(destino);
+            if (!sala) throw new Error('Sala de destino não encontrada.');
+            ok(await supabase.from('alunos').update({ sala_id: sala.id }).in('id', ids));
         }
 
         // ===== Interface =====
-        function alternarAba(aba) {
+        let abaAtual = 'alunos';
+
+        // Volta todos os formulários e seleções ao padrão (usado ao trocar de aba)
+        function resetarTela() {
+            cancelarAluno(); cancelarProf(); cancelarSala(); cancelarMateria();
+            document.querySelector('[name=t_modo][value=auto]').checked = true;
+            $('t_origem').value = '';
+            plano = null;
+            alternarModoTransf();
+            renderTransf();
+        }
+
+        async function alternarAba(aba) {
+            const mudou = aba !== abaAtual;
+            abaAtual = aba;
             document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + aba ? 'block' : 'none');
             document.querySelectorAll('[data-a=aba]').forEach(b => b.classList.toggle('active', b.dataset.v === aba));
             [$('tituloPainel').innerText, $('subtituloHeader').innerText] = ABAS[aba];
-            if (aba === 'fotos') renderFotos();
+            try { await carregar(); } catch (e) { return falhou(e); } // sempre mostra os dados mais recentes
+            if (mudou) resetarTela(); // ao trocar de aba, nada do que foi preenchido ou selecionado antes fica guardado
+            if (aba === 'alunos') { montarSelectSala($('editAlunoId').value ? $('a_sala').value : ''); renderAlunos(); }
+            if (aba === 'professores') { renderQuadros(); renderProf(); }
+            if (aba === 'fotos') await renderFotos();
             if (aba === 'estrutura') atualizarEstrutura();
         }
 
@@ -406,15 +501,29 @@
             $('btnSalvar-' + x).innerText = edit ? 'Salvar Alterações' : x === 'a' ? 'Cadastrar Aluno' : PERM[$('p_permissao').value][1];
         }
 
-        function excluir(chave, id) {
+        // apaga todas as fotos do aluno na área privada
+        async function removerFotos(userId) {
+            if (!userId) return;
+            const { data } = await supabase.storage.from('fotos').list(userId);
+            if (data?.length) await supabase.storage.from('fotos').remove(data.map(f => `${userId}/${f.name}`));
+        }
+
+        async function excluir(chave, id) {
             if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
             const alvo = ler(chave).find(x => x.id === id);
             if (!alvo) return;
-            gravar(chave, ler(chave).filter(x => x.id !== id));
-            if (chave === 'alunosDB') {
-                gravar('pedidosFotoDB', ler('pedidosFotoDB').filter(p => ![alvo.email, alvo.matricula].includes(p.alunoEmail)));
-                renderAlunos();
-            } else renderProf();
+            try {
+                if (chave === 'alunosDB') {
+                    await removerFotos(alvo.user_id);
+                    ok(await supabase.from('alunos').delete().eq('id', id)); // apaga junto os dados pessoais e os pedidos de foto
+                } else {
+                    ok(await supabase.from('equipe').delete().eq('id', id)); // apaga junto CPF e atribuições
+                }
+                if (alvo.user_id) await conta('excluir', { user_id: alvo.user_id }); // apaga a conta de login
+            } catch (e) { falhou(e); }
+            await carregar().catch(falhou);
+            chave === 'alunosDB' ? renderAlunos() : renderProf();
+            atualizarEstrutura();
         }
 
         // ===== Alunos =====
@@ -425,6 +534,7 @@
             const a = ler('alunosDB').find(x => x.id === id);
             montarSelectSala(a.sala);
             CAMPOS.forEach(k => $('a_' + k).value = a[k] || '');
+            $('a_telefone').value = (a.telefone || '').replace(/\D/g, ''); // telefones antigos com máscara viram só números
             $('a_senha').value = ''; // nunca exibe a senha atual
             $('editAlunoId').value = id;
             modo('a', true);
@@ -435,34 +545,67 @@
 
         $('formAluno').addEventListener('submit', e => {
             e.preventDefault();
-            const id = $('editAlunoId').value, alunos = ler('alunosDB');
-            const v = Object.fromEntries(CAMPOS.map(k => [k, $('a_' + k).value.trim()]));
-            const atual = alunos.find(a => a.id === id);
+            salvando('btnSalvar-a', async () => {
+                const id = $('editAlunoId').value, alunos = ler('alunosDB');
+                const v = Object.fromEntries(CAMPOS.map(k => [k, $('a_' + k).value.trim()]));
+                const atual = alunos.find(a => a.id === id);
 
-            if (!cpfValido(v.cpf)) return alert('Erro: CPF inválido!');
-            const dup = Object.keys(ROTULO).find(k => duplicado(alunos, k, v[k], id));
-            if (dup) return alert(`Erro: Já existe um aluno cadastrado com este ${ROTULO[dup]}!`);
-            if (!atual && !v.senha) return alert('Erro: informe a senha.');
+                v.email = normalizarAcesso(v.email); // Acesso padronizado: minúsculo e com 4 zeros
+                if (!/^0000[1-9]\d*sp$/.test(v.email)) return alert('Erro: o Acesso deve começar com 3 ou 4 zeros e terminar em "sp" (ex.: 000110939352sp).');
+                if (!cpfValido(v.cpf)) return alert('Erro: CPF inválido!');
+                const longo = Object.keys(LIMITES).find(k => v[k].length > LIMITES[k]); // confere o tamanho também aqui (o banco confere de novo)
+                if (longo) return alert(`Erro: ${NOME_CAMPO[longo]} pode ter no máximo ${LIMITES[longo]} caracteres.`);
+                v.telefone = v.telefone.replace(/\D/g, '');
+                if (!/^\d{10,11}$/.test(v.telefone)) return alert('Erro: o telefone deve ter só números, com DDD (10 ou 11 dígitos). Ex.: 11988887777.');
+                const dup = Object.keys(ROTULO).find(k => duplicado(alunos, k, v[k], id));
+                if (dup) return alert(`Erro: Já existe um aluno cadastrado com este ${ROTULO[dup]}!`);
+                if (!atual && !v.senha) return alert('Erro: informe a senha.');
+                if (v.senha && v.senha.length < SENHA_MIN) return alert(`Erro: a senha deve ter pelo menos ${SENHA_MIN} caracteres.`);
 
-            // sala: respeita o limite e cria a próxima sala do ano quando todas estão lotadas
-            let aviso = '';
-            if (v.sala.startsWith('__nova__|')) {
-                const nova = criarSalaAuto(v.sala.slice(9));
-                if (!nova) return alert('Erro: não é possível criar mais salas para este ano.');
-                v.sala = nomeCompleto(nova);
-                aviso = `\nComo todas as salas estavam lotadas, foi criada a sala ${v.sala}.`;
-            } else if (v.sala !== atual?.sala && (contar()[v.sala] || 0) >= LIMITE) {
-                return alert(`Erro: a sala ${v.sala} já está com ${LIMITE} alunos.`);
-            }
+                // sala: respeita o limite e cria a próxima sala do ano quando todas estão lotadas
+                let aviso = '';
+                if (v.sala.startsWith('__nova__|')) {
+                    const nova = await criarSalaAuto(v.sala.slice(9));
+                    if (!nova) return alert('Erro: não é possível criar mais salas para este ano.');
+                    v.sala = nomeCompleto(nova);
+                    aviso = `\nComo todas as salas estavam lotadas, foi criada a sala ${v.sala}.`;
+                } else if (v.sala !== atual?.sala && (contar()[v.sala] || 0) >= LIMITE) {
+                    return alert(`Erro: a sala ${v.sala} já está com ${LIMITE} alunos.`);
+                }
+                const sala = salaPorNome(v.sala);
+                if (!sala) return alert('Erro: selecione uma sala válida.');
 
-            const aluno = atual || { id: novoId(), fotoPerfil: null };
-            Object.assign(aluno, v, { senha: v.senha || aluno.senha });
-            if (!atual) alunos.push(aluno);
+                const dados = { cpf: v.cpf, nascimento: v.nascimento, endereco: v.endereco, mae: v.mae || null, pai: v.pai || null, telefone: v.telefone };
+                const login = (await loginInterno(v.email)).email;
 
-            gravar('alunosDB', alunos);
-            cancelarAluno();
-            renderAlunos();
-            alert('Aluno salvo com sucesso!' + aviso);
+                if (!atual) {
+                    const user_id = (await conta('criar', { email: login, senha: v.senha, cargo: 'aluno' })).user_id;
+                    let novoId = null;
+                    try {
+                        novoId = ok(await supabase.from('alunos').insert({ user_id, nome: v.nome, acesso: v.email, matricula: v.matricula, sala_id: sala.id }).select('id').single()).id;
+                        ok(await supabase.from('alunos_dados_pessoais').insert({ aluno_id: novoId, ...dados }));
+                    } catch (err) { // desfaz o que foi criado pela metade
+                        if (novoId) await supabase.from('alunos').delete().eq('id', novoId);
+                        await conta('excluir', { user_id }).catch(() => {});
+                        throw err;
+                    }
+                } else {
+                    let user_id = atual.user_id;
+                    if (!user_id) { // aluno sem conta de login: cria agora
+                        if (!v.senha) return alert('Erro: este aluno está sem conta de login. Informe uma senha.');
+                        user_id = (await conta('criar', { email: login, senha: v.senha, cargo: 'aluno' })).user_id;
+                    } else if (v.email !== atual.email || v.senha) {
+                        await conta('atualizar', { user_id, ...(v.email !== atual.email && { email: login }), ...(v.senha && { senha: v.senha }) });
+                    }
+                    ok(await supabase.from('alunos').update({ user_id, nome: v.nome, acesso: v.email, matricula: v.matricula, sala_id: sala.id }).eq('id', id));
+                    ok(await supabase.from('alunos_dados_pessoais').upsert({ aluno_id: id, ...dados }));
+                }
+
+                await carregar();
+                cancelarAluno();
+                atualizarEstrutura();
+                alert('Aluno salvo com sucesso!' + aviso);
+            });
         });
 
         // ===== Equipe gestora =====
@@ -508,31 +651,69 @@
             renderQuadros(); tipoPerm();
         }
 
+        // troca as atribuições do professor pelas escolhidas na tela
+        async function gravarAtribuicoes(profId, permissao, mats) {
+            ok(await supabase.from('atribuicoes').delete().eq('professor_id', profId));
+            if (permissao !== 'professores') return;
+            const linhas = mats.flatMap(m => {
+                const materia = ler('materiasDB').find(x => x.nome === m);
+                return atrib[m].map(nome => ({ professor_id: profId, materia_id: materia?.id, sala_id: salaPorNome(nome)?.id }));
+            });
+            if (linhas.some(l => !l.materia_id || !l.sala_id)) throw new Error('Matéria ou sala não encontrada. Atualize a página e tente de novo.');
+            if (linhas.length) ok(await supabase.from('atribuicoes').insert(linhas));
+        }
+
         $('formProf').addEventListener('submit', e => {
             e.preventDefault();
-            const id = $('editProfId').value, permissao = $('p_permissao').value, cpf = $('p_cpf').value.trim();
-            const senha = $('p_senha').value.trim(), profs = ler('professoresDB'), mats = Object.keys(atrib);
-            const atual = profs.find(p => p.id === id);
+            salvando('btnSalvar-p', async () => {
+                const id = $('editProfId').value, permissao = $('p_permissao').value, cpf = $('p_cpf').value.trim();
+                const senha = $('p_senha').value.trim(), profs = ler('professoresDB'), mats = Object.keys(atrib);
+                const nome = $('p_nome').value.trim();
+                const atual = profs.find(p => p.id === id);
 
-            if (!cpfValido(cpf)) return alert('Erro: CPF inválido!');
-            if (duplicado(profs, 'cpf', cpf, id)) return alert('Erro: Já existe um membro da equipe cadastrado com este CPF!');
-            if (!atual && !senha) return alert('Erro: informe a senha.');
-            if (permissao === 'professores') {
-                if (!mats.length) return alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
-                if (mats.some(m => !atrib[m].length)) return alert('Erro: Atribua pelo menos uma sala a cada matéria.');
-            }
+                if (!cpfValido(cpf)) return alert('Erro: CPF inválido!');
+                if (nome.length > 100) return alert('Erro: o nome pode ter no máximo 100 caracteres.');
+                if (duplicado(profs, 'cpf', cpf, id)) return alert('Erro: Já existe um membro da equipe cadastrado com este CPF!');
+                if (!atual && !senha) return alert('Erro: informe a senha.');
+                if (senha && senha.length < SENHA_MIN) return alert(`Erro: a senha deve ter pelo menos ${SENHA_MIN} caracteres.`);
+                if (permissao === 'professores') {
+                    if (!mats.length) return alert('Erro: Um professor deve ser cadastrado com pelo menos uma matéria atribuída.');
+                    if (mats.some(m => !atrib[m].length)) return alert('Erro: Atribua pelo menos uma sala a cada matéria.');
+                }
 
-            const prof = atual || { id: novoId() };
-            Object.assign(prof, {
-                nome: $('p_nome').value.trim(), cpf, permissao, senha: senha || prof.senha,
-                atribuicoes: permissao === 'professores' ? mats.map(m => ({ materia: m, salas: atrib[m] })) : []
+                const login = (await loginInterno(cpf)).email; // a equipe entra pelo CPF
+                const cargo = CARGO[permissao];
+
+                if (!atual) {
+                    const user_id = (await conta('criar', { email: login, senha, cargo })).user_id;
+                    let novoId = null;
+                    try {
+                        novoId = ok(await supabase.from('equipe').insert({ user_id, nome, permissao }).select('id').single()).id;
+                        ok(await supabase.from('equipe_dados').insert({ equipe_id: novoId, cpf }));
+                        await gravarAtribuicoes(novoId, permissao, mats);
+                    } catch (err) { // desfaz o que foi criado pela metade
+                        if (novoId) await supabase.from('equipe').delete().eq('id', novoId);
+                        await conta('excluir', { user_id }).catch(() => {});
+                        throw err;
+                    }
+                } else {
+                    let user_id = atual.user_id;
+                    if (!user_id) { // membro sem conta de login: cria agora
+                        if (!senha) return alert('Erro: este membro está sem conta de login. Informe uma senha.');
+                        user_id = (await conta('criar', { email: login, senha, cargo })).user_id;
+                    } else if (cpf !== atual.cpf || permissao !== atual.permissao || senha) {
+                        await conta('atualizar', { user_id, cargo, ...(cpf !== atual.cpf && { email: login }), ...(senha && { senha }) });
+                    }
+                    ok(await supabase.from('equipe').update({ user_id, nome, permissao }).eq('id', id));
+                    ok(await supabase.from('equipe_dados').upsert({ equipe_id: id, cpf }));
+                    await gravarAtribuicoes(id, permissao, mats);
+                }
+
+                await carregar();
+                cancelarProf();
+                atualizarEstrutura();
+                alert('Membro da equipe salvo com sucesso!');
             });
-            if (!atual) profs.push(prof);
-
-            gravar('professoresDB', profs);
-            cancelarProf();
-            renderProf();
-            alert('Membro da equipe salvo com sucesso!');
         });
 
         $('quadroSalas').addEventListener('change', e => {
@@ -543,30 +724,36 @@
             atrib[m] = [...salas];
         });
 
-        // ===== Fotos =====
-        const renderFotos = () => {
+        // ===== Fotos (guardadas na área privada do banco; o link abaixo vale por 5 minutos) =====
+        async function renderFotos() {
             const pedidos = ler('pedidosFotoDB');
-            $('tabelaFotos').innerHTML = pedidos.map(p => `
+            const links = await Promise.all(pedidos.map(p => supabase.storage.from('fotos').createSignedUrl(p.foto_path, 300).then(r => r.data?.signedUrl || null).catch(() => null)));
+            $('tabelaFotos').innerHTML = pedidos.map((p, i) => `
                 <tr><td>${esc(p.nomeAluno)}</td><td>${esc(p.sala)}</td>
-                <td>${ehImagem(p.novaFoto) ? `<img src="${esc(p.novaFoto)}" alt="Foto solicitada" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : 'Imagem inválida'}</td>
+                <td>${links[i] ? `<img src="${esc(links[i])}" alt="Foto solicitada" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : 'Imagem indisponível'}</td>
                 <td class="acoes">
                     <button class="btn-acao btn-aprovar" data-a="foto-ok" data-v="${esc(p.id)}">Aprovar</button>
                     <button class="btn-acao btn-rejeitar" data-a="foto-no" data-v="${esc(p.id)}">Recusar</button>
                 </td></tr>`).join('') || '<tr><td colspan="4" class="vazio">Nenhum pedido de foto pendente.</td></tr>';
-        };
+        }
 
-        function avaliarFoto(id, aprovado) {
-            const pedidos = ler('pedidosFotoDB'), p = pedidos.find(x => x.id === id);
+        async function avaliarFoto(id, aprovado) {
+            const p = ler('pedidosFotoDB').find(x => x.id === id);
             if (!p) return;
-            if (aprovado) {
-                if (!ehImagem(p.novaFoto)) return alert('Erro: a imagem enviada é inválida.');
-                const alunos = ler('alunosDB');
-                const aluno = alunos.find(a => (p.alunoId && a.id === p.alunoId) || a.email === p.alunoEmail || a.matricula === p.alunoEmail);
-                if (aluno) { aluno.fotoPerfil = p.novaFoto; gravar('alunosDB', alunos); }
-            }
-            gravar('pedidosFotoDB', pedidos.filter(x => x.id !== id));
-            renderFotos();
-            alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
+            try {
+                if (aprovado) {
+                    const aluno = ler('alunosDB').find(a => a.id === p.alunoId);
+                    if (!aluno) throw new Error('Aluno não encontrado.');
+                    ok(await supabase.from('alunos').update({ foto_path: p.foto_path }).eq('id', p.alunoId));
+                    if (aluno.foto_path && aluno.foto_path !== p.foto_path) await supabase.storage.from('fotos').remove([aluno.foto_path]); // apaga a foto antiga
+                } else {
+                    await supabase.storage.from('fotos').remove([p.foto_path]);
+                }
+                ok(await supabase.from('pedidos_foto').delete().eq('id', id));
+                await carregar();
+                await renderFotos();
+                alert(aprovado ? 'Foto aprovada e aplicada com sucesso!' : 'Foto recusada.');
+            } catch (e) { falhou(e); }
         }
 
         // ===== Estrutura: salas =====
@@ -587,42 +774,42 @@
 
         $('formSala').addEventListener('submit', e => {
             e.preventDefault();
-            const id = $('editSalaId').value, nivel = $('s_nivel').value, salas = ler('salasDB');
-            const m = $('s_nome').value.trim().match(/^(\d{1,2})\s*[º°o]?\s*(?:ano\s*)?([a-z])$/i);
-            if (!m) return alert('Erro: use o formato "1º Ano B" (número do ano e uma letra).');
-            const nova = { id: id || novoId(), nome: `${m[1]}º Ano ${m[2].toUpperCase()}`, nivel };
-            if (salas.some(s => s.id !== id && nomeCompleto(s) === nomeCompleto(nova))) return alert('Erro: esta sala já está cadastrada.');
+            salvando('btnSalvar-s', async () => {
+                const id = $('editSalaId').value, nivel = $('s_nivel').value, salas = ler('salasDB');
+                const m = $('s_nome').value.trim().match(/^(\d{1,2})\s*[º°o]?\s*(?:ano\s*)?([a-z])$/i);
+                if (!m) return alert('Erro: use o formato "1º Ano B" (número do ano e uma letra).');
+                const nova = { id, nome: `${m[1]}º Ano ${m[2].toUpperCase()}`, nivel };
+                if (salas.some(s => s.id !== id && nomeCompleto(s) === nomeCompleto(nova))) return alert('Erro: esta sala já está cadastrada.');
 
-            const velha = salas.find(s => s.id === id);
-            if (velha && nomeCompleto(velha) !== nomeCompleto(nova)) {
-                const n = contar()[nomeCompleto(velha)] || 0;
-                if (n && serieDe(velha) !== serieDe(nova)) return alert(`Erro: a sala tem ${n} aluno(s). Para mudar o ano ou o nível, transfira os alunos antes.`);
-                // renomear acompanha: alunos, professores e pedidos de foto passam para o nome novo
-                const troca = lista => lista.map(s => s === nomeCompleto(velha) ? nomeCompleto(nova) : s);
-                const alunos = ler('alunosDB'); alunos.forEach(a => { a.sala = troca([a.sala])[0]; }); gravar('alunosDB', alunos);
-                const profs = ler('professoresDB'); profs.forEach(p => p.atribuicoes.forEach(a => { a.salas = troca(a.salas); })); gravar('professoresDB', profs);
-                const pedidos = ler('pedidosFotoDB'); pedidos.forEach(p => { p.sala = troca([p.sala])[0]; }); gravar('pedidosFotoDB', pedidos);
-            }
-            gravar('salasDB', velha ? salas.map(s => s.id === id ? nova : s) : [...salas, nova]);
-            cancelarSala();
-            atualizarEstrutura();
+                const velha = salas.find(s => s.id === id);
+                if (velha && nomeCompleto(velha) !== nomeCompleto(nova)) {
+                    const n = contar()[nomeCompleto(velha)] || 0;
+                    if (n && serieDe(velha) !== serieDe(nova)) return alert(`Erro: a sala tem ${n} aluno(s). Para mudar o ano ou o nível, remaneje os alunos antes.`);
+                }
+                // renomear acompanha sozinho: alunos, professores e pedidos de foto apontam para a sala pelo código, não pelo nome
+                const linha = { serie: `${m[1]}º Ano`, letra: m[2].toUpperCase(), nivel };
+                ok(velha ? await supabase.from('salas').update(linha).eq('id', id) : await supabase.from('salas').insert(linha));
+                await carregar();
+                cancelarSala();
+                atualizarEstrutura();
+            });
         });
 
-        function excluirSala(id) {
+        async function excluirSala(id) {
             const s = ler('salasDB').find(x => x.id === id), nome = nomeCompleto(s), n = contar()[nome] || 0;
             if (n) {
-                alert(`Não dá para excluir: a sala ${nome} tem ${n} aluno(s).\nTransfira os alunos para outra sala antes de excluir.`);
+                alert(`Não dá para excluir: a sala ${nome} tem ${n} aluno(s).\nRemaneje os alunos para outra sala antes de excluir.`);
                 $('t_origem').value = nome;
                 renderTransf();
                 return $('cardTransf').scrollIntoView({ behavior: 'smooth' });
             }
             const profs = ler('professoresDB').filter(p => p.atribuicoes.some(a => a.salas.includes(nome)));
             if (!confirm(`Excluir a sala ${nome}?` + (profs.length ? `\nEla também será removida da atribuição de ${profs.length} professor(es).` : ''))) return;
-            if (profs.length) {
-                const todos = ler('professoresDB'); todos.forEach(p => p.atribuicoes.forEach(a => { a.salas = a.salas.filter(x => x !== nome); })); gravar('professoresDB', todos);
-            }
-            gravar('salasDB', ler('salasDB').filter(x => x.id !== id));
-            if ($('editSalaId').value === id) cancelarSala();
+            try {
+                ok(await supabase.from('salas').delete().eq('id', id)); // as atribuições dessa sala saem junto
+                if ($('editSalaId').value === id) cancelarSala();
+                await carregar();
+            } catch (e) { falhou(e); }
             atualizarEstrutura();
         }
 
@@ -638,36 +825,38 @@
 
         $('formMateria').addEventListener('submit', e => {
             e.preventDefault();
-            const id = $('editMateriaId').value, nome = $('m_nome').value.trim().replace(/\s+/g, ' '), lista = ler('materiasDB');
-            if (!nome) return alert('Erro: informe o nome da matéria.');
-            if (duplicado(lista, 'nome', nome, id)) return alert('Erro: esta matéria já está cadastrada.');
-
-            const velha = lista.find(m => m.id === id);
-            if (velha && velha.nome !== nome) { // renomear acompanha os professores
-                const profs = ler('professoresDB'); profs.forEach(p => p.atribuicoes.forEach(a => { if (a.materia === velha.nome) a.materia = nome; })); gravar('professoresDB', profs);
-            }
-            gravar('materiasDB', velha ? lista.map(m => m.id === id ? { ...m, nome } : m) : [...lista, { id: novoId(), nome }]);
-            cancelarMateria();
-            atualizarEstrutura();
+            salvando('btnSalvar-m', async () => {
+                const id = $('editMateriaId').value, nome = $('m_nome').value.trim().replace(/\s+/g, ' '), lista = ler('materiasDB');
+                if (!nome) return alert('Erro: informe o nome da matéria.');
+                if (duplicado(lista, 'nome', nome, id)) return alert('Erro: esta matéria já está cadastrada.');
+                // renomear acompanha sozinho os professores (eles apontam para a matéria pelo código)
+                ok(lista.some(m => m.id === id) ? await supabase.from('materias').update({ nome }).eq('id', id) : await supabase.from('materias').insert({ nome }));
+                await carregar();
+                cancelarMateria();
+                atualizarEstrutura();
+            });
         });
 
-        function excluirMateria(id) {
+        async function excluirMateria(id) {
             const m = ler('materiasDB').find(x => x.id === id), usam = profsDaMateria(m.nome);
             if (usam.length) return alert(`Não dá para excluir "${m.nome}": ela está em uso por ${usam.map(p => p.nome).join(', ')}.\nRemova a matéria desses professores (ou troque por outra) em Gestão da Equipe Gestora e depois exclua.`);
             if (!confirm(`Excluir a matéria "${m.nome}"?`)) return;
-            gravar('materiasDB', ler('materiasDB').filter(x => x.id !== id));
-            if ($('editMateriaId').value === id) cancelarMateria();
+            try {
+                ok(await supabase.from('materias').delete().eq('id', id));
+                if ($('editMateriaId').value === id) cancelarMateria();
+                await carregar();
+            } catch (e) { falhou(e); }
             atualizarEstrutura();
         }
 
-        // ===== Estrutura: transferência de alunos =====
+        // ===== Estrutura: remanejamento de turma =====
         function sugerirTransferencia() {
             const origem = $('t_origem').value;
             if (!origem) return alert('Escolha a sala de origem.');
             const alunos = alunosDaSala(origem).sort(porNome), cont = contar();
             if (!alunos.length) return $('t_previa').innerHTML = '<p class="aviso">Esta sala não tem alunos.</p>';
             const lotes = salasMesmaSerie(origem).map(s => ({ nome: nomeCompleto(s), n: cont[nomeCompleto(s)] || 0, ids: [] }));
-            if (!lotes.length) return $('t_previa').innerHTML = '<p class="aviso">Não há outra sala deste ano. Cadastre uma sala do mesmo ano para poder transferir.</p>';
+            if (!lotes.length) return $('t_previa').innerHTML = '<p class="aviso">Não há outra sala deste ano. Cadastre uma sala do mesmo ano para poder remanejar.</p>';
 
             let sobra = 0; // cada aluno vai para a sala do mesmo ano com menos alunos e ainda com vaga
             alunos.forEach(a => {
@@ -679,18 +868,25 @@
                 ? `<p style="margin-bottom: 8px;">Sugestão para os ${alunos.length - sobra} aluno(s) que cabem:</p><ul style="margin: 0 0 12px 18px;">${plano.map(l => `<li><strong>${esc(l.nome)}</strong>: +${l.ids.length} (ficará com ${l.n}/${LIMITE})</li>`).join('')}</ul>`
                 : '')
                 + (sobra ? `<p class="aviso" style="color: #ef4444;">Faltam vagas para ${sobra} aluno(s): eles continuam em ${esc(origem)}. Cadastre outra sala deste ano ou libere vagas.</p>` : '')
-                + (plano.length ? '<button type="button" data-a="t-confirmar" class="btn-acao btn-aprovar" style="padding: 10px 18px;">Confirmar transferência</button>' : '');
+                + (plano.length ? '<button type="button" data-a="t-confirmar" class="btn-acao btn-aprovar" style="padding: 10px 18px;">Confirmar remanejamento</button>' : '');
         }
 
-        function confirmarTransferencia() {
+        async function confirmarTransferencia() {
             if (!plano?.length) return;
             const total = plano.reduce((s, l) => s + l.ids.length, 0);
-            plano.forEach(l => mover(l.ids, l.nome));
-            atualizarEstrutura();
-            alert(`${total} aluno(s) transferido(s) com sucesso!`);
+            try {
+                for (const l of plano) await mover(l.ids, l.nome);
+                await carregar();
+                atualizarEstrutura();
+                alert(`${total} aluno(s) remanejado(s) com sucesso!`);
+            } catch (e) {
+                falhou(e);
+                await carregar().catch(() => {});
+                atualizarEstrutura();
+            }
         }
 
-        function transferirManual() {
+        async function transferirManual() {
             const origem = $('t_origem').value, destino = $('t_destino').value;
             const ids = [...$('t_lista').querySelectorAll('input:checked')].map(i => i.value);
             if (!ids.length) return alert('Marque pelo menos um aluno.');
@@ -698,9 +894,16 @@
             if (!salasMesmaSerie(origem).some(s => nomeCompleto(s) === destino)) return alert('Erro: o aluno só pode ir para uma sala do mesmo ano e nível.');
             const vagas = LIMITE - (contar()[destino] || 0);
             if (ids.length > vagas) return alert(`Erro: a sala ${destino} só tem ${vagas} vaga(s) e você marcou ${ids.length} aluno(s).`);
-            mover(ids, destino);
-            atualizarEstrutura();
-            alert(`${ids.length} aluno(s) transferido(s) com sucesso!`);
+            try {
+                await mover(ids, destino);
+                await carregar();
+                atualizarEstrutura();
+                alert(`${ids.length} aluno(s) remanejado(s) com sucesso!`);
+            } catch (e) {
+                falhou(e);
+                await carregar().catch(() => {});
+                atualizarEstrutura();
+            }
         }
 
         function alternarModoTransf() {
@@ -709,10 +912,10 @@
             $('t_manual').style.display = manual ? 'block' : 'none';
         }
 
-        // ===== Eventos (um único ouvinte de clique, sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
+        // ===== Eventos (um único ouvinte de clique, sem onclick inline; o botão de tema é tratado pelo botão_tema.js) =====
         const acoes = {
             aba: alternarAba,
-            sair: () => { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; },
+            sair: () => supabase.auth.signOut().finally(() => { location.href = 'login.html'; }),
             'ed-a': editarAluno, 'ex-a': id => excluir('alunosDB', id), 'cancelar-a': cancelarAluno,
             'ed-p': editarProf, 'ex-p': id => excluir('professoresDB', id), 'cancelar-p': cancelarProf,
             'add-mat': () => {
@@ -736,36 +939,9 @@
         // ===== Início =====
         $('p_permissao').innerHTML = Object.entries(PERM).map(([k, [t]]) => opcao(k, t)).join('');
         $('a_nascimento').max = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
-
-        // migração automática dos dados antigos: roda a cada abertura e só grava se algo mudou
-        const migrar = (chave, ajustar) => {
-            const lista = ler(chave).map(ajustar);
-            if (JSON.stringify(lista) !== localStorage.getItem(chave)) gravar(chave, lista);
-        };
-        migrar('alunosDB', a => ({ fotoPerfil: null, ...a }));
-        migrar('professoresDB', ({ materia, salas, ...p }) => ({
-            ...p,
-            atribuicoes: (p.atribuicoes?.length ? p.atribuicoes : materia ? [{ materia, salas }] : [])
-                .map(a => ({ materia: a.materia, salas: a.salas || [] }))
-        }));
-        migrar('pedidosFotoDB', p => p);
-
-        // primeira vez: cria as listas de salas e matérias a partir do que já existe (nada se perde)
-        if (localStorage.getItem('salasDB') === null) {
-            const nomes = new Set(turmasPadrao);
-            [...ler('alunosDB').map(a => a.sala), ...ler('professoresDB').flatMap(p => p.atribuicoes.flatMap(a => a.salas))]
-                .filter(s => PADRAO_SALA.test(s)).forEach(s => nomes.add(s));
-            gravar('salasDB', [...nomes].map(s => { const [, nome, nivel] = s.match(PADRAO_SALA); return { id: novoId(), nome, nivel }; }));
-        }
-        if (localStorage.getItem('materiasDB') === null) {
-            const profs = ler('professoresDB'); // "Sistemas" era o valor antigo de "Desenvolvimento de Sistemas"
-            profs.forEach(p => p.atribuicoes.forEach(a => { if (a.materia === 'Sistemas') a.materia = 'Desenvolvimento de Sistemas'; }));
-            gravar('professoresDB', profs);
-            const nomes = new Set([...materiasPadrao, ...profs.flatMap(p => p.atribuicoes.map(a => a.materia))]);
-            gravar('materiasDB', [...nomes].map(nome => ({ id: novoId(), nome })));
-        }
-
         $('s_nivel').innerHTML = NIVEIS.map(n => opcao(n)).join('');
+
+        try { await carregar(); } catch (e) { falhou(e); }
         montarSelectSala(); montarSelectMateria();
         renderQuadros(); tipoPerm(); renderAlunos(); renderProf();
     </script>

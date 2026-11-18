@@ -26,7 +26,7 @@
     </style>
 </head>
 <body class="dashboard-body" style="visibility: hidden;">
-    <script src="botão_de_tema.js"></script>
+    <script src="botão_tema.js"></script>
 
     <aside class="sidebar">
         <div>
@@ -67,27 +67,52 @@
     </main>
 
     <script type="module">
+        // @ts-nocheck  (avisa o VS Code para não mostrar alertas de tipo; não muda nada no funcionamento)
+        import { supabase } from './config.js';
+
         // ===== Utilitários =====
         const $ = id => document.getElementById(id);
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const lerJSON = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
-        const lerLista = k => { const l = lerJSON(k); return Array.isArray(l) ? l : []; };
+        const ok = r => { if (r.error) throw r.error; return r.data; };
+        const dataHora = d => d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
         // ===== Sessão =====
-        const usuario = lerJSON('usuarioLogado');
-        if (!['professor', 'admin'].includes(usuario?.cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        // professor e gestão entram por aqui (o login envia os dois para esta página); o admin pode olhar
+        const { data: { session } } = await supabase.auth.getSession();
+        const cargo = session?.user?.app_metadata?.cargo;
+        if (!['professor', 'gestao', 'admin'].includes(cargo)) { location.href = 'login.html'; throw new Error('Acesso negado'); }
+        supabase.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.href = 'login.html'; });
         document.body.style.visibility = '';
 
-        // ===== Cabeçalho =====
-        // As matérias vêm do cadastro: o formato atual usa "atribuicoes"; o antigo guardava só "materia"
-        const cadastro = lerLista('professoresDB').find(p => (usuario.id && p.id === usuario.id) || (usuario.cpf && p.cpf === usuario.cpf));
-        const materias = [...new Set([...(cadastro?.atribuicoes ?? []).map(a => a.materia), cadastro?.materia ?? usuario.materia].filter(Boolean))];
+        // ===== Dados (vêm do banco; a cópia local é recarregada a cada atualização) =====
+        let cadastro = null;      // { nome, materias: [...] } do professor logado
+        let muralAvisosDB = [];
 
-        if (usuario.nome) $('boasVindasProf').textContent = `Olá, ${usuario.nome}!`;
-        $('materiaProfDisplay').textContent = `${materias.length > 1 ? 'Matérias lecionadas' : 'Matéria lecionada'}: ${materias.join(', ') || 'Não especificada'}`;
+        async function carregar() {
+            // nome e matérias vêm do cadastro feito pelo admin (o professor só enxerga o próprio)
+            const eu = ok(await supabase.from('equipe').select('id, nome').eq('user_id', session.user.id).maybeSingle());
+            let materias = [];
+            if (eu) {
+                const atrib = ok(await supabase.from('atribuicoes').select('materia_id').eq('professor_id', eu.id));
+                const ids = [...new Set(atrib.map(a => a.materia_id))];
+                if (ids.length) materias = ok(await supabase.from('materias').select('nome').in('id', ids)).map(m => m.nome).sort((a, b) => a.localeCompare(b));
+            }
+            cadastro = eu ? { nome: eu.nome, materias } : null;
+
+            const av = ok(await supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em')
+                .gt('expira_em', new Date().toISOString()).order('publicado_em', { ascending: false }));
+            muralAvisosDB = av.map(a => ({ id: a.id, titulo: a.titulo, conteudo: a.conteudo, expiracao: a.expira_em, data: dataHora(new Date(a.publicado_em)) }));
+        }
+
+        // ===== Cabeçalho =====
+        function renderCabecalho() {
+            const materias = cadastro?.materias ?? [];
+            if (cadastro?.nome) $('boasVindasProf').textContent = `Olá, ${cadastro.nome}!`;
+            $('materiaProfDisplay').textContent = `${materias.length > 1 ? 'Matérias lecionadas' : 'Matéria lecionada'}: ${materias.join(', ') || 'Não especificada'}`;
+        }
 
         // ===== Mural (só avisos que ainda não expiraram) =====
-        const renderMural = () => $('containerMuralProf').innerHTML = lerLista('muralAvisosDB')
+        const renderMural = () => $('containerMuralProf').innerHTML = muralAvisosDB
             .filter(a => new Date(a.expiracao).getTime() > Date.now())
             .map(a => `
                 <div class="card-aviso-prof"><h4>${esc(a.titulo)}</h4><span class="aviso-data">${esc(a.data)}</span>
@@ -99,17 +124,31 @@
             document.querySelectorAll('.secao').forEach(s => s.style.display = s.id === 's-' + tela ? 'block' : 'none');
             document.querySelectorAll('[data-tela]').forEach(b => b.classList.toggle('active', b.dataset.tela === tela));
             if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
+            if (tela === 'painel') renderCabecalho();
+            atualizar();
         }
 
-        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_de_tema.js) =====
+        // ===== Eventos (sem onclick inline; o botão de tema é tratado pelo botão_tema.js) =====
         document.addEventListener('click', e => {
             const el = e.target.closest('[data-tela], [data-acao]');
             if (!el) return;
             if (el.dataset.tela) return mostrar(el.dataset.tela);
-            if (el.dataset.acao === 'sair') { localStorage.removeItem('usuarioLogado'); location.href = 'login.html'; }
+            if (el.dataset.acao === 'sair') supabase.auth.signOut().finally(() => { location.href = 'login.html'; });
         });
 
-        renderMural();
+        // ===== Atualização automática =====
+        // Quando o admin muda algo (matérias, nome, avisos), este painel busca os dados novos no banco
+        async function atualizar() {
+            try { await carregar(); } catch (e) { return console.error(e); }
+            renderCabecalho(); renderMural();
+        }
+        addEventListener('focus', atualizar);                                      // ao voltar para esta aba
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
+        setInterval(() => { if (!document.hidden) atualizar(); }, 30000);          // e a cada 30 segundos, enquanto a aba está aberta
+
+        // ===== Início =====
+        try { await carregar(); } catch (e) { console.error(e); alert('Erro ao carregar os dados. Verifique a internet e tente de novo.'); }
+        renderCabecalho(); renderMural();
     </script>
 </body>
 </html>
