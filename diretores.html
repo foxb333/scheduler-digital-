@@ -19,6 +19,10 @@
         .aviso-texto { margin: 0; color: var(--text-main); font-size: 14px; }
         .btn-excluir, .btn-editar-aviso { color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
         .btn-excluir { background: #ef4444; }
+        .selo-evento { display: inline-block; font-size: 12px; font-weight: 600; color: #fff; background: #a855f7; border-radius: 6px; padding: 2px 8px; margin-bottom: 6px; }
+        .dica { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: block; }
+        .linha-datas { display: flex; gap: 15px; flex-wrap: wrap; }
+        .linha-datas .input-group { flex: 1; min-width: 150px; }
         .btn-editar-aviso { background: #2563eb; }
 
         select, option { background-color: var(--bg-card, #0f172a) !important; color: var(--text-main, #f8fafc) !important; }
@@ -94,7 +98,20 @@
                     <input type="hidden" id="editAvisoId">
                     <div class="input-group mb15"><label for="avisoTitulo">Título do Aviso</label><input type="text" id="avisoTitulo" placeholder="Ex: Não haverá aula nesta sexta-feira" required></div>
                     <div class="input-group mb15"><label for="avisoConteudo">Descrição do Comunicado</label><textarea id="avisoConteudo" rows="4" placeholder="Detalhes do aviso..." class="campo" required></textarea></div>
-                    <div class="input-group mb15"><label for="avisoDias">Tempo de Exposição (Dias - Máximo 365)</label><input type="number" id="avisoDias" min="1" max="365" value="7" required></div>
+                    <div class="input-group mb15"><label for="avisoTipo">Tipo do Aviso</label>
+                        <select id="avisoTipo" class="campo">
+                            <option value="simples">Simples (só informa)</option>
+                            <option value="data">Com data (evento: aparece na agenda do aluno)</option>
+                        </select>
+                    </div>
+                    <div id="grupoDias" class="input-group mb15"><label for="avisoDias">Tempo de Exposição (Dias - Máximo 365)</label><input type="number" id="avisoDias" min="1" max="365" value="7" required></div>
+                    <div id="grupoEvento" style="display: none;">
+                        <div class="linha-datas mb15">
+                            <div class="input-group"><label for="avisoInicio">Primeiro dia do evento</label><input type="date" id="avisoInicio"></div>
+                            <div class="input-group"><label for="avisoFim">Último dia do evento</label><input type="date" id="avisoFim"></div>
+                        </div>
+                        <span class="dica mb15">O evento pode durar de 1 a 10 dias seguidos (para 1 dia só, use a mesma data nos dois campos). O aviso sai do mural 1 dia depois do último dia do evento.</span>
+                    </div>
                     <div style="display: flex; gap: 10px;">
                         <button type="submit" id="btnSalvarAviso" class="btn-central" style="max-width: 200px;">Publicar Aviso</button>
                         <button type="button" id="btnCancelarAviso" data-acao="cancelar" class="btn-central" style="max-width: 120px; background: #64748b; display: none;">Cancelar</button>
@@ -109,6 +126,7 @@
     </main>
 
     <script type="module">
+        // @ts-nocheck  (avisa o VS Code para não mostrar alertas de tipo; não muda nada no funcionamento)
         import { supabase } from './config.js';
 
         // ===== Utilitários =====
@@ -118,6 +136,7 @@
         const msgErro = e => {
             const t = String(e?.message || e || 'erro desconhecido');
             if (/row-level security|permission denied/.test(t)) return 'Sem permissão. Saia e entre de novo.';
+            if (/avisos_evento_ck|avisos_tipo_ck/.test(t)) return 'Confira o tipo e as datas do evento (de 1 a 10 dias seguidos).';
             if (/avisos_check/.test(t)) return 'O prazo do aviso não pode passar de 365 dias desde a publicação.';
             if (/Failed to fetch|NetworkError|Load failed/.test(t)) return 'Sem conexão com o banco de dados. Verifique a internet.';
             return t;
@@ -142,7 +161,7 @@
             const [salas, alunos, avisos] = await Promise.all([
                 supabase.from('salas').select('id, nome, nivel'),
                 supabase.from('alunos').select('id, nome, matricula, acesso, sala_id'),
-                supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em').order('publicado_em', { ascending: false })
+                supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em, tipo, evento_inicio, evento_fim').order('publicado_em', { ascending: false })
             ].map(p => p.then(ok)));
 
             const nomeSala = Object.fromEntries(salas.map(s => [s.id, `${s.nome} (${s.nivel})`]));
@@ -155,11 +174,19 @@
                 alunosDB: alunos.map(a => ({ id: a.id, nome: a.nome, matricula: a.matricula, email: a.acesso, sala: nomeSala[a.sala_id] || '' })), // "email" = campo Acesso
                 muralAvisosDB: avisos.filter(a => !vencidos.includes(a)).map(a => ({
                     id: a.id, titulo: a.titulo, conteudo: a.conteudo, publicado: a.publicado_em, expiracao: a.expira_em,
+                    tipo: a.tipo || 'simples', inicio: a.evento_inicio || '', fim: a.evento_fim || '',
                     data: dataHora(new Date(a.publicado_em))
                 }))
             };
         }
         const dataHora = d => d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        // ===== Datas do evento (texto "AAAA-MM-DD", sem fuso horário, para o dia nunca andar para trás ou para frente) =====
+        const hojeISO = () => new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+        const somaDias = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+        const diasEntre = (a, b) => Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5);
+        const br = iso => iso.split('-').reverse().join('/');
+        const periodo = a => a.inicio === a.fim ? br(a.inicio) : `${br(a.inicio)} a ${br(a.fim)}`;
 
         // nome do diretor logado (vem do cadastro da equipe)
         async function boasVindas() {
@@ -210,9 +237,31 @@
                 </div>
                 <h4>${esc(a.titulo)}</h4>
                 <span class="aviso-meta">Publicado em: ${esc(a.data)}</span>
-                <span class="aviso-exp">⏱️ Expira em aproximadamente ${diasRestantes(a)} dia(s)</span>
+                ${a.tipo === 'data' ? `<span class="selo-evento">📅 Evento: ${esc(periodo(a))}</span>` : ''}
+                <span class="aviso-exp">${a.tipo === 'data' ? `⏱️ Sai do mural em ${esc(br(somaDias(a.fim, 1)))} (1 dia depois do evento)` : `⏱️ Expira em aproximadamente ${diasRestantes(a)} dia(s)`}</span>
                 <p class="aviso-texto">${esc(a.conteudo)}</p>
             </div>`).join('') || '<p class="vazio">Nenhum aviso ativo no mural.</p>';
+
+        // mostra os campos certos para cada tipo de aviso
+        function alternarTipo() {
+            const data = $('avisoTipo').value === 'data';
+            $('grupoEvento').style.display = data ? 'block' : 'none';
+            $('grupoDias').style.display = data ? 'none' : 'block';
+            $('avisoDias').required = !data;
+            $('avisoInicio').required = $('avisoFim').required = data;
+            limitesDatas();
+        }
+
+        // o primeiro dia não pode ser passado; o último vai do primeiro até 9 dias depois (10 dias no total)
+        function limitesDatas() {
+            const editando = !!$('editAvisoId').value, velho = ler('muralAvisosDB').find(a => a.id === $('editAvisoId').value);
+            const manterInicio = editando && velho?.tipo === 'data' && $('avisoInicio').value === velho.inicio; // evento em andamento: o início antigo continua valendo
+            $('avisoInicio').min = manterInicio ? '' : hojeISO();
+            const i = $('avisoInicio').value;
+            $('avisoFim').min = i || hojeISO();
+            $('avisoFim').max = i ? somaDias(i, 9) : '';
+            if (i && $('avisoFim').value && ($('avisoFim').value < i || $('avisoFim').value > somaDias(i, 9))) $('avisoFim').value = '';
+        }
 
         function modoForm(editando) {
             $('tituloFormAviso').textContent = editando ? 'Editar Aviso' : 'Publicar Novo Aviso';
@@ -224,6 +273,7 @@
             $('formAvisoDirecao').reset();
             $('editAvisoId').value = '';
             modoForm(false);
+            alternarTipo();
         }
 
         function editarAviso(id) {
@@ -232,8 +282,11 @@
             $('editAvisoId').value = id;
             $('avisoTitulo').value = a.titulo;
             $('avisoConteudo').value = a.conteudo;
-            $('avisoDias').value = Math.min(365, diasRestantes(a)); // mantém o prazo que falta, em vez de voltar para 7
+            $('avisoDias').value = a.tipo === 'data' ? 7 : Math.min(365, diasRestantes(a)); // mantém o prazo que falta, em vez de voltar para 7
+            $('avisoTipo').value = a.tipo;
+            $('avisoInicio').value = a.inicio; $('avisoFim').value = a.fim;
             modoForm(true);
+            alternarTipo();
             scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -249,21 +302,38 @@
 
         $('formAvisoDirecao').addEventListener('submit', async e => {
             e.preventDefault();
-            const id = $('editAvisoId').value, dias = Math.floor(+$('avisoDias').value);
-            if (dias > 365) return alert('O limite máximo de exposição é de 365 dias (1 ano).');
-            if (!(dias >= 1)) return alert('Informe um tempo de exposição de 1 a 365 dias.');
+            const id = $('editAvisoId').value, tipo = $('avisoTipo').value, velho = ler('muralAvisosDB').find(a => a.id === id);
+            const dias = Math.floor(+$('avisoDias').value), inicio = $('avisoInicio').value, fim = $('avisoFim').value;
+
+            if (tipo === 'data') {
+                if (!inicio || !fim) return alert('Informe o primeiro e o último dia do evento.');
+                if (fim < inicio) return alert('O último dia do evento não pode ser antes do primeiro.');
+                if (diasEntre(inicio, fim) > 9) return alert('O evento pode durar no máximo 10 dias seguidos.');
+                const andamento = velho?.tipo === 'data' && velho.inicio === inicio; // evento em andamento pode ser editado
+                if (inicio < hojeISO() && !andamento) return alert('O evento deve começar de hoje em diante.');
+                if (fim < hojeISO()) return alert('O evento já terminou. Escolha datas de hoje em diante.');
+            } else {
+                if (dias > 365) return alert('O limite máximo de exposição é de 365 dias (1 ano).');
+                if (!(dias >= 1)) return alert('Informe um tempo de exposição de 1 a 365 dias.');
+            }
 
             const btn = $('btnSalvarAviso'); btn.disabled = true;
             try {
-                const agora = new Date(), expira = new Date(agora.getTime() + dias * 864e5);
-                const campos = { titulo: $('avisoTitulo').value.trim(), conteudo: $('avisoConteudo').value.trim() };
-                const velho = ler('muralAvisosDB').find(a => a.id === id);
+                const agora = new Date();
+                // aviso com data: sai do mural à meia-noite (Brasília) do dia seguinte ao último dia do evento (o banco confere de novo)
+                const expira = tipo === 'data' ? new Date(somaDias(fim, 1) + 'T00:00:00-03:00') : new Date(agora.getTime() + dias * 864e5);
+                const campos = {
+                    titulo: $('avisoTitulo').value.trim(), conteudo: $('avisoConteudo').value.trim(),
+                    tipo, evento_inicio: tipo === 'data' ? inicio : null, evento_fim: tipo === 'data' ? fim : null
+                };
 
                 if (velho) { // ao editar, mantém a data original de publicação
                     const limite = new Date(velho.publicado).getTime() + 365 * 864e5; // o banco não aceita mais de 365 dias desde a publicação
                     if (expira.getTime() > limite) {
                         const maximo = Math.max(1, Math.floor((limite - agora.getTime()) / 864e5));
-                        return alert(`O aviso não pode ficar mais de 365 dias no mural desde a publicação. Para este aviso, o máximo agora é ${maximo} dia(s).`);
+                        return alert(tipo === 'data'
+                            ? 'O evento está longe demais: o aviso não pode ficar mais de 365 dias no mural desde a publicação.'
+                            : `O aviso não pode ficar mais de 365 dias no mural desde a publicação. Para este aviso, o máximo agora é ${maximo} dia(s).`);
                     }
                     ok(await supabase.from('avisos').update({ ...campos, expira_em: expira.toISOString() }).eq('id', id));
                 } else {
@@ -289,6 +359,8 @@
             else acoes[el.dataset.acao]?.(el.dataset.v);
         });
         $('selectTurmasDirecao').addEventListener('change', renderAlunos);
+        $('avisoTipo').addEventListener('change', alternarTipo);
+        $('avisoInicio').addEventListener('change', limitesDatas);
 
         // ===== Atualização automática =====
         // Quando o admin muda algo (salas, transferência de alunos, avisos), este painel busca os dados novos no banco
@@ -302,7 +374,7 @@
 
         // ===== Início =====
         try { await carregar(); } catch (e) { falhou(e); }
-        montarTurmas(); renderAlunos(); renderAvisos();
+        montarTurmas(); renderAlunos(); renderAvisos(); alternarTipo();
         boasVindas().catch(console.error);
     </script>
 </body>

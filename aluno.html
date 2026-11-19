@@ -20,6 +20,14 @@
         .materia-prof { font-size: 14px; color: var(--text-main); }
         .card-aviso-aluno { background: var(--bg-card); border-left: 4px solid #60a5fa; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         .card-aviso-aluno h4 { color: #60a5fa; margin-bottom: 5px; }
+        .card-aviso-aluno { position: relative; padding-right: 55px; transition: box-shadow 0.3s; }
+        .card-aviso-aluno.evento { border-left-color: #a855f7; }
+        .card-aviso-aluno.destacado { box-shadow: 0 0 0 2px #a855f7, 0 0 18px rgba(168, 85, 247, 0.45); }
+        .selo-evento { display: inline-block; font-size: 12px; font-weight: 600; color: #fff; background: #a855f7; border-radius: 6px; padding: 2px 8px; margin-bottom: 8px; }
+        .btn-mais { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #2563eb; color: #fff; font-size: 22px; font-weight: 700; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s, background 0.2s; }
+        .btn-mais:hover { transform: scale(1.1); background: #1d4ed8; }
+        .btn-mais.marcado { background: #16a34a; font-size: 17px; }
+        .btn-mais-mural { margin: 5px auto 20px; display: block; }
         .aviso-data { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 10px; }
         .aviso-texto { margin: 0; color: var(--text-main); font-size: 14px; }
         .perfil-container { display: flex; align-items: center; gap: 20px; padding: 20px; margin-bottom: 25px; }
@@ -38,6 +46,21 @@
         .trofeu-card h4 { color: var(--text-main); margin: 10px 0 5px; }
         .trofeu-card.destaque { border-color: #60a5fa; }
         .trofeu-card.destaque h4 { color: #60a5fa; }
+        .trofeu-card.ferro .icone { filter: grayscale(1) brightness(0.8); }
+        .agenda-layout { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap; width: 100%; }
+        .agenda-layout .calendario-card.grande { flex: 1 1 420px; width: auto; }
+        .agenda-painel { flex: 1 1 260px; max-width: 340px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 20px; padding: 20px; box-sizing: border-box; max-height: 540px; display: flex; flex-direction: column; }
+        .agenda-painel h4 { color: #60a5fa; margin: 0 0 4px; }
+        .agenda-painel .nota { margin: 0 0 12px; }
+        .agenda-lista { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .mini-aviso { display: block; width: 100%; text-align: left; font: inherit; background: var(--bg-hover); border: 1px solid var(--border-main); border-left: 4px solid #a855f7; border-radius: 8px; padding: 10px 12px; cursor: pointer; color: var(--text-main); transition: 0.2s; }
+        .mini-aviso:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.12); }
+        .mini-aviso strong { display: block; color: #60a5fa; font-size: 14px; margin-bottom: 2px; }
+        .mini-aviso small { display: block; color: var(--text-muted); font-size: 11px; margin-bottom: 4px; }
+        .mini-aviso span { display: block; font-size: 13px; }
+        .calendar-table td.dia { position: relative; }
+        .badge-dia { position: absolute; top: 3px; right: 3px; min-width: 17px; height: 17px; padding: 0 4px; box-sizing: border-box; border-radius: 9px; background: #a855f7; color: #fff; font-size: 11px; font-weight: 700; line-height: 17px; text-align: center; }
+        @media screen and (max-width: 768px) { .agenda-painel { max-width: none; } }
         .titulo-aba { margin-bottom: 5px; color: #60a5fa; }
         .nota { font-size: 13px; color: var(--text-muted); }
         .vazio { color: var(--text-muted); }
@@ -102,26 +125,33 @@
             <div class="trofeu-gigante-card" role="button" tabindex="0" data-tela="trofeus">
                 <div class="icone">🏆</div>
                 <h3>Sala de Troféus Acadêmicos</h3>
-                <p class="nota" style="font-size: 14px; margin: 0;">Clique aqui para visualizar seus níveis Bronze, Prata e Diamante!</p>
+                <p class="nota" style="font-size: 14px; margin: 0;">Clique aqui para visualizar seus níveis Ferro, Bronze, Prata e Diamante!</p>
             </div>
         </div>
 
         <div class="aba agenda-wrapper" id="abaAgenda" style="display: none;">
-            <div class="calendario-card grande">
-                <div class="calendar-header">
-                    <h3 id="monthYear"></h3>
-                    <div class="calendar-nav">
-                        <button type="button" class="btn-hoje" data-acao="hoje" title="Voltar para o mês e dia atual">
-                            <span class="texto-pc">Voltar</span><span class="texto-mobile">Volt.</span>
-                        </button>
-                        <button type="button" class="nav-arrow" id="prevMonth" aria-label="Mês anterior">&lt;</button>
-                        <button type="button" class="nav-arrow" id="nextMonth" aria-label="Próximo mês">&gt;</button>
+            <div class="agenda-layout">
+                <div class="calendario-card grande">
+                    <div class="calendar-header">
+                        <h3 id="monthYear"></h3>
+                        <div class="calendar-nav">
+                            <button type="button" class="btn-hoje" data-acao="hoje" title="Voltar para o mês e dia atual">
+                                <span class="texto-pc">Voltar</span><span class="texto-mobile">Volt.</span>
+                            </button>
+                            <button type="button" class="nav-arrow" id="prevMonth" data-acao="mes-ant" aria-label="Mês anterior">&lt;</button>
+                            <button type="button" class="nav-arrow" id="nextMonth" data-acao="mes-prox" aria-label="Próximo mês">&gt;</button>
+                        </div>
                     </div>
+                    <table class="calendar-table">
+                        <thead><tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr></thead>
+                        <tbody id="calendarBody"></tbody>
+                    </table>
                 </div>
-                <table class="calendar-table">
-                    <thead><tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr></thead>
-                    <tbody id="calendarBody"></tbody>
-                </table>
+                <aside class="agenda-painel" id="agendaPainel" aria-live="polite">
+                    <h4 id="agendaPainelTitulo">Avisos do dia</h4>
+                    <p class="nota" id="agendaPainelSub"></p>
+                    <div class="agenda-lista" id="agendaPainelLista"></div>
+                </aside>
             </div>
         </div>
 
@@ -133,7 +163,7 @@
 
         <div class="aba" id="abaMural" style="display: none;">
             <h3 class="titulo-aba">Bem-vindo ao Mural de Avisos</h3>
-            <p class="nota" style="margin-bottom: 15px;">Comunicados oficiais emitidos pela direção.</p>
+            <p class="nota" style="margin-bottom: 15px;">Comunicados oficiais emitidos pela direção. Nos avisos com data, toque no <strong>+</strong> para colocar o evento na sua agenda.</p>
             <div id="containerMuralAluno"></div>
         </div>
 
@@ -144,8 +174,8 @@
         </div>
     </main>
 
-    <script src="calendario.js"></script>
     <script type="module">
+        // @ts-nocheck  (avisa o VS Code para não mostrar alertas de tipo; não muda nada no funcionamento)
         import { supabase } from './config.js';
 
         // ===== Utilitários =====
@@ -170,6 +200,8 @@
         // ===== Dados (vêm do banco; o aluno só enxerga os próprios dados) =====
         let aluno = null;                 // { id, nome, sala, fotoPerfil }
         let materiasDB = [], muralAvisosDB = [];
+        let agendaIds = new Set();        // códigos dos avisos que o aluno marcou na agenda
+        let muralQtd = 10;                // quantos avisos o mural mostra (de 10 em 10)
         const fotoCache = {};             // caminho da foto -> link temporário
 
         const dataHora = d => d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -199,9 +231,17 @@
         }
 
         async function carregarAvisos() {
-            const av = ok(await supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em')
+            const av = ok(await supabase.from('avisos').select('id, titulo, conteudo, publicado_em, expira_em, tipo, evento_inicio, evento_fim')
                 .gt('expira_em', new Date().toISOString()).order('publicado_em', { ascending: false }));
-            muralAvisosDB = av.map(a => ({ id: a.id, titulo: a.titulo, conteudo: a.conteudo, expiracao: a.expira_em, data: dataHora(new Date(a.publicado_em)) }));
+            muralAvisosDB = av.map(a => ({
+                id: a.id, titulo: a.titulo, conteudo: a.conteudo, expiracao: a.expira_em, data: dataHora(new Date(a.publicado_em)),
+                tipo: a.tipo || 'simples', inicio: a.evento_inicio || '', fim: a.evento_fim || ''
+            }));
+        }
+
+        // avisos que ESTE aluno colocou na própria agenda (cada aluno só enxerga os dele)
+        async function carregarAgenda() {
+            agendaIds = new Set(aluno ? ok(await supabase.from('agenda_avisos').select('aviso_id').eq('aluno_id', aluno.id)).map(r => r.aviso_id) : []);
         }
 
         // ===== Dados fixos =====
@@ -212,28 +252,82 @@
             mural: ['Mural de Avisos', 'Comunicados importantes.'],
             trofeus: ['Conquistas e Troféus', 'Visualize seus prêmios.']
         };
-        const TROFEUS = [['🥉', 'Nível Bronze', '1º Bimestre - Conquistado'], ['🥈', 'Nível Prata', '2º Bimestre - Conquistado'], ['💎', 'Nível Diamante', '3º Bimestre - Em andamento', true]];
+        const TROFEUS = [ // ordem: Ferro, Bronze, Prata, Diamante (um por bimestre)
+            ['🔩', 'Nível Ferro', '1º Bimestre - Conquistado', false, 'ferro'],
+            ['🥉', 'Nível Bronze', '2º Bimestre - Conquistado'],
+            ['🥈', 'Nível Prata', '3º Bimestre - Em andamento', true],
+            ['💎', 'Nível Diamante', '4º Bimestre - A conquistar']
+        ];
         const CORES = ['#2563eb', '#16a34a', '#9333ea', '#db2777', '#ca8a04', '#0284c7'];
 
-        // ===== Calendário: sempre posiciona em hoje (mês e dia) =====
-        // Funciona com o calendario.js novo (irParaHoje) e com o antigo (currentMonth/currentYear), mesmo se o navegador usar cópia em cache.
-        function irParaHoje() {
-            if (window.irParaHoje) return window.irParaHoje();
-            const h = new Date();
-            if (typeof currentMonth !== 'undefined') { currentMonth = h.getMonth(); currentYear = h.getFullYear(); }
-            else if (typeof mes !== 'undefined') { mes = h.getMonth(); ano = h.getFullYear(); }
-            window.renderCalendar?.();
-            $('calendarBody').querySelector('.hoje')?.classList.add('ativo');
+        // ===== Datas (texto "AAAA-MM-DD", sem fuso horário, para o dia nunca andar) =====
+        const pad = n => String(n).padStart(2, '0');
+        const hojeISO = () => { const h = new Date(); return `${h.getFullYear()}-${pad(h.getMonth() + 1)}-${pad(h.getDate())}`; };
+        const somaDias = (iso, n) => { const d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+        const br = iso => iso.split('-').reverse().join('/');
+        const periodo = a => a.inicio === a.fim ? br(a.inicio) : `${br(a.inicio)} a ${br(a.fim)}`;
+
+        // ===== Calendário (agenda) =====
+        const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        let calMes = new Date().getMonth(), calAno = new Date().getFullYear(), diaSel = hojeISO();
+
+        // avisos que o aluno marcou e que ainda estão no mural, agrupados por dia ({ '2026-12-05': [aviso, ...] })
+        function avisosPorDia() {
+            const mapa = {};
+            muralAvisosDB.filter(a => agendaIds.has(a.id) && a.tipo === 'data' && a.inicio && a.fim && new Date(a.expiracao).getTime() > Date.now()).forEach(a => {
+                for (let d = a.inicio, n = 0; d <= a.fim && n < 10; d = somaDias(d, 1), n++) (mapa[d] ||= []).push(a);
+            });
+            return mapa;
+        }
+
+        function renderCalendario() {
+            $('monthYear').textContent = `${MESES[calMes]} ${calAno}`;
+            const vazios = new Date(calAno, calMes, 1).getDay(), total = new Date(calAno, calMes + 1, 0).getDate();
+            const hoje = hojeISO(), mapa = avisosPorDia();
+            let html = '<tr>' + '<td class="vazio"></td>'.repeat(vazios), celulas = vazios;
+            for (let d = 1; d <= total; d++) {
+                const iso = `${calAno}-${pad(calMes + 1)}-${pad(d)}`, n = (mapa[iso] || []).length;
+                html += `<td class="dia${iso === hoje ? ' hoje' : ''}${iso === diaSel ? ' ativo' : ''}" data-dia="${iso}" role="button" tabindex="0" aria-label="Dia ${d}${n ? `, ${n} aviso(s)` : ''}">${d}${n ? `<span class="badge-dia">${n > 9 ? '9+' : n}</span>` : ''}</td>`;
+                if (++celulas % 7 === 0 && d < total) html += '</tr><tr>';
+            }
+            html += '<td class="vazio"></td>'.repeat((7 - celulas % 7) % 7) + '</tr>';
+            $('calendarBody').innerHTML = html;
+        }
+
+        // quadro à direita: mini mural vertical com os avisos do dia clicado
+        function renderPainel() {
+            const lista = avisosPorDia()[diaSel] || [];
+            $('agendaPainelTitulo').textContent = diaSel === hojeISO() ? 'Hoje' : `Dia ${br(diaSel)}`;
+            $('agendaPainelSub').textContent = lista.length ? `${lista.length} aviso(s) neste dia. Toque para abrir no mural.` : '';
+            $('agendaPainelLista').innerHTML = lista.map(a => `
+                <button type="button" class="mini-aviso" data-acao="ver-aviso" data-v="${esc(a.id)}">
+                    <strong>${esc(a.titulo)}</strong><small>📅 ${esc(periodo(a))}</small>
+                    <span>${esc(a.conteudo.length > 90 ? a.conteudo.slice(0, 90) + '…' : a.conteudo)}</span>
+                </button>`).join('') || '<p class="nota">Nenhum aviso neste dia. No Mural de Avisos, toque no + de um aviso com data para colocá-lo aqui.</p>';
+        }
+
+        const renderAgenda = () => { renderCalendario(); renderPainel(); };
+
+        function irPara(iso) { // mostra o mês do dia e seleciona o dia
+            const [a, m] = iso.split('-').map(Number);
+            calAno = a; calMes = m - 1; diaSel = iso;
+            renderAgenda();
+        }
+        const irParaHoje = () => irPara(hojeISO());
+        function mudarMes(n) {
+            const d = new Date(calAno, calMes + n, 1);
+            calAno = d.getFullYear(); calMes = d.getMonth();
+            renderCalendario();
         }
 
         // ===== Telas =====
-        function mostrarAba(tela) {
+        function mostrarAba(tela, manterMural = false) {
             document.querySelectorAll('.aba').forEach(a => a.style.display = a.id === 'aba' + tela[0].toUpperCase() + tela.slice(1) ? 'block' : 'none');
             document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.toggle('active', b.dataset.tela === tela));
             [$('tituloTelaPrincipal').textContent, $('subtituloTelaPrincipal').textContent] = ABAS[tela];
             if (tela === 'agenda') irParaHoje();
-            if (tela === 'mural') renderMural(); // reavalia a validade dos avisos toda vez que a aba é aberta
-            if (tela === 'home' || tela === 'materias' || tela === 'mural') atualizar();
+            if (tela === 'mural') { if (!manterMural) muralQtd = 10; renderMural(); } // reavalia a validade dos avisos toda vez que a aba é aberta
+            if (['home', 'materias', 'mural', 'agenda'].includes(tela)) atualizar();
         }
 
         function renderPerfil() {
@@ -260,15 +354,66 @@
                 || `<p class="vazio">Nenhuma matéria atribuída para a sua turma (${esc(sala || 'não atribuída')}) no momento.</p>`;
         }
 
-        // só mostra avisos que ainda não expiraram
-        const renderMural = () => $('containerMuralAluno').innerHTML = muralAvisosDB
-            .filter(av => new Date(av.expiracao).getTime() > Date.now())
-            .map(av => `
-            <div class="card-aviso-aluno"><h4>${esc(av.titulo)}</h4><span class="aviso-data">${esc(av.data)}</span>
-            <p class="aviso-texto">${esc(av.conteudo)}</p></div>`).join('') || '<p class="vazio">Nenhum aviso novo no mural.</p>';
+        // só mostra avisos que ainda não expiraram; carrega de 10 em 10
+        let destaque = null; // aviso a ser destacado depois de vir da agenda
+        const avisosAtivos = () => muralAvisosDB.filter(av => new Date(av.expiracao).getTime() > Date.now());
 
-        const renderTrofeus = () => $('trofeusGrid').innerHTML = TROFEUS.map(([icone, nome, status, destaque]) => `
-            <div class="trofeu-card${destaque ? ' destaque' : ''}"><div class="icone">${icone}</div><h4>${nome}</h4><p class="nota">${status}</p></div>`).join('');
+        function renderMural() {
+            const todos = avisosAtivos(), vistos = todos.slice(0, muralQtd);
+            $('containerMuralAluno').innerHTML = vistos.map(av => {
+                const evento = av.tipo === 'data' && av.inicio, marcado = agendaIds.has(av.id);
+                return `
+            <div class="card-aviso-aluno${evento ? ' evento' : ''}" id="aviso-${esc(av.id)}">
+                ${evento ? `<button type="button" class="btn-mais${marcado ? ' marcado' : ''}" data-acao="agenda-alt" data-v="${esc(av.id)}"
+                    title="${marcado ? 'Já está na sua agenda (toque para remover)' : 'Adicionar à minha agenda'}" aria-label="${marcado ? 'Remover da agenda' : 'Adicionar à agenda'}">${marcado ? '✓' : '+'}</button>` : ''}
+                <h4>${esc(av.titulo)}</h4><span class="aviso-data">${esc(av.data)}</span>
+                ${evento ? `<span class="selo-evento">📅 Evento: ${esc(periodo(av))}</span>` : ''}
+                <p class="aviso-texto">${esc(av.conteudo)}</p></div>`;
+            }).join('') || '<p class="vazio">Nenhum aviso novo no mural.</p>';
+            if (todos.length > vistos.length) $('containerMuralAluno').insertAdjacentHTML('beforeend',
+                `<button type="button" class="btn-hoje btn-mais-mural" data-acao="mais-avisos">Ler mais avisos (restam ${todos.length - vistos.length})</button>`);
+            if (destaque) { // veio da agenda: rola até o aviso e destaca por alguns segundos
+                const el = $('aviso-' + destaque.id);
+                if (el) {
+                    el.classList.add('destacado');
+                    if (!destaque.rolou) { destaque.rolou = true; el.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { destaque = null; renderMural(); }, 2500); }
+                }
+            }
+        }
+
+        // abre o aviso no mural (vindo do quadro da agenda); garante que ele já esteja carregado na lista
+        function verAviso(id) {
+            const i = avisosAtivos().findIndex(a => a.id === id);
+            if (i < 0) return alert('Este aviso não está mais no mural.');
+            muralQtd = Math.max(muralQtd, Math.ceil((i + 1) / 10) * 10);
+            destaque = { id, rolou: false };
+            mostrarAba('mural', true);
+        }
+
+        // "+" do aviso: coloca (ou tira) o evento da agenda do aluno
+        async function alternarAgenda(id) {
+            const av = muralAvisosDB.find(a => a.id === id);
+            if (!aluno || !av) return;
+            try {
+                if (agendaIds.has(id)) {
+                    if (!confirm('Remover este aviso da sua agenda?')) return;
+                    ok(await supabase.from('agenda_avisos').delete().eq('aluno_id', aluno.id).eq('aviso_id', id));
+                    agendaIds.delete(id);
+                    renderMural(); renderAgenda();
+                    return;
+                }
+                const r = await supabase.from('agenda_avisos').insert({ aluno_id: aluno.id, aviso_id: id });
+                if (r.error && !/agenda_avisos_pkey|duplicate/.test(r.error.message)) throw r.error; // já estava marcado: segue normalmente
+                agendaIds.add(id);
+                mostrarAba('agenda');
+                const hoje = hojeISO();
+                irPara(av.inicio <= hoje && av.fim >= hoje ? hoje : av.inicio); // evento em andamento: abre em hoje; senão, no 1º dia do evento
+                renderMural();
+            } catch (e) { falhou(e); }
+        }
+
+        const renderTrofeus = () => $('trofeusGrid').innerHTML = TROFEUS.map(([icone, nome, status, destaque, extra]) => `
+            <div class="trofeu-card${destaque ? ' destaque' : ''}${extra ? ' ' + extra : ''}"><div class="icone">${icone}</div><h4>${nome}</h4><p class="nota">${status}</p></div>`).join('');
 
         // ===== Pedido de troca de foto (a foto vai para a área privada; o admin aprova) =====
         $('inputFotoUpload').addEventListener('change', async e => {
@@ -293,14 +438,19 @@
             menu: () => { const aberto = $('sidebarContent').classList.toggle('open'); document.querySelector('.menu-toggle').setAttribute('aria-expanded', aberto); },
             sair: () => supabase.auth.signOut().finally(() => { location.href = 'login.html'; }),
             hoje: irParaHoje,
+            'mes-ant': () => mudarMes(-1), 'mes-prox': () => mudarMes(1),
+            'agenda-alt': alternarAgenda, 'ver-aviso': verAviso,
+            'mais-avisos': () => { muralQtd += 10; renderMural(); },
             foto: () => $('inputFotoUpload').click()
         };
         document.addEventListener('click', e => {
+            const dia = e.target.closest('[data-dia]');
+            if (dia) { diaSel = dia.dataset.dia; return renderAgenda(); }
             const el = e.target.closest('[data-tela], [data-acao]');
             if (!el) return;
             if (el.dataset.acao === 'sair') e.preventDefault(); // o signOut leva ao login
             if (el.dataset.tela) mostrarAba(el.dataset.tela);
-            else acoes[el.dataset.acao]?.();
+            else acoes[el.dataset.acao]?.(el.dataset.v);
         });
         document.addEventListener('keydown', e => { // teclado: Enter/Espaço nos elementos clicáveis que não são <button>
             if (['Enter', ' '].includes(e.key) && e.target.matches('[role=button]')) { e.preventDefault(); e.target.click(); }
@@ -309,15 +459,15 @@
         // ===== Atualização automática =====
         // Quando o admin muda algo (sala do aluno, transferência, matérias, avisos), este painel busca os dados novos no banco
         async function atualizar() {
-            try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos()]); } catch (e) { return console.error(e); }
-            renderPerfil(); renderMaterias(); renderMural();
+            try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos(), carregarAgenda()]); } catch (e) { return console.error(e); }
+            renderPerfil(); renderMaterias(); renderMural(); renderAgenda();
         }
         addEventListener('focus', atualizar);                                      // ao voltar para esta aba
         document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizar(); });
         setInterval(() => { if (!document.hidden) atualizar(); }, 30000);          // e a cada 30 segundos, enquanto a aba está aberta
 
         // ===== Início =====
-        try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos()]); } catch (e) { falhou(e); }
+        try { await carregarAluno(); await Promise.all([carregarMaterias(), carregarAvisos(), carregarAgenda()]); } catch (e) { falhou(e); }
         renderPerfil(); renderMaterias(); renderMural(); renderTrofeus(); irParaHoje();
     </script>
 </body>
